@@ -2,7 +2,6 @@ import React from "react";
 import { useNavigate, Link } from "react-router-dom";
 import Cookies from "js-cookie";
 import { signOut } from "../../lib/api/gotoreAPI";
-
 import AppBar from "@mui/material/AppBar";
 import Button from "@mui/material/Button";
 import FitnessCenterIcon from "@mui/icons-material/FitnessCenter";
