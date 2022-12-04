@@ -1,0 +1,2 @@
+backend: exec /usr/bin/env sh -c 'rails s'
+frontend: exec /usr/bin/env PORT=3000 sh -c 'cd ../ && cd frontend && yarn start'
