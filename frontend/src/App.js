@@ -4,6 +4,9 @@ import Home from "./components/pages/Home";
 import SignUp from "./components/pages/SignUp";
 import SignIn from "./components/pages/SignIn";
 import { getCurrentUser } from "./lib/api/gotoreAPI";
+import Header from "./components/pages/Header";
+import Post from "./components/pages/posts/show";
+import EditPost from "./components/pages/posts/edit";
 
 const App = () => {
   const [isSignedIn, setIsSignedIn] = useState(false);
@@ -13,12 +16,12 @@ const App = () => {
   const handleGetCurrentUser = async () => {
     try {
       const res = await getCurrentUser();
-      if (res?.data.isLogin === true) {
+      if (res) {
         setIsSignedIn(true);
-        setCurrentUser(res?.data.data);
-        console.log(res?.data.data);
+        setCurrentUser(res?.data.currentUser);
+        console.log(res?.data);
       } else {
-        console.log(res?.data.message);
+        console.log(res?.data);
       }
     } catch (err) {
       console.log(err);
@@ -31,6 +34,7 @@ const App = () => {
 
   return (
     <Router>
+      <Header isSignedIn={isSignedIn} />
       <AuthContext.Provider
         value={{
           isSignedIn: isSignedIn,
@@ -40,6 +44,8 @@ const App = () => {
         <Routes>
           <Route path='/signup' element={<SignUp />} />
           <Route path='/signin' element={<SignIn />} />
+          <Route path='/post' element={<Post />} />
+          <Route path='/post-edit' element={<EditPost />} />
           <Route path='/' element={<Home />} />
         </Routes>
       </AuthContext.Provider>
