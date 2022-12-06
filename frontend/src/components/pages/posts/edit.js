@@ -22,6 +22,7 @@ export default function EditPost() {
   const [meetingDatetime, setMeetingDatetime] = useState("");
   const [categoryId, setCategoryId] = useState(1);
   const [categoriesList, setcategoriesList] = useState([]);
+  const [postFileData, setPostFileData] = useState({});
 
   const handleSubmit = async () => {
     const data = {
@@ -39,6 +40,43 @@ export default function EditPost() {
     }
   };
 
+  // const formData = new FormData();
+  // postData.append("image", postFileData.image ? postFileData.image : "");
+  // const response = axios.post("/image/store", params, {
+  //   headers: {
+  //     "Content-Type": "multipart/form-data",
+  //   },
+  // });
+
+  const changeUploadFile = async (event) => {
+    const { name, files } = event.target;
+    setPostFileData({
+      ...postFileData,
+      [name]: files[0],
+    });
+    console.log(postFileData);
+    event.target.value = "";
+  };
+
+  const UploadButton = (props) => {
+    return (
+      <label htmlFor={`upload-button-${props.name}`}>
+        <input
+          // accept='image/*'
+          style={{ display: "none" }}
+          id={`upload-button-${props.name}`}
+          name={props.name}
+          multiple
+          type='file'
+          onChange={props.onChange}
+        />
+        <Button variant='contained' component='span' {...props}>
+          {props.children}
+        </Button>
+      </label>
+    );
+  };
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -51,6 +89,13 @@ export default function EditPost() {
             Gather workout friends!
           </Typography>
           <Box component='form' noValidate sx={{ mt: 1 }}>
+            <UploadButton
+              className='primary'
+              name='image'
+              onChange={changeUploadFile}
+            >
+              Upload your picture
+            </UploadButton>
             <TextField
               value={title}
               onChange={(e) => setTitle(e.target.value)}
