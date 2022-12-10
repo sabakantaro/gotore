@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import CssBaseline from "@mui/material/CssBaseline";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
@@ -11,58 +11,80 @@ import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import InputLabel from "@mui/material/InputLabel";
 import FormControl from "@mui/material/FormControl";
+import IconButton from "@mui/material/IconButton";
+import Cancel from "@mui/icons-material/Cancel";
 import { editPost } from "../../../lib/api/gotoreAPI";
 
 const theme = createTheme();
 
-export default function EditPost() {
+export default function EditPost({ currentUser }) {
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const [place, setPlace] = useState("");
   const [meetingDatetime, setMeetingDatetime] = useState("");
   const [categoryId, setCategoryId] = useState(1);
-  const [categoriesList, setcategoriesList] = useState([]);
-  const [postFileData, setPostFileData] = useState({});
+  // const [categoriesList, setcategoriesList] = useState([]);
+  const [image, setImage] = useState("");
+  const [preview, setPreview] = useState("");
 
-  const handleSubmit = async () => {
-    const data = {
-      title: title,
-      body: body,
-      place: place,
-      meeting_datetime: meetingDatetime,
-      category_id: categoryId,
-    };
-    try {
-      const res = await editPost(data);
-      console.log(res.data);
-    } catch (err) {
-      console.log(err);
-    }
-  };
+  const uploadImage = useCallback((e) => {
+    const file = e.target.files[0];
+    setImage(file);
+  }, []);
 
-  // const formData = new FormData();
-  // postData.append("image", postFileData.image ? postFileData.image : "");
-  // const response = axios.post("/image/store", params, {
-  //   headers: {
-  //     "Content-Type": "multipart/form-data",
-  //   },
-  // });
+  const previewImage = useCallback((e) => {
+    const file = e.target.files[0];
+    setPreview(window.URL.createObjectURL(file));
+  }, []);
 
-  const changeUploadFile = async (event) => {
-    const { name, files } = event.target;
-    setPostFileData({
-      ...postFileData,
-      [name]: files[0],
-    });
-    console.log(postFileData);
-    event.target.value = "";
-  };
+  const createFormData = useCallback(() => {
+    const formData = new FormData();
+    image && formData.append("file", image);
 
-  const UploadButton = (props) => {
+    return formData;
+  }, [image]);
+
+  const handleSubmit = useCallback(
+    async (e) => {
+      e.preventDefault();
+
+      const imageData = createFormData();
+      const data = {
+        title: title,
+        body: body,
+        place: place,
+        meeting_datetime: meetingDatetime,
+        category_id: categoryId,
+        post_image: imageData,
+        user_id: currentUser?.id || null,
+      };
+
+      await editPost(data).then(() => {
+        setTitle("");
+        setBody("");
+        setPlace("");
+        setMeetingDatetime("");
+        setCategoryId("");
+        setPreview("");
+        setImage("");
+        console.log("success");
+      });
+    },
+    [
+      body,
+      categoryId,
+      createFormData,
+      meetingDatetime,
+      place,
+      title,
+      currentUser,
+    ]
+  );
+
+  const UploadButton = useCallback((props) => {
     return (
       <label htmlFor={`upload-button-${props.name}`}>
         <input
-          // accept='image/*'
           style={{ display: "none" }}
           id={`upload-button-${props.name}`}
           name={props.name}
@@ -70,12 +92,12 @@ export default function EditPost() {
           type='file'
           onChange={props.onChange}
         />
-        <Button variant='contained' component='span' {...props}>
+        <Button variant='contained' component='span'>
           {props.children}
         </Button>
       </label>
     );
-  };
+  }, []);
 
   return (
     <ThemeProvider theme={theme}>
@@ -92,10 +114,21 @@ export default function EditPost() {
             <UploadButton
               className='primary'
               name='image'
-              onChange={changeUploadFile}
+              onChange={(e) => {
+                uploadImage(e);
+                previewImage(e);
+              }}
             >
-              Upload your picture
+              Upload
             </UploadButton>
+            {preview && (
+              <Box sx={{ borderRadius: 1, borderColor: "grey.400" }}>
+                <IconButton color='inherit' onClick={() => setPreview("")}>
+                  <Cancel />
+                </IconButton>
+                <img src={preview} alt='preview img' />
+              </Box>
+            )}
             <TextField
               value={title}
               onChange={(e) => setTitle(e.target.value)}

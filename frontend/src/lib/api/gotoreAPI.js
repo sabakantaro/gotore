@@ -43,6 +43,6 @@ export const getPost = (id) => {
   return client.get(`posts/${id}`);
 };
 
-export const editPost = (params) => {
-  return client.post("posts", params);
+export const editPost = (data) => {
+  return client.post("posts", data);
 };

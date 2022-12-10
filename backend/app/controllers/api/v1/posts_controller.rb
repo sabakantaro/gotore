@@ -1,5 +1,5 @@
 class Api::V1::PostsController < ApplicationController
-	before_action :set_post, only: [:show, :update, :destroy]
+	before_action :set_post, only: [:show, :update, :destroy, :upload_image]
 
 	def index
 		posts = Post.order(created_at: :desc)
@@ -12,11 +12,10 @@ class Api::V1::PostsController < ApplicationController
 
 	def create
 		post = Post.new(post_params)
-		post.user_id = current_api_v1_user.id
 		if post.save
 			render json: { post: post }, status: :ok
 		else
-			render json: { post: post.errors }, status: :ok
+			render json: { post: post.errors }, status: :internal_server_error
 		end
 	end
 
@@ -29,7 +28,7 @@ class Api::V1::PostsController < ApplicationController
 		if @post.update(post_params)
 			render json: { post: @post }, status: :ok
 		else
-			render json: { post: @post.errors }, status: :ok
+			render json: { post: @post.errors }, status: :internal_server_error
 		end
 	end
 
@@ -40,7 +39,7 @@ class Api::V1::PostsController < ApplicationController
 	end
 
 	def post_params
-		params.require(:post).permit(:title, :body, :place, :meeting_datetime, :category_id)
+		params.require(:post).permit(:title, :body, :place, :meeting_datetime, :category_id, :post_image, :user_id)
 	end
 end
 

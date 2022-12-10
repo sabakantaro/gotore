@@ -45,7 +45,10 @@ const App = () => {
           <Route path='/signup' element={<SignUp />} />
           <Route path='/signin' element={<SignIn />} />
           <Route path='/post' element={<Post />} />
-          <Route path='/post-edit' element={<EditPost />} />
+          <Route
+            path='/post-edit'
+            element={<EditPost currentUser={currentUser} />}
+          />
           <Route path='/' element={<Home />} />
         </Routes>
       </AuthContext.Provider>
