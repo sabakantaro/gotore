@@ -34,3 +34,15 @@ export const getCurrentUser = () => {
     });
   }
 };
+
+export const getPosts = () => {
+  return client.get("/posts");
+};
+
+export const getPost = (id) => {
+  return client.get(`posts/${id}`);
+};
+
+export const editPost = (data) => {
+  return client.post("posts", data);
+};
