@@ -51,7 +51,13 @@ const Header = (isSignedIn) => {
         <Toolbar sx={{ flexWrap: "wrap" }}>
           <FitnessCenterIcon sx={{ mr: 2 }} />
           <Typography variant='h6' color='inherit' noWrap sx={{ flexGrow: 1 }}>
-            Gotore
+            <Link
+              href='/'
+              variant='body'
+              style={{ color: "black", textDecoration: "none" }}
+            >
+              Gotore
+            </Link>
           </Typography>
           {isSignedIn ? (
             <Button
