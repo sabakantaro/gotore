@@ -40,9 +40,17 @@ export const getPosts = () => {
 };
 
 export const getPost = (id) => {
-  return client.get(`posts/${id}`);
+  return client.get(`/posts/${id}`);
 };
 
-export const editPost = (data) => {
-  return client.post("posts", data);
+export const createPost = (data) => {
+  return client.post("/posts", data);
+};
+
+export const editPost = (id, data) => {
+  return client.post(`/posts/${id}`, data);
+};
+
+export const deletePost = (id) => {
+  return client.delete(`/posts/${id}`);
 };

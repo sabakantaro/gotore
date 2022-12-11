@@ -5,8 +5,9 @@ import SignUp from "./components/pages/SignUp";
 import SignIn from "./components/pages/SignIn";
 import { getCurrentUser } from "./lib/api/gotoreAPI";
 import Header from "./components/pages/Header";
-import Post from "./components/pages/posts/show";
-import EditPost from "./components/pages/posts/edit";
+import Post from "./components/pages/posts/Show";
+import CreatePost from "./components/pages/posts/Create";
+import EditPost from "./components/pages/posts/Edit";
 
 const App = () => {
   const [isSignedIn, setIsSignedIn] = useState(false);
@@ -35,21 +36,24 @@ const App = () => {
   return (
     <Router>
       <Header isSignedIn={isSignedIn} />
-      <AuthContext.Provider
-        value={{
-          isSignedIn: isSignedIn,
-          currentUser: currentUser,
-        }}
-      >
+      <AuthContext.Provider>
         <Routes>
+          <Route path='/' element={<Home currentUser={currentUser} />} />
           <Route path='/signup' element={<SignUp />} />
           <Route path='/signin' element={<SignIn />} />
-          <Route path='/post' element={<Post />} />
+          {/* <Route path='/post' element={<Post />} /> */}
           <Route
-            path='/post-edit'
+            path='/posts/:id'
+            element={<Post currentUser={currentUser} />}
+          />
+          <Route
+            path='/post-create'
+            element={<CreatePost currentUser={currentUser} />}
+          />
+          <Route
+            path='/post-edit/:id'
             element={<EditPost currentUser={currentUser} />}
           />
-          <Route path='/' element={<Home />} />
         </Routes>
       </AuthContext.Provider>
     </Router>

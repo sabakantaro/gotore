@@ -1,5 +1,5 @@
-import React, { useState, useCallback, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import React, { useState, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import CssBaseline from "@mui/material/CssBaseline";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
@@ -16,43 +16,23 @@ import IconButton from "@mui/material/IconButton";
 import CardMedia from "@mui/material/CardMedia";
 import Cancel from "@mui/icons-material/Cancel";
 import CameraAlt from "@mui/icons-material/CameraAlt";
-import { editPost, getPost } from "../../../lib/api/gotoreAPI";
+import { createPost } from "../../../lib/api/gotoreAPI";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import moment from "moment";
 
 const theme = createTheme();
 
-export default function EditPost({ currentUser }) {
-  const [post, setPost] = useState([]);
-  const [title, setTitle] = useState(post.title);
-  const [body, setBody] = useState(post.body);
-  const [place, setPlace] = useState(post.place);
-  const [meetingDatetime, setMeetingDatetime] = useState(post.meetingDatetime);
-  const [categoryId, setCategoryId] = useState(post.categoryId);
+export default function CreatePost({ currentUser }) {
+  const [title, setTitle] = useState("");
+  const [body, setBody] = useState("");
+  const [place, setPlace] = useState("");
+  const [meetingDatetime, setMeetingDatetime] = useState(new Date());
+  const [categoryId, setCategoryId] = useState(1);
   // const [categoriesList, setcategoriesList] = useState([]);
-  const [image, setImage] = useState(post.imageUrl);
-  const [preview, setPreview] = useState(post.imageUrl);
-  const params = useParams();
+  const [image, setImage] = useState("");
+  const [preview, setPreview] = useState("");
   const navigate = useNavigate();
-
-  const handleGetPost = useCallback(async () => {
-    try {
-      const res = await getPost(params.id);
-      if (res) {
-        setPost(res.data.post);
-        console.log(res.data.post);
-      } else {
-        console.log("No post");
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  }, [params.id]);
-
-  useEffect(() => {
-    handleGetPost();
-  }, [handleGetPost]);
 
   const parseAsMoment = (dateTimeStr) => {
     return moment.utc(dateTimeStr, "YYYY-MM-DDTHH:mm:00Z", "ja").utcOffset(9);
@@ -89,11 +69,11 @@ export default function EditPost({ currentUser }) {
 
       const data = createFormData();
 
-      await editPost(params.id, data).then(() => {
+      await createPost(data).then(() => {
         navigate("/");
       });
     },
-    [createFormData, navigate, params.id]
+    [createFormData, navigate]
   );
 
   const UploadButton = useCallback((props) => {

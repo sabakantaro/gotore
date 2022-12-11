@@ -4,6 +4,6 @@ class Post < ApplicationRecord
   mount_uploader :post_image, ImageUploader
 
   def image_url
-    image.thumb.url
+    post_image.thumb.url
   end
 end

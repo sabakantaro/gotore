@@ -2,12 +2,12 @@ class Api::V1::PostsController < ApplicationController
 	before_action :set_post, only: [:show, :update, :destroy, :upload_image]
 
 	def index
-		posts = Post.order(created_at: :desc)
+		posts = Post.order(meeting_datetime: :desc).as_json(methods: :image_url)
 		render json: { posts: posts }, status: :ok
 	end
 
 	def show
-		render json: { post: @post }, status: :ok
+		render json: { post: @post.as_json(methods: :image_url) }, status: :ok
 	end
 
 	def create
