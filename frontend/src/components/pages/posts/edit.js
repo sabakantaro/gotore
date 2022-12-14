@@ -24,24 +24,32 @@ import moment from "moment";
 const theme = createTheme();
 
 export default function EditPost({ currentUser }) {
-  const [post, setPost] = useState([]);
-  const [title, setTitle] = useState(post.title);
-  const [body, setBody] = useState(post.body);
-  const [place, setPlace] = useState(post.place);
-  const [meetingDatetime, setMeetingDatetime] = useState(post.meetingDatetime);
-  const [categoryId, setCategoryId] = useState(post.categoryId);
+  const [title, setTitle] = useState("");
+  const [body, setBody] = useState("");
+  const [place, setPlace] = useState("");
+  const [meetingDatetime, setMeetingDatetime] = useState(new Date());
+  const [categoryId, setCategoryId] = useState(0);
   // const [categoriesList, setcategoriesList] = useState([]);
-  const [image, setImage] = useState(post.imageUrl);
-  const [preview, setPreview] = useState(post.imageUrl);
+  const [image, setImage] = useState("");
+  const [preview, setPreview] = useState("");
   const params = useParams();
   const navigate = useNavigate();
 
   const handleGetPost = useCallback(async () => {
     try {
       const res = await getPost(params.id);
-      if (res) {
-        setPost(res.data.post);
-        console.log(res.data.post);
+      if (res.data.post) {
+        const post = res.data.post;
+        setTitle(post.title);
+        setBody(post.body);
+        setPlace(post.place);
+        setMeetingDatetime(
+          post.meetingDatetime !== null ? post.meetingDatetime : new Date()
+        );
+        setCategoryId(post.categoryId);
+        setImage(post.imageUrl);
+        setPreview(post.imageUrl);
+        console.log(post);
       } else {
         console.log("No post");
       }
@@ -70,7 +78,6 @@ export default function EditPost({ currentUser }) {
 
   const createFormData = useCallback(() => {
     const formData = new FormData();
-    if (!image) return;
     formData.append("post[post_image]", image);
     formData.append("post[title]", title);
     formData.append("post[body]", body);
@@ -79,7 +86,6 @@ export default function EditPost({ currentUser }) {
     formData.append("post[category_id]", categoryId);
     formData.append("post[user_id]", currentUser?.id || null);
 
-    console.log(formData);
     return formData;
   }, [body, categoryId, currentUser, image, meetingDatetime, place, title]);
 
@@ -88,6 +94,7 @@ export default function EditPost({ currentUser }) {
       e.preventDefault();
 
       const data = createFormData();
+      console.log(data);
 
       await editPost(params.id, data).then(() => {
         navigate("/");
@@ -158,7 +165,6 @@ export default function EditPost({ currentUser }) {
               label='Title'
               name='title'
               autoComplete='title'
-              autoFocus
             />
             <TextField
               value={body}
@@ -170,7 +176,6 @@ export default function EditPost({ currentUser }) {
               label='Body'
               name='body'
               autoComplete='body'
-              autoFocus
             />
             <FormControl fullWidth required margin='normal'>
               <InputLabel id='demo-simple-select-label'>Category</InputLabel>
@@ -195,7 +200,6 @@ export default function EditPost({ currentUser }) {
               label='Place'
               name='place'
               autoComplete='place'
-              autoFocus
             />
             <DatePicker
               selected={moment(meetingDatetime).toDate()}
@@ -209,7 +213,6 @@ export default function EditPost({ currentUser }) {
                   label='Datetime'
                   name='datetime'
                   autoComplete='datetime'
-                  autoFocus
                   inputProps={{ readOnly: true }}
                 >
                   {parseAsMoment(meetingDatetime).format("YYYY/MM/DD")}
