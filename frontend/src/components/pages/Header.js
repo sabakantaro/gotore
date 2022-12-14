@@ -11,7 +11,7 @@ import Typography from "@mui/material/Typography";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import GlobalStyles from "@mui/material/GlobalStyles";
 
-const Header = () => {
+const Header = (isSignedIn) => {
   const navigate = useNavigate();
 
   const theme = createTheme();
@@ -20,7 +20,7 @@ const Header = () => {
     try {
       const res = await signOut();
 
-      if (res.data.success === true) {
+      if (res) {
         Cookies.remove("_access_token");
         Cookies.remove("_client");
         Cookies.remove("_uid");
@@ -51,33 +51,42 @@ const Header = () => {
         <Toolbar sx={{ flexWrap: "wrap" }}>
           <FitnessCenterIcon sx={{ mr: 2 }} />
           <Typography variant='h6' color='inherit' noWrap sx={{ flexGrow: 1 }}>
-            Gotore
+            <Link
+              href='/'
+              variant='body'
+              style={{ color: "black", textDecoration: "none" }}
+            >
+              Gotore
+            </Link>
           </Typography>
-          <nav>
-            <Link
-              variant='button'
-              color='text.primary'
-              to='/signup'
+          {isSignedIn ? (
+            <Button
+              onClick={handleSignOut}
+              variant='outlined'
               sx={{ my: 1, mx: 1.5 }}
             >
-              Sign up
-            </Link>
-            <Link
-              variant='button'
-              color='text.primary'
-              to='/signin'
-              sx={{ my: 1, mx: 1.5 }}
-            >
-              Sign in
-            </Link>
-          </nav>
-          <Button
-            onClick={handleSignOut}
-            variant='outlined'
-            sx={{ my: 1, mx: 1.5 }}
-          >
-            Sign out
-          </Button>
+              Sign out
+            </Button>
+          ) : (
+            <>
+              <Button
+                variant='outlined'
+                sx={{ my: 1, mx: 1.5 }}
+                component={Link}
+                to='/signup'
+              >
+                Sign up
+              </Button>
+              <Button
+                variant='outlined'
+                sx={{ my: 1, mx: 1.5 }}
+                component={Link}
+                to='/signin'
+              >
+                Sign in
+              </Button>
+            </>
+          )}
         </Toolbar>
       </AppBar>
     </ThemeProvider>
