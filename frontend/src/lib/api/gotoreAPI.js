@@ -48,7 +48,7 @@ export const createPost = (data) => {
 };
 
 export const editPost = (id, data) => {
-  return client.post(`/posts/${id}`, data);
+  return client.patch(`/posts/${id}`, data);
 };
 
 export const deletePost = (id) => {

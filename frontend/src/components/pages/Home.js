@@ -19,7 +19,7 @@ import EventIcon from "@mui/icons-material/Event";
 
 const theme = createTheme();
 
-const Home = (currentUser) => {
+const Home = ({ currentUser }) => {
   const [posts, setPosts] = useState([]);
 
   const handleGetPosts = async () => {
@@ -176,8 +176,7 @@ const Home = (currentUser) => {
                       >
                         View
                       </Button>
-                      {/* eslint-disable-next-line eqeqeq */}
-                      {post.userId == currentUser.id && (
+                      {post.userId === currentUser.id && (
                         <Button
                           size='small'
                           component={Link}
