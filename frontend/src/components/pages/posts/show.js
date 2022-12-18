@@ -12,7 +12,7 @@ import Paper from "@mui/material/Paper";
 import Link from "@mui/material/Link";
 import moment from "moment";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
-import SearchForm from "../posts/SearchForm";
+import SearchForm from "./SearchForm";
 import Breadcrumbs from "@mui/material/Breadcrumbs";
 import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";

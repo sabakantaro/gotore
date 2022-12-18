@@ -54,3 +54,7 @@ export const editPost = (id, data) => {
 export const deletePost = (id) => {
   return client.delete(`/posts/${id}`);
 };
+
+export const getCategories = () => {
+  return client.get("/categories");
+};
