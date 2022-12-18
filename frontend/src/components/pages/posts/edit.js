@@ -16,7 +16,7 @@ import IconButton from "@mui/material/IconButton";
 import CardMedia from "@mui/material/CardMedia";
 import Cancel from "@mui/icons-material/Cancel";
 import CameraAlt from "@mui/icons-material/CameraAlt";
-import { editPost, getPost } from "../../../lib/api/gotoreAPI";
+import { editPost, getPost, getCategories } from "../../../lib/api/gotoreAPI";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import moment from "moment";
@@ -29,7 +29,7 @@ export default function EditPost({ currentUser }) {
   const [place, setPlace] = useState("");
   const [meetingDatetime, setMeetingDatetime] = useState(new Date());
   const [categoryId, setCategoryId] = useState(0);
-  // const [categoriesList, setcategoriesList] = useState([]);
+  const [categoriesList, setcategoriesList] = useState([]);
   const [image, setImage] = useState("");
   const [preview, setPreview] = useState("");
   const params = useParams();
@@ -57,6 +57,22 @@ export default function EditPost({ currentUser }) {
       console.log(err);
     }
   }, [params.id]);
+
+  const handleGetCategories = useCallback(async () => {
+    try {
+      const res = await getCategories();
+      if (res.data) {
+        setcategoriesList(res.data.categories);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  }, []);
+
+  useEffect(() => {
+    handleGetPost();
+    handleGetCategories();
+  }, [handleGetPost, handleGetCategories]);
 
   useEffect(() => {
     handleGetPost();
@@ -186,8 +202,10 @@ export default function EditPost({ currentUser }) {
                 value={categoryId}
                 onChange={(e) => setCategoryId(e.target.value)}
               >
-                <MenuItem value={1}>Hobby</MenuItem>
-                <MenuItem value={2}>Professional</MenuItem>
+                {categoriesList &&
+                  categoriesList.map((category) => (
+                    <MenuItem value={category.id}>{category.name}</MenuItem>
+                  ))}
               </Select>
             </FormControl>
             <TextField
