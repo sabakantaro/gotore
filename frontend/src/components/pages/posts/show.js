@@ -1,19 +1,25 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import Card from "@mui/material/Card";
+import { Link as RouterLink, useParams, useNavigate } from "react-router-dom";
 import CardHeader from "@mui/material/CardHeader";
 import CardMedia from "@mui/material/CardMedia";
-import CardContent from "@mui/material/CardContent";
-import CardActions from "@mui/material/CardActions";
 import Avatar from "@mui/material/Avatar";
-import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
+import { getPost } from "../../../lib/api/gotoreAPI";
+import Box from "@mui/material/Box";
+import Container from "@mui/material/Container";
+import Grid from "@mui/material/Grid";
+import Paper from "@mui/material/Paper";
+import Link from "@mui/material/Link";
+import moment from "moment";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
+import SearchForm from "../posts/SearchForm";
+import Breadcrumbs from "@mui/material/Breadcrumbs";
+import Divider from "@mui/material/Divider";
+import IconButton from "@mui/material/IconButton";
+import CardActions from "@mui/material/CardActions";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import FavoriteIcon from "@mui/icons-material/Favorite";
-import ShareIcon from "@mui/icons-material/Share";
-import DeleteIcon from "@mui/icons-material/Delete";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import { getPost, deletePost } from "../../../lib/api/gotoreAPI";
 
 const Post = ({ currentUser }) => {
   const [post, setPost] = useState([]);
@@ -39,68 +45,187 @@ const Post = ({ currentUser }) => {
     handleGetPost();
   }, [handleGetPost]);
 
-  const handleDeletePost = useCallback(
-    async (id) => {
-      await deletePost(id).then(() => {
-        navigate("/");
-      });
-    },
-    [navigate]
-  );
-
   return (
     <>
-      <Card
-        className={{
-          width: 320,
-          marginTop: "2rem",
-          transition: "all 0.3s",
-          "&:hover": {
-            boxShadow:
-              "1px 0px 20px -1px rgba(0,0,0,0.2), 0px 0px 20px 5px rgba(0,0,0,0.14), 0px 1px 10px 0px rgba(0,0,0,0.12)",
-            transform: "translateY(-3px)",
-          },
+      <Box
+        component='main'
+        sx={{
+          backgroundColor: (theme) =>
+            theme.palette.mode === "light"
+              ? theme.palette.grey[100]
+              : theme.palette.grey[900],
+          flexGrow: 1,
+          height: "100vh",
+          overflow: "auto",
         }}
       >
-        <CardHeader
-          avatar={<Avatar>U</Avatar>}
-          action={
-            <IconButton>
-              <MoreVertIcon />
-            </IconButton>
-          }
-          title={`${currentUser.name}`}
-        />
-        <CardMedia
-          component='img'
-          src={
-            post.imageUrl ? post.imageUrl : "https://source.unsplash.com/random"
-          }
-          alt='post image'
-        />
-        <CardContent>
-          <Typography variant='body2' color='textSecondary' component='span'>
-            {post.body ? post.body : "No content"}
-          </Typography>
-        </CardContent>
-        <CardActions disableSpacing>
-          <IconButton onClick={() => (like ? setLike(false) : setLike(true))}>
-            {like ? <FavoriteIcon /> : <FavoriteBorderIcon />}
-          </IconButton>
-          <IconButton>
-            <ShareIcon />
-          </IconButton>
-          <div
-            className={{
-              marginLeft: "auto",
-            }}
-          >
-            <IconButton onClick={() => handleDeletePost(post.id)}>
-              <DeleteIcon />
-            </IconButton>
-          </div>
-        </CardActions>
-      </Card>
+        <Breadcrumbs aria-label='breadcrumb' sx={{ m: 2, ml: 18 }}>
+          <Link underline='hover' color='inherit' component={RouterLink} to='/'>
+            TOP
+          </Link>
+          <Typography color='text.primary'>{post.title}</Typography>
+        </Breadcrumbs>
+        <Container maxWidth='lg' sx={{ mt: 0, mb: 4 }}>
+          <Grid container spacing={3}>
+            <Grid item xs={12} md={4} lg={4}>
+              <Paper
+                sx={{
+                  p: 2,
+                  display: "flex",
+                  flexDirection: "column",
+                }}
+              >
+                <SearchForm />
+              </Paper>
+            </Grid>
+            <Grid item xs={12} md={8} lg={8}>
+              <Paper
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                }}
+              >
+                <CardMedia
+                  sx={{ borderRadius: "4px 4px 0 0", height: 400 }}
+                  component='img'
+                  src={
+                    post.imageUrl
+                      ? post.imageUrl
+                      : "https://source.unsplash.com/random"
+                  }
+                  alt='post image'
+                />
+                <div style={{ padding: 24 }}>
+                  <CardHeader
+                    sx={{ p: 0 }}
+                    action={
+                      currentUser &&
+                      post.userId === currentUser.id && (
+                        <IconButton
+                          component={RouterLink}
+                          to={`/post-edit/${post.id}`}
+                        >
+                          <MoreVertIcon />
+                        </IconButton>
+                      )
+                    }
+                    title={
+                      <Typography
+                        gutterBottom
+                        variant='h5'
+                        sx={{
+                          mb: 0,
+                        }}
+                      >
+                        {post.title ? post.title : "New Post"}
+                      </Typography>
+                    }
+                  />
+
+                  <CardHeader
+                    sx={{ pt: 0, pl: 0 }}
+                    avatar={
+                      <LocationOnIcon color='disabled' sx={{ fontSize: 16 }} />
+                    }
+                    title={
+                      <Typography
+                        gutterBottom
+                        variant='h5'
+                        sx={{
+                          mb: 0,
+                          fontSize: 16,
+                          color: "text.secondary",
+                          overflow: "hidden",
+                          whiteSpace: "nowrap",
+                          width: "100%",
+                          textOverflow: "ellipsis",
+                        }}
+                      >
+                        {post.place ? post.place : "Anytimefitness Vancouver"}
+                      </Typography>
+                    }
+                    color='text.secondary'
+                  />
+                  <CardHeader
+                    sx={{ pt: 0 }}
+                    avatar={<Avatar sx={{ backgroundColor: "pink" }}>U</Avatar>}
+                    title={`${post.user?.name}`}
+                  />
+                  <Grid container sx={{ mt: 0.5 }}>
+                    <Grid item xs={6} sx={{ backgroundColor: "lightgray" }}>
+                      <Typography
+                        variant='body3'
+                        sx={{ fontSize: 14, fontWeight: "bold", ml: 1 }}
+                      >
+                        Event date
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography
+                        variant='body3'
+                        sx={{ fontSize: 14, fontWeight: "bold", ml: 1 }}
+                      >
+                        {post.meetingDatetime
+                          ? moment(post.meetingDatetime).format("YYYY-MM-DD")
+                          : "To be decided"}
+                      </Typography>
+                    </Grid>
+                  </Grid>
+                  <Grid container sx={{ mt: 0.5, mb: 1 }}>
+                    <Grid item xs={6} sx={{ backgroundColor: "lightgray" }}>
+                      <Typography
+                        variant='body3'
+                        sx={{ fontSize: 14, fontWeight: "bold", ml: 1 }}
+                      >
+                        Category
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography
+                        variant='body3'
+                        sx={{ fontSize: 14, fontWeight: "bold", ml: 1 }}
+                      >
+                        {post.category?.name}
+                      </Typography>
+                    </Grid>
+                  </Grid>
+                  <Divider />
+                  <CardActions sx={{ justifyContent: "center" }}>
+                    <IconButton
+                      onClick={() => (like ? setLike(false) : setLike(true))}
+                    >
+                      {like ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+                      <Typography variant='body1'>{post.id}</Typography>
+                    </IconButton>
+                  </CardActions>
+                  <Divider />
+                  <Typography
+                    sx={{
+                      mt: 1,
+                      whiteSpace: "pre-wrap",
+                    }}
+                    variant='body1'
+                  >
+                    {post.body ? post.body : "Hello!"}
+                  </Typography>
+                </div>
+                <div style={{ padding: 12, width: "100%" }}>
+                  <iframe
+                    title='Google Map'
+                    src={`https://www.google.com/maps?output=embed&q=${post.place}`}
+                    style={{
+                      border: 0,
+                      borderRadius: 3,
+                      width: "100%",
+                      height: 300,
+                    }}
+                  />
+                </div>
+              </Paper>
+            </Grid>
+          </Grid>
+        </Container>
+      </Box>
     </>
   );
 };
