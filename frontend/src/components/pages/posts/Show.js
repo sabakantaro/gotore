@@ -31,7 +31,6 @@ const Post = ({ currentUser }) => {
       const res = await getPost(params.id);
       if (res) {
         setPost(res.data.post);
-        console.log(res.data.post);
       } else {
         console.log("No post");
       }
@@ -148,7 +147,7 @@ const Post = ({ currentUser }) => {
                   <CardHeader
                     sx={{ pt: 0 }}
                     avatar={
-                      <Avatar sx={{ backgroundColor: "#3f50b5" }}>
+                      <Avatar src={post?.user?.image && post.user.image.url}>
                         {currentUser?.name.charAt(0)}
                       </Avatar>
                     }
