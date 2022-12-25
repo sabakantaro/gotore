@@ -35,6 +35,10 @@ export const getCurrentUser = () => {
   }
 };
 
+export const editUser = (id, data) => {
+  return client.put(`/users/${id}`, data);
+};
+
 export const getPosts = () => {
   return client.get("/posts");
 };
