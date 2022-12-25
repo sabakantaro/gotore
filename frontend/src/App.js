@@ -8,6 +8,8 @@ import Header from "./components/pages/Header";
 import Post from "./components/pages/posts/Show";
 import CreatePost from "./components/pages/posts/Create";
 import EditPost from "./components/pages/posts/Edit";
+import User from "./components/pages/users/Show";
+import EditUser from "./components/pages/users/Edit";
 
 const App = () => {
   const [isSignedIn, setIsSignedIn] = useState(false);
@@ -35,7 +37,7 @@ const App = () => {
 
   return (
     <Router>
-      <Header isSignedIn={isSignedIn} />
+      <Header isSignedIn={isSignedIn} currentUser={currentUser} />
       <AuthContext.Provider>
         <Routes>
           <Route path='/' element={<Home currentUser={currentUser} />} />
@@ -53,6 +55,14 @@ const App = () => {
           <Route
             path='/post-edit/:id'
             element={<EditPost currentUser={currentUser} />}
+          />
+          <Route
+            path='/users/:id'
+            element={<User currentUser={currentUser} />}
+          />
+          <Route
+            path='/user-edit/:id'
+            element={<EditUser currentUser={currentUser} />}
           />
         </Routes>
       </AuthContext.Provider>
