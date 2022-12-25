@@ -7,6 +7,13 @@ class User < ActiveRecord::Base
          :recoverable, :rememberable, :validatable
   include DeviseTokenAuth::Concerns::User
   has_many :posts
+  has_many :participates
+
+  has_many :chat_room_users
+  has_many :chat_rooms, through: :chat_room_users
+
+  has_many :messages
+
   mount_uploader :image, ImageUploader
 
   def image_url

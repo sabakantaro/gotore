@@ -1,0 +1,2 @@
+class Participate < ApplicationRecord
+end

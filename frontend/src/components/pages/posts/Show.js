@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Link as RouterLink, useParams } from "react-router-dom";
+import { Link as RouterLink, useParams, useNavigate } from "react-router-dom";
 import CardHeader from "@mui/material/CardHeader";
 import CardMedia from "@mui/material/CardMedia";
 import Avatar from "@mui/material/Avatar";
 import Typography from "@mui/material/Typography";
-import { getPost } from "../../../lib/api/gotoreAPI";
+import { getPost, createParticipate } from "../../../lib/api/gotoreAPI";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
@@ -17,14 +17,16 @@ import Breadcrumbs from "@mui/material/Breadcrumbs";
 import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import CardActions from "@mui/material/CardActions";
-import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
-import FavoriteIcon from "@mui/icons-material/Favorite";
+import Button from "@mui/material/Button";
+// import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+// import FavoriteIcon from "@mui/icons-material/Favorite";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 
 const Post = ({ currentUser }) => {
   const [post, setPost] = useState([]);
-  const [like, setLike] = useState(false);
+  // const [like, setLike] = useState(false);
   const params = useParams();
+  const navigate = useNavigate();
 
   const handleGetPost = useCallback(async () => {
     try {
@@ -42,6 +44,26 @@ const Post = ({ currentUser }) => {
   useEffect(() => {
     handleGetPost();
   }, [handleGetPost]);
+
+  const handleCreateParticipate = useCallback(async () => {
+    const data = {
+      user_id: currentUser?.id,
+      post_id: post.id,
+    };
+
+    try {
+      const res = await createParticipate(data);
+      console.log(res);
+
+      if (res) {
+        navigate(`/`);
+      } else {
+        console.log("Failed");
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  }, [currentUser, navigate, post.id]);
 
   return (
     <>
@@ -193,12 +215,19 @@ const Post = ({ currentUser }) => {
                   </Grid>
                   <Divider />
                   <CardActions sx={{ justifyContent: "center" }}>
-                    <IconButton
+                    {/* <IconButton
                       onClick={() => (like ? setLike(false) : setLike(true))}
                     >
                       {like ? <FavoriteIcon /> : <FavoriteBorderIcon />}
                       <Typography variant='body1'>{post.id}</Typography>
-                    </IconButton>
+                    </IconButton> */}
+                    <Button
+                      color='primary'
+                      variant='contained'
+                      onClick={handleCreateParticipate}
+                    >
+                      Participate it!
+                    </Button>
                   </CardActions>
                   <Divider />
                   <Typography

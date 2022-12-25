@@ -10,6 +10,8 @@ import CreatePost from "./components/pages/posts/Create";
 import EditPost from "./components/pages/posts/Edit";
 import User from "./components/pages/users/Show";
 import EditUser from "./components/pages/users/Edit";
+import ChatRooms from "./components/pages/chat_rooms/ChatRooms";
+import ChatRoom from "./components/pages/chat_rooms/ChatRoom";
 
 const App = () => {
   const [isSignedIn, setIsSignedIn] = useState(false);
@@ -43,7 +45,15 @@ const App = () => {
           <Route path='/' element={<Home currentUser={currentUser} />} />
           <Route path='/signup' element={<SignUp />} />
           <Route path='/signin' element={<SignIn />} />
-          {/* <Route path='/post' element={<Post />} /> */}
+          <Route
+            exact
+            path='/chat_rooms'
+            element={<ChatRooms currentUser={currentUser} />}
+          />
+          <Route
+            path='/chatroom/:id'
+            element={<ChatRoom currentUser={currentUser} />}
+          />
           <Route
             path='/posts/:id'
             element={<Post currentUser={currentUser} />}
