@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import Button from "@mui/material/Button";
 import Card from "@mui/material/Card";
-// import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -12,7 +11,7 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { getPosts, deletePost } from "../../lib/api/gotoreAPI";
+import { getPosts } from "../../lib/api/gotoreAPI";
 import moment from "moment";
 import LocationOnIcon from "@mui/icons-material/LocationOnOutlined";
 import EventIcon from "@mui/icons-material/Event";
@@ -20,17 +19,11 @@ import CardHeader from "@mui/material/CardHeader";
 import Avatar from "@mui/material/Avatar";
 import IconButton from "@mui/material/IconButton";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-// import FavoriteBorderIcon from "@mui/icons-material/Fa voriteBorder";
-// import FavoriteIcon from "@mui/icons-material/Favorite";
-// // import ShareIcon from "@mui/icons-material/Share";
-// import DeleteIcon from "@mui/icons-material/Delete";
 
 const theme = createTheme();
 
 const Home = ({ currentUser }) => {
   const [posts, setPosts] = useState([]);
-  const [like, setLike] = useState(false);
-  const navigate = useNavigate();
 
   const handleGetPosts = async () => {
     try {
@@ -46,15 +39,6 @@ const Home = ({ currentUser }) => {
       console.log(err);
     }
   };
-
-  const handleDeletePost = useCallback(
-    async (id) => {
-      await deletePost(id).then(() => {
-        navigate("/");
-      });
-    },
-    [navigate]
-  );
 
   useEffect(() => {
     handleGetPosts();
@@ -99,7 +83,7 @@ const Home = ({ currentUser }) => {
                 justifyContent='center'
               >
                 <Button
-                  color='secondary'
+                  color='primary'
                   variant='contained'
                   component={Link}
                   to='/post'
@@ -107,7 +91,7 @@ const Home = ({ currentUser }) => {
                   Search by details
                 </Button>
                 <Button
-                  color='secondary'
+                  color='primary'
                   variant='outlined'
                   component={Link}
                   to='/post-create'
@@ -147,7 +131,7 @@ const Home = ({ currentUser }) => {
                       <CardHeader
                         avatar={<Avatar>U</Avatar>}
                         action={
-                          post.userId === currentUser.id && (
+                          post.userId === currentUser?.id && (
                             <IconButton
                               component={Link}
                               to={`/post-edit/${post.id}`}
@@ -225,7 +209,7 @@ const Home = ({ currentUser }) => {
                         >
                           {like ? <FavoriteIcon /> : <FavoriteBorderIcon />}
                         </IconButton>
-                        {post.userId === currentUser.id && (
+                        {post.userId === currentUser?.id && (
                           <div
                             className={{
                               marginLeft: "auto",

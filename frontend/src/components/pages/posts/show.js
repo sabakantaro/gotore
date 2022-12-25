@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Link as RouterLink, useParams, useNavigate } from "react-router-dom";
+import { Link as RouterLink, useParams } from "react-router-dom";
 import CardHeader from "@mui/material/CardHeader";
 import CardMedia from "@mui/material/CardMedia";
 import Avatar from "@mui/material/Avatar";
@@ -25,7 +25,6 @@ const Post = ({ currentUser }) => {
   const [post, setPost] = useState([]);
   const [like, setLike] = useState(false);
   const params = useParams();
-  const navigate = useNavigate();
 
   const handleGetPost = useCallback(async () => {
     try {
@@ -100,7 +99,7 @@ const Post = ({ currentUser }) => {
                     sx={{ p: 0 }}
                     action={
                       currentUser &&
-                      post.userId === currentUser.id && (
+                      post.userId === currentUser?.id && (
                         <IconButton
                           component={RouterLink}
                           to={`/post-edit/${post.id}`}
@@ -148,7 +147,11 @@ const Post = ({ currentUser }) => {
                   />
                   <CardHeader
                     sx={{ pt: 0 }}
-                    avatar={<Avatar sx={{ backgroundColor: "pink" }}>U</Avatar>}
+                    avatar={
+                      <Avatar sx={{ backgroundColor: "#3f50b5" }}>
+                        {currentUser?.name.charAt(0)}
+                      </Avatar>
+                    }
                     title={`${post.user?.name}`}
                   />
                   <Grid container sx={{ mt: 0.5 }}>

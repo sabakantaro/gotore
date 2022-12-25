@@ -1,17 +1,19 @@
 import React from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link as RouterLink } from "react-router-dom";
 import Cookies from "js-cookie";
 import { signOut } from "../../lib/api/gotoreAPI";
 import AppBar from "@mui/material/AppBar";
 import Button from "@mui/material/Button";
 import FitnessCenterIcon from "@mui/icons-material/FitnessCenter";
+import Avatar from "@mui/material/Avatar";
 import CssBaseline from "@mui/material/CssBaseline";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import GlobalStyles from "@mui/material/GlobalStyles";
+import Link from "@mui/material/Link";
 
-const Header = (isSignedIn) => {
+const Header = ({ isSignedIn, currentUser }) => {
   const navigate = useNavigate();
 
   const theme = createTheme();
@@ -60,19 +62,31 @@ const Header = (isSignedIn) => {
             </Link>
           </Typography>
           {isSignedIn ? (
-            <Button
-              onClick={handleSignOut}
-              variant='outlined'
-              sx={{ my: 1, mx: 1.5 }}
-            >
-              Sign out
-            </Button>
+            <>
+              <Button
+                onClick={handleSignOut}
+                variant='outlined'
+                sx={{ my: 1, mx: 1.5 }}
+              >
+                Sign out
+              </Button>
+              <Link
+                underline='hover'
+                color='inherit'
+                component={RouterLink}
+                to={`/users/${currentUser?.id}`}
+              >
+                <Avatar sx={{ backgroundColor: "#3f50b5" }}>
+                  {currentUser?.name.charAt(0)}
+                </Avatar>
+              </Link>
+            </>
           ) : (
             <>
               <Button
                 variant='outlined'
                 sx={{ my: 1, mx: 1.5 }}
-                component={Link}
+                component={RouterLink}
                 to='/signup'
               >
                 Sign up
@@ -80,7 +94,7 @@ const Header = (isSignedIn) => {
               <Button
                 variant='outlined'
                 sx={{ my: 1, mx: 1.5 }}
-                component={Link}
+                component={RouterLink}
                 to='/signin'
               >
                 Sign in
