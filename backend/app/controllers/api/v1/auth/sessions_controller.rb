@@ -7,6 +7,6 @@ class Api::V1::Auth::SessionsController < ApplicationController
   private
 
   def current_user_to_json(current_user)
-    current_user.as_json(only: [:id, :uid, :name, :email, :image, :nickname])
+    current_user.as_json(only: [:id, :uid, :name, :email, :image])
   end
 end

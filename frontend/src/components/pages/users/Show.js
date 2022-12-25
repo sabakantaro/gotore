@@ -73,8 +73,8 @@ const Post = ({ currentUser }) => {
               sx={{ borderRadius: "4px 4px 0 0", height: 120 }}
               component='img'
               src={
-                currentUser?.imageUrl
-                  ? currentUser.imageUrl
+                currentUser?.image
+                  ? currentUser?.image?.url
                   : "https://source.unsplash.com/random"
               }
               alt='post image'
@@ -98,8 +98,8 @@ const Post = ({ currentUser }) => {
                     <Avatar
                       alt='Remy Sharp'
                       src={
-                        currentUser?.imageUrl
-                          ? currentUser.imageUrl
+                        currentUser?.image
+                          ? currentUser?.image?.url
                           : "https://source.unsplash.com/random"
                       }
                       sx={{ width: 112, height: 112, mt: -8 }}

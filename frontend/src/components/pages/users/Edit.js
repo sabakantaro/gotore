@@ -18,9 +18,9 @@ import "react-datepicker/dist/react-datepicker.css";
 const theme = createTheme();
 
 export default function CreatePost({ currentUser }) {
-  const [name, setName] = useState("");
-  const [image, setImage] = useState("");
-  const [preview, setPreview] = useState("");
+  const [name, setName] = useState(currentUser?.name);
+  const [image, setImage] = useState(currentUser?.image?.url);
+  const [preview, setPreview] = useState(currentUser?.image?.url);
   const navigate = useNavigate();
   const params = useParams();
 
@@ -39,12 +39,16 @@ export default function CreatePost({ currentUser }) {
     if (!image) return;
     formData.append("user[image]", image);
     formData.append("user[name]", name);
-    formData.append("user[email]", currentUser.email);
-    formData.append("user[password]", currentUser.password);
+    // formData.append("user[email]", currentUser.email);
+    // formData.append("user[password]", currentUser.password);
 
     console.log(formData);
     return formData;
-  }, [image, name, currentUser]);
+  }, [
+    image,
+    name,
+    // currentUser
+  ]);
 
   const handleSubmit = useCallback(
     async (e) => {
@@ -53,7 +57,7 @@ export default function CreatePost({ currentUser }) {
       const data = createFormData();
 
       await editUser(params.id, data).then(() => {
-        navigate("/");
+        navigate(`/users/${params.id}`);
       });
     },
     [createFormData, navigate, params.id]

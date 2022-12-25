@@ -28,8 +28,6 @@ const Home = ({ currentUser }) => {
   const handleGetPosts = async () => {
     try {
       const res = await getPosts();
-      console.log(res);
-
       if (res) {
         setPosts(res.data.posts);
       } else {
@@ -129,7 +127,16 @@ const Home = ({ currentUser }) => {
                         alt='post image'
                       />
                       <CardHeader
-                        avatar={<Avatar>U</Avatar>}
+                        avatar={
+                          <Avatar
+                            alt='User Image'
+                            src={
+                              post.user?.image
+                                ? post.user?.imageUrl
+                                : "https://source.unsplash.com/random"
+                            }
+                          />
+                        }
                         action={
                           post.userId === currentUser?.id && (
                             <IconButton

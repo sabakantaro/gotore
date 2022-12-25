@@ -2,8 +2,8 @@ class Api::V1::PostsController < ApplicationController
 	before_action :set_post, only: [:show, :update, :destroy]
 
 	def index
-		posts = Post.order(meeting_datetime: :desc).as_json(methods: :image_url, include: :user)
-		render json: { posts: posts }, status: :ok
+		posts = Post.order(meeting_datetime: :desc)
+		render json: { posts: post_to_json(posts) }, status: :ok
 	end
 
 	def show
@@ -36,6 +36,19 @@ class Api::V1::PostsController < ApplicationController
 
 	def set_post
 		@post = Post.find_by(id: params[:id])
+	end
+
+	def post_to_json(posts)
+		posts.as_json(
+			# only: %i[],
+			methods: %i[image_url],
+			include: [
+				user: {
+					# only: %i[id name],
+					methods: [:image_url],
+				},
+			],
+		)
 	end
 
 	def post_params
