@@ -4,14 +4,10 @@ import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import { signUp } from "../../lib/api/gotoreAPI";
 import { getCurrentUser } from "../../lib/api/gotoreAPI";
-
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
-// import FormControlLabel from "@mui/material/FormControlLabel";
-// import Checkbox from "@mui/material/Checkbox";
-// import Link from "@mui/material/Link";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
@@ -93,16 +89,6 @@ const SignUp = () => {
                   autoFocus
                 />
               </Grid>
-              {/* <Grid item xs={12} sm={6}>
-            <TextField
-              required
-              fullWidth
-              id='lastName'
-              label='Last Name'
-              name='lastName'
-              autoComplete='family-name'
-            />
-          </Grid> */}
               <Grid item xs={12}>
                 <TextField
                   value={email}
@@ -141,14 +127,6 @@ const SignUp = () => {
                   autoComplete='passwordConfirmation'
                 />
               </Grid>
-              {/* <Grid item xs={12}>
-            <FormControlLabel
-              control={
-                <Checkbox value='allowExtraEmails' color='primary' />
-              }
-              label='I want to receive inspiration, marketing promotions and updates via email.'
-            />
-          </Grid> */}
             </Grid>
             <Button
               type='submit'
@@ -158,13 +136,6 @@ const SignUp = () => {
             >
               Sign Up
             </Button>
-            <Grid container justifyContent='flex-end'>
-              <Grid item>
-                {/* <Link href='#' variant='body2'>
-              Already have an account? Sign in
-            </Link> */}
-              </Grid>
-            </Grid>
           </Box>
         </Box>
       </Container>

@@ -4,6 +4,12 @@ import Home from "./components/pages/Home";
 import SignUp from "./components/pages/SignUp";
 import SignIn from "./components/pages/SignIn";
 import { getCurrentUser } from "./lib/api/gotoreAPI";
+import Header from "./components/pages/Header";
+import Post from "./components/pages/posts/Show";
+import CreatePost from "./components/pages/posts/Create";
+import EditPost from "./components/pages/posts/Edit";
+import User from "./components/pages/users/Show";
+import EditUser from "./components/pages/users/Edit";
 
 const App = () => {
   const [isSignedIn, setIsSignedIn] = useState(false);
@@ -13,12 +19,12 @@ const App = () => {
   const handleGetCurrentUser = async () => {
     try {
       const res = await getCurrentUser();
-      if (res?.data.isLogin === true) {
+      if (res) {
         setIsSignedIn(true);
-        setCurrentUser(res?.data.data);
-        console.log(res?.data.data);
+        setCurrentUser(res?.data.currentUser);
+        console.log(res?.data);
       } else {
-        console.log(res?.data.message);
+        console.log(res?.data);
       }
     } catch (err) {
       console.log(err);
@@ -31,16 +37,33 @@ const App = () => {
 
   return (
     <Router>
-      <AuthContext.Provider
-        value={{
-          isSignedIn: isSignedIn,
-          currentUser: currentUser,
-        }}
-      >
+      <Header isSignedIn={isSignedIn} currentUser={currentUser} />
+      <AuthContext.Provider>
         <Routes>
+          <Route path='/' element={<Home currentUser={currentUser} />} />
           <Route path='/signup' element={<SignUp />} />
           <Route path='/signin' element={<SignIn />} />
-          <Route path='/' element={<Home />} />
+          {/* <Route path='/post' element={<Post />} /> */}
+          <Route
+            path='/posts/:id'
+            element={<Post currentUser={currentUser} />}
+          />
+          <Route
+            path='/post-create'
+            element={<CreatePost currentUser={currentUser} />}
+          />
+          <Route
+            path='/post-edit/:id'
+            element={<EditPost currentUser={currentUser} />}
+          />
+          <Route
+            path='/users/:id'
+            element={<User currentUser={currentUser} />}
+          />
+          <Route
+            path='/user-edit/:id'
+            element={<EditUser currentUser={currentUser} />}
+          />
         </Routes>
       </AuthContext.Provider>
     </Router>

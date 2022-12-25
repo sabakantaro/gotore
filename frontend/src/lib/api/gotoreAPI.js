@@ -34,3 +34,31 @@ export const getCurrentUser = () => {
     });
   }
 };
+
+export const editUser = (id, data) => {
+  return client.put(`/users/${id}`, data);
+};
+
+export const getPosts = () => {
+  return client.get("/posts");
+};
+
+export const getPost = (id) => {
+  return client.get(`/posts/${id}`);
+};
+
+export const createPost = (data) => {
+  return client.post("/posts", data);
+};
+
+export const editPost = (id, data) => {
+  return client.patch(`/posts/${id}`, data);
+};
+
+export const deletePost = (id) => {
+  return client.delete(`/posts/${id}`);
+};
+
+export const getCategories = () => {
+  return client.get("/categories");
+};
