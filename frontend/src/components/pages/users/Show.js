@@ -99,7 +99,7 @@ const Post = ({ currentUser }) => {
                       alt='Remy Sharp'
                       src={
                         currentUser?.image
-                          ? currentUser?.image?.url
+                          ? currentUser.image.url
                           : "https://source.unsplash.com/random"
                       }
                       sx={{ width: 112, height: 112, mt: -8 }}

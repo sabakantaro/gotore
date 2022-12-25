@@ -76,7 +76,9 @@ const Header = ({ isSignedIn, currentUser }) => {
                 component={RouterLink}
                 to={`/users/${currentUser?.id}`}
               >
-                <Avatar sx={{ backgroundColor: "#3f50b5" }}>
+                <Avatar 
+
+                src={currentUser?.image.url}>
                   {currentUser?.name.charAt(0)}
                 </Avatar>
               </Link>
