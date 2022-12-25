@@ -1,5 +1,5 @@
 /backend/.ruby-version
 /backend/config
 /backend/vendor
-
+/backend/public
 /frontend/node_modules
