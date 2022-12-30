@@ -62,3 +62,31 @@ export const deletePost = (id) => {
 export const getCategories = () => {
   return client.get("/categories");
 };
+
+export const createParticipate = (data) => {
+  return client.post("/participates", data);
+};
+
+export const getChatRooms = () => {
+  return client.get("/chat_rooms", {
+    headers: {
+      "access-token": Cookies.get("_access_token"),
+      client: Cookies.get("_client"),
+      uid: Cookies.get("_uid"),
+    },
+  });
+};
+
+export const getChatRoom = (id) => {
+  return client.get(`/chat_rooms/${id}`, {
+    headers: {
+      "access-token": Cookies.get("_access_token"),
+      client: Cookies.get("_client"),
+      uid: Cookies.get("_uid"),
+    },
+  });
+};
+
+export const createMessage = (data) => {
+  return client.post("/messages", data);
+};
