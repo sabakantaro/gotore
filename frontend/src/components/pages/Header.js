@@ -5,6 +5,9 @@ import { signOut } from "../../lib/api/gotoreAPI";
 import AppBar from "@mui/material/AppBar";
 import Button from "@mui/material/Button";
 import FitnessCenterIcon from "@mui/icons-material/FitnessCenter";
+import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
+import SearchIcon from "@mui/icons-material/Search";
+import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import Avatar from "@mui/material/Avatar";
 import CssBaseline from "@mui/material/CssBaseline";
 import Toolbar from "@mui/material/Toolbar";
@@ -63,25 +66,42 @@ const Header = ({ isSignedIn, currentUser }) => {
           </Typography>
           {isSignedIn ? (
             <>
-              <Button
-                onClick={handleSignOut}
-                variant='outlined'
-                sx={{ my: 1, mx: 1.5 }}
-              >
-                Sign out
-              </Button>
               <Link
                 underline='hover'
                 color='inherit'
                 component={RouterLink}
                 to={`/users/${currentUser?.id}`}
+                sx={{ mt: 1, mx: 3 }}
               >
-                <Avatar 
-
-                src={currentUser?.image.url}>
+                <SearchIcon />
+              </Link>
+              <Link
+                underline='hover'
+                color='inherit'
+                component={RouterLink}
+                to={`/chatrooms`}
+                sx={{ mt: 1, mx: 3 }}
+              >
+                <ChatBubbleIcon />
+              </Link>
+              <Link
+                underline='hover'
+                color='inherit'
+                component={RouterLink}
+                to={`/users/${currentUser?.id}`}
+                sx={{ ml: 3 }}
+              >
+                <Avatar src={currentUser?.image.url}>
                   {currentUser?.name.charAt(0)}
                 </Avatar>
               </Link>
+              <Button
+                onClick={handleSignOut}
+                // variant='outlined'
+                sx={{ my: 1, mx: 1.5 }}
+              >
+                <ExitToAppIcon />
+              </Button>
             </>
           ) : (
             <>

@@ -40,7 +40,7 @@ const ChatRooms = () => {
         chatRooms.length > 0 ? (
           chatRooms.map((chatRoom, index) => {
             return (
-              <Grid container key={index} justify='center'>
+              <Grid container key={index} sx={{ justifyContent: "center" }}>
                 <List>
                   <Link
                     to={`/chatroom/${chatRoom.chatRoom.id}`}
@@ -60,11 +60,11 @@ const ChatRooms = () => {
                         <ListItemAvatar>
                           <Avatar
                             alt='avatar'
-                            src={chatRoom.otherUser.image.url}
+                            src={chatRoom.otherUser?.image.url}
                           />
                         </ListItemAvatar>
                         <ListItemText
-                          primary={chatRoom.otherUser.name}
+                          primary={chatRoom.otherUser?.name}
                           secondary={
                             <div style={{ marginTop: "0.5rem" }}>
                               <Typography

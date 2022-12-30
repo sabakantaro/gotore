@@ -47,7 +47,7 @@ const App = () => {
           <Route path='/signin' element={<SignIn />} />
           <Route
             exact
-            path='/chat_rooms'
+            path='/chatrooms'
             element={<ChatRooms currentUser={currentUser} />}
           />
           <Route
