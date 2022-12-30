@@ -1,7 +1,7 @@
 class Api::V1::ParticipatesController < ApplicationController
 	def create
 		participate = Participate.create(
-			post_id: participates_params[:post_id],
+			event_id: participates_params[:event_id],
 			user_id: participates_params[:user_id],
 		)
 
@@ -12,10 +12,10 @@ class Api::V1::ParticipatesController < ApplicationController
 			user_id: participate.user_id,
 		)
 
-		post = Post.find_by(id: participate.post_id)
+		event = Event.find_by(id: participate.event_id)
 		ChatRoomUser.find_or_create_by(
 			chat_room_id: chat_room.id,
-			user_id: post.user_id,
+			user_id: event.user_id,
 		)
 
 		if participate.save
@@ -28,6 +28,6 @@ class Api::V1::ParticipatesController < ApplicationController
 	private
 
 		def participates_params
-			params.permit(:post_id, :user_id)
+			params.permit(:event_id, :user_id)
 		end
 end

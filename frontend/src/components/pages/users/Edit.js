@@ -17,7 +17,7 @@ import "react-datepicker/dist/react-datepicker.css";
 
 const theme = createTheme();
 
-export default function CreatePost({ currentUser }) {
+export default function EditUser({ currentUser }) {
   const [name, setName] = useState(currentUser?.name);
   const [image, setImage] = useState(currentUser?.image?.url);
   const [preview, setPreview] = useState(currentUser?.image?.url);

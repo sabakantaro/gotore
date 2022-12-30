@@ -11,7 +11,7 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { getPosts } from "../../lib/api/gotoreAPI";
+import { getEvents } from "../../lib/api/gotoreAPI";
 import moment from "moment";
 import LocationOnIcon from "@mui/icons-material/LocationOnOutlined";
 import EventIcon from "@mui/icons-material/Event";
@@ -23,13 +23,13 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 const theme = createTheme();
 
 const Home = ({ currentUser }) => {
-  const [posts, setPosts] = useState([]);
+  const [events, setEvents] = useState([]);
 
-  const handleGetPosts = async () => {
+  const handleGetEvents = async () => {
     try {
-      const res = await getPosts();
+      const res = await getEvents();
       if (res) {
-        setPosts(res.data.posts);
+        setEvents(res.data.events);
       } else {
         console.log("No articles");
       }
@@ -39,7 +39,7 @@ const Home = ({ currentUser }) => {
   };
 
   useEffect(() => {
-    handleGetPosts();
+    handleGetEvents();
   }, []);
 
   return (
@@ -84,7 +84,7 @@ const Home = ({ currentUser }) => {
                   color='primary'
                   variant='contained'
                   component={Link}
-                  to='/post'
+                  to='/'
                 >
                   Search by details
                 </Button>
@@ -101,13 +101,13 @@ const Home = ({ currentUser }) => {
           </Box>
           <Container sx={{ py: 8 }} maxWidth='md'>
             <Grid container spacing={4}>
-              {posts.map((post) => (
+              {events.map((post) => (
                 <Grid item key={post.id} xs={12} sm={6} md={4}>
                   <Link
                     variant='body'
                     style={{ color: "black", textDecoration: "none" }}
                     component={Link}
-                    to={`/posts/${post.id}`}
+                    to={`/events/${post.id}`}
                   >
                     <Card
                       sx={{
@@ -124,7 +124,7 @@ const Home = ({ currentUser }) => {
                             ? post.imageUrl
                             : "https://source.unsplash.com/random"
                         }
-                        alt='post image'
+                        alt='Event image'
                       />
                       <CardHeader
                         avatar={

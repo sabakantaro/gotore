@@ -16,14 +16,14 @@ import IconButton from "@mui/material/IconButton";
 import CardMedia from "@mui/material/CardMedia";
 import Cancel from "@mui/icons-material/Cancel";
 import CameraAlt from "@mui/icons-material/CameraAlt";
-import { editPost, getPost, getCategories } from "../../../lib/api/gotoreAPI";
+import { editEvent, getEvent, getCategories } from "../../../lib/api/gotoreAPI";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import moment from "moment";
 
 const theme = createTheme();
 
-export default function EditPost({ currentUser }) {
+export default function EditEvent({ currentUser }) {
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const [place, setPlace] = useState("");
@@ -35,23 +35,23 @@ export default function EditPost({ currentUser }) {
   const params = useParams();
   const navigate = useNavigate();
 
-  const handleGetPost = useCallback(async () => {
+  const handleGetEvent = useCallback(async () => {
     try {
-      const res = await getPost(params.id);
-      if (res.data.post) {
-        const post = res.data.post;
-        setTitle(post.title);
-        setBody(post.body);
-        setPlace(post.place);
+      const res = await getEvent(params.id);
+      if (res.data.event) {
+        const event = res.data.event;
+        setTitle(event.title);
+        setBody(event.body);
+        setPlace(event.place);
         setMeetingDatetime(
-          post.meetingDatetime !== null ? post.meetingDatetime : new Date()
+          event.meetingDatetime !== null ? event.meetingDatetime : new Date()
         );
-        setCategoryId(post.categoryId);
-        setImage(post.imageUrl);
-        setPreview(post.imageUrl);
-        console.log(post);
+        setCategoryId(event.categoryId);
+        setImage(event.imageUrl);
+        setPreview(event.imageUrl);
+        console.log(event);
       } else {
-        console.log("No post");
+        console.log("No event");
       }
     } catch (err) {
       console.log(err);
@@ -70,13 +70,13 @@ export default function EditPost({ currentUser }) {
   }, []);
 
   useEffect(() => {
-    handleGetPost();
+    handleGetEvent();
     handleGetCategories();
-  }, [handleGetPost, handleGetCategories]);
+  }, [handleGetEvent, handleGetCategories]);
 
   useEffect(() => {
-    handleGetPost();
-  }, [handleGetPost]);
+    handleGetEvent();
+  }, [handleGetEvent]);
 
   const parseAsMoment = (dateTimeStr) => {
     return moment.utc(dateTimeStr, "YYYY-MM-DDTHH:mm:00Z", "ja").utcOffset(9);
@@ -94,13 +94,13 @@ export default function EditPost({ currentUser }) {
 
   const createFormData = useCallback(() => {
     const formData = new FormData();
-    formData.append("post[post_image]", image);
-    formData.append("post[title]", title);
-    formData.append("post[body]", body);
-    formData.append("post[place]", place);
-    formData.append("post[meeting_datetime]", meetingDatetime);
-    formData.append("post[category_id]", categoryId);
-    formData.append("post[user_id]", currentUser?.id || null);
+    formData.append("event[image]", image);
+    formData.append("event[title]", title);
+    formData.append("event[body]", body);
+    formData.append("event[place]", place);
+    formData.append("event[meeting_datetime]", meetingDatetime);
+    formData.append("event[category_id]", categoryId);
+    formData.append("event[user_id]", currentUser?.id || null);
 
     return formData;
   }, [body, categoryId, currentUser, image, meetingDatetime, place, title]);
@@ -112,7 +112,7 @@ export default function EditPost({ currentUser }) {
       const data = createFormData();
       console.log(data);
 
-      await editPost(params.id, data).then(() => {
+      await editEvent(params.id, data).then(() => {
         navigate("/");
       });
     },
