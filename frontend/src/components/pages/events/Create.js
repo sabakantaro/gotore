@@ -16,14 +16,14 @@ import IconButton from "@mui/material/IconButton";
 import CardMedia from "@mui/material/CardMedia";
 import Cancel from "@mui/icons-material/Cancel";
 import CameraAlt from "@mui/icons-material/CameraAlt";
-import { createPost, getCategories } from "../../../lib/api/gotoreAPI";
+import { createEvent, getCategories } from "../../../lib/api/gotoreAPI";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import moment from "moment";
 
 const theme = createTheme();
 
-export default function CreatePost({ currentUser }) {
+export default function CreateEvent({ currentUser }) {
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const [place, setPlace] = useState("");
@@ -67,13 +67,13 @@ export default function CreatePost({ currentUser }) {
   const createFormData = useCallback(() => {
     const formData = new FormData();
     if (!image) return;
-    formData.append("post[post_image]", image);
-    formData.append("post[title]", title);
-    formData.append("post[body]", body);
-    formData.append("post[place]", place);
-    formData.append("post[meeting_datetime]", meetingDatetime);
-    formData.append("post[category_id]", categoryId);
-    formData.append("post[user_id]", currentUser?.id || null);
+    formData.append("event[image]", image);
+    formData.append("event[title]", title);
+    formData.append("event[body]", body);
+    formData.append("event[place]", place);
+    formData.append("event[meeting_datetime]", meetingDatetime);
+    formData.append("event[category_id]", categoryId);
+    formData.append("event[user_id]", currentUser?.id || null);
 
     console.log(formData);
     return formData;
@@ -85,7 +85,7 @@ export default function CreatePost({ currentUser }) {
 
       const data = createFormData();
 
-      await createPost(data).then(() => {
+      await createEvent(data).then(() => {
         navigate("/");
       });
     },

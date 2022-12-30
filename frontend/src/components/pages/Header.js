@@ -70,7 +70,7 @@ const Header = ({ isSignedIn, currentUser }) => {
                 underline='hover'
                 color='inherit'
                 component={RouterLink}
-                to={`/users/${currentUser?.id}`}
+                to={"/"}
                 sx={{ mt: 1, mx: 3 }}
               >
                 <SearchIcon />

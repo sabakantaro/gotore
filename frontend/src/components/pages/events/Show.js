@@ -4,7 +4,7 @@ import CardHeader from "@mui/material/CardHeader";
 import CardMedia from "@mui/material/CardMedia";
 import Avatar from "@mui/material/Avatar";
 import Typography from "@mui/material/Typography";
-import { getPost, createParticipate } from "../../../lib/api/gotoreAPI";
+import { getEvent, createParticipate } from "../../../lib/api/gotoreAPI";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
@@ -22,19 +22,19 @@ import Button from "@mui/material/Button";
 // import FavoriteIcon from "@mui/icons-material/Favorite";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 
-const Post = ({ currentUser }) => {
-  const [post, setPost] = useState([]);
+const Event = ({ currentUser }) => {
+  const [event, setEvent] = useState([]);
   // const [like, setLike] = useState(false);
   const params = useParams();
   const navigate = useNavigate();
 
-  const handleGetPost = useCallback(async () => {
+  const handleGetEvent = useCallback(async () => {
     try {
-      const res = await getPost(params.id);
+      const res = await getEvent(params.id);
       if (res) {
-        setPost(res.data.post);
+        setEvent(res.data.event);
       } else {
-        console.log("No post");
+        console.log("No event");
       }
     } catch (err) {
       console.log(err);
@@ -42,13 +42,13 @@ const Post = ({ currentUser }) => {
   }, [params.id]);
 
   useEffect(() => {
-    handleGetPost();
-  }, [handleGetPost]);
+    handleGetEvent();
+  }, [handleGetEvent]);
 
   const handleCreateParticipate = useCallback(async () => {
     const data = {
       user_id: currentUser?.id,
-      post_id: post.id,
+      event_id: event.id,
     };
 
     try {
@@ -63,7 +63,7 @@ const Post = ({ currentUser }) => {
     } catch (err) {
       console.log(err);
     }
-  }, [currentUser, navigate, post.id]);
+  }, [currentUser, navigate, event.id]);
 
   return (
     <>
@@ -83,7 +83,7 @@ const Post = ({ currentUser }) => {
           <Link underline='hover' color='inherit' component={RouterLink} to='/'>
             TOP
           </Link>
-          <Typography color='text.primary'>{post.title}</Typography>
+          <Typography color='text.primary'>{event.title}</Typography>
         </Breadcrumbs>
         <Container maxWidth='lg' sx={{ mt: 0, mb: 4 }}>
           <Grid container spacing={3}>
@@ -109,21 +109,21 @@ const Post = ({ currentUser }) => {
                   sx={{ borderRadius: "4px 4px 0 0", height: 400 }}
                   component='img'
                   src={
-                    post.imageUrl
-                      ? post.imageUrl
+                    event.imageUrl
+                      ? event.imageUrl
                       : "https://source.unsplash.com/random"
                   }
-                  alt='post image'
+                  alt='event image'
                 />
                 <div style={{ padding: 24 }}>
                   <CardHeader
                     sx={{ p: 0 }}
                     action={
                       currentUser &&
-                      post.userId === currentUser?.id && (
+                      event.userId === currentUser?.id && (
                         <IconButton
                           component={RouterLink}
-                          to={`/post-edit/${post.id}`}
+                          to={`/event-edit/${event.id}`}
                         >
                           <MoreVertIcon />
                         </IconButton>
@@ -137,7 +137,7 @@ const Post = ({ currentUser }) => {
                           mb: 0,
                         }}
                       >
-                        {post.title ? post.title : "New Post"}
+                        {event.title ? event.title : "New event"}
                       </Typography>
                     }
                   />
@@ -161,7 +161,7 @@ const Post = ({ currentUser }) => {
                           textOverflow: "ellipsis",
                         }}
                       >
-                        {post.place ? post.place : "Anytimefitness Vancouver"}
+                        {event.place ? event.place : "Anytimefitness Vancouver"}
                       </Typography>
                     }
                     color='text.secondary'
@@ -169,11 +169,11 @@ const Post = ({ currentUser }) => {
                   <CardHeader
                     sx={{ pt: 0 }}
                     avatar={
-                      <Avatar src={post?.user?.image && post.user.image.url}>
+                      <Avatar src={event?.user?.image && event.user.image.url}>
                         {currentUser?.name.charAt(0)}
                       </Avatar>
                     }
-                    title={`${post.user?.name}`}
+                    title={`${event.user?.name}`}
                   />
                   <Grid container sx={{ mt: 0.5 }}>
                     <Grid item xs={6} sx={{ backgroundColor: "lightgray" }}>
@@ -189,8 +189,8 @@ const Post = ({ currentUser }) => {
                         variant='body3'
                         sx={{ fontSize: 14, fontWeight: "bold", ml: 1 }}
                       >
-                        {post.meetingDatetime
-                          ? moment(post.meetingDatetime).format("YYYY-MM-DD")
+                        {event.meetingDatetime
+                          ? moment(event.meetingDatetime).format("YYYY-MM-DD")
                           : "To be decided"}
                       </Typography>
                     </Grid>
@@ -209,7 +209,7 @@ const Post = ({ currentUser }) => {
                         variant='body3'
                         sx={{ fontSize: 14, fontWeight: "bold", ml: 1 }}
                       >
-                        {post.category?.name}
+                        {event.category?.name}
                       </Typography>
                     </Grid>
                   </Grid>
@@ -219,12 +219,13 @@ const Post = ({ currentUser }) => {
                       onClick={() => (like ? setLike(false) : setLike(true))}
                     >
                       {like ? <FavoriteIcon /> : <FavoriteBorderIcon />}
-                      <Typography variant='body1'>{post.id}</Typography>
+                      <Typography variant='body1'>{event.id}</Typography>
                     </IconButton> */}
                     <Button
                       color='primary'
                       variant='contained'
                       onClick={handleCreateParticipate}
+                      disabled={event.userId === currentUser?.id}
                     >
                       Participate it!
                     </Button>
@@ -237,13 +238,13 @@ const Post = ({ currentUser }) => {
                     }}
                     variant='body1'
                   >
-                    {post.body ? post.body : "Hello!"}
+                    {event.body ? event.body : "Hello!"}
                   </Typography>
                 </div>
                 <div style={{ padding: 12, width: "100%" }}>
                   <iframe
                     title='Google Map'
-                    src={`https://www.google.com/maps?output=embed&q=${post.place}`}
+                    src={`https://www.google.com/maps?output=embed&q=${event.place}`}
                     style={{
                       border: 0,
                       borderRadius: 3,
@@ -261,4 +262,4 @@ const Post = ({ currentUser }) => {
   );
 };
 
-export default Post;
+export default Event;

@@ -5,9 +5,9 @@ import SignUp from "./components/pages/SignUp";
 import SignIn from "./components/pages/SignIn";
 import { getCurrentUser } from "./lib/api/gotoreAPI";
 import Header from "./components/pages/Header";
-import Post from "./components/pages/posts/Show";
-import CreatePost from "./components/pages/posts/Create";
-import EditPost from "./components/pages/posts/Edit";
+import Event from "./components/pages/events/Show";
+import CreateEvent from "./components/pages/events/Create";
+import EditEvent from "./components/pages/events/Edit";
 import User from "./components/pages/users/Show";
 import EditUser from "./components/pages/users/Edit";
 import ChatRooms from "./components/pages/chat_rooms/ChatRooms";
@@ -55,16 +55,16 @@ const App = () => {
             element={<ChatRoom currentUser={currentUser} />}
           />
           <Route
-            path='/posts/:id'
-            element={<Post currentUser={currentUser} />}
+            path='/events/:id'
+            element={<Event currentUser={currentUser} />}
           />
           <Route
-            path='/post-create'
-            element={<CreatePost currentUser={currentUser} />}
+            path='/Event-create'
+            element={<CreateEvent currentUser={currentUser} />}
           />
           <Route
-            path='/post-edit/:id'
-            element={<EditPost currentUser={currentUser} />}
+            path='/Event-edit/:id'
+            element={<EditEvent currentUser={currentUser} />}
           />
           <Route
             path='/users/:id'
