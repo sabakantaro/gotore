@@ -19,11 +19,15 @@ import CardHeader from "@mui/material/CardHeader";
 import Avatar from "@mui/material/Avatar";
 import IconButton from "@mui/material/IconButton";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import EventBox from "../pages/events/EventBox";
 
 const theme = createTheme();
 
 const Home = ({ currentUser }) => {
   const [events, setEvents] = useState([]);
+  const [like, setLike] = useState(false);
 
   const handleGetEvents = async () => {
     try {
@@ -31,7 +35,7 @@ const Home = ({ currentUser }) => {
       if (res) {
         setEvents(res.data.events);
       } else {
-        console.log("No articles");
+        console.log("No events");
       }
     } catch (err) {
       console.log(err);
@@ -92,7 +96,7 @@ const Home = ({ currentUser }) => {
                   color='primary'
                   variant='outlined'
                   component={Link}
-                  to='/post-create'
+                  to='/event-create'
                 >
                   Gather friends
                 </Button>
@@ -101,138 +105,8 @@ const Home = ({ currentUser }) => {
           </Box>
           <Container sx={{ py: 8 }} maxWidth='md'>
             <Grid container spacing={4}>
-              {events.map((post) => (
-                <Grid item key={post.id} xs={12} sm={6} md={4}>
-                  <Link
-                    variant='body'
-                    style={{ color: "black", textDecoration: "none" }}
-                    component={Link}
-                    to={`/events/${post.id}`}
-                  >
-                    <Card
-                      sx={{
-                        height: "100%",
-                        display: "flex",
-                        flexDirection: "column",
-                      }}
-                    >
-                      <CardMedia
-                        height='200'
-                        component='img'
-                        src={
-                          post.imageUrl
-                            ? post.imageUrl
-                            : "https://source.unsplash.com/random"
-                        }
-                        alt='Event image'
-                      />
-                      <CardHeader
-                        avatar={
-                          <Avatar
-                            alt='User Image'
-                            src={
-                              post.user?.image
-                                ? post.user?.imageUrl
-                                : "https://source.unsplash.com/random"
-                            }
-                          />
-                        }
-                        action={
-                          post.userId === currentUser?.id && (
-                            <IconButton
-                              component={Link}
-                              to={`/post-edit/${post.id}`}
-                            >
-                              <MoreVertIcon />
-                            </IconButton>
-                          )
-                        }
-                        title={`${post.user?.name}`}
-                      />
-                      <CardContent sx={{ flexGrow: 1, pt: 0, pb: 0 }}>
-                        <Typography
-                          gutterBottom
-                          variant='h5'
-                          sx={{
-                            mb: 2,
-                            overflow: "hidden",
-                            whiteSpace: "nowrap",
-                            width: "100%",
-                            textOverflow: "ellipsis",
-                          }}
-                        >
-                          {post.title ? post.title : "New Post"}
-                        </Typography>
-                        <Grid container>
-                          <Grid item xs={2}>
-                            <LocationOnIcon />
-                          </Grid>
-                          <Grid item xs={6}>
-                            <Typography
-                              variant='body3'
-                              sx={{
-                                overflow: "hidden",
-                                whiteSpace: "nowrap",
-                                width: "100%",
-                                textOverflow: "ellipsis",
-                              }}
-                            >
-                              {post.place ? post.place : "To be decided"}
-                            </Typography>
-                          </Grid>
-                        </Grid>
-                        <Grid container>
-                          <Grid item xs={2}>
-                            <EventIcon />
-                          </Grid>
-                          <Grid item xs={6}>
-                            <Typography variant='body3'>
-                              {post.meetingDatetime
-                                ? moment(post.meetingDatetime).format(
-                                    "YYYY-MM-DD"
-                                  )
-                                : "To be decided"}
-                            </Typography>
-                          </Grid>
-                        </Grid>
-                        <Typography
-                          sx={{
-                            mt: 1,
-                            overflow: "hidden",
-                            whiteSpace: "nowrap",
-                            width: "100%",
-                            textOverflow: "ellipsis",
-                          }}
-                          variant='body1'
-                        >
-                          {post.body ? post.body : "Hello!"}
-                        </Typography>
-                      </CardContent>
-                      {/* <CardActions disableSpacing>
-                        <IconButton
-                          onClick={() =>
-                            like ? setLike(false) : setLike(true)
-                          }
-                        >
-                          {like ? <FavoriteIcon /> : <FavoriteBorderIcon />}
-                        </IconButton>
-                        {post.userId === currentUser?.id && (
-                          <div
-                            className={{
-                              marginLeft: "auto",
-                            }}
-                          >
-                            <IconButton
-                              onClick={() => handleDeletePost(post.id)}
-                            >
-                              <DeleteIcon />
-                            </IconButton>
-                          </div>
-                        )}
-                      </CardActions> */}
-                    </Card>
-                  </Link>
-                </Grid>
+              {events.map((event) => (
+                <EventBox event={event} currentUser={currentUser} />
               ))}
             </Grid>
           </Container>
