@@ -8,11 +8,10 @@ class User < ActiveRecord::Base
   include DeviseTokenAuth::Concerns::User
   has_many :events
   has_many :participates
-
   has_many :chat_room_users
   has_many :chat_rooms, through: :chat_room_users
-
   has_many :messages
+  has_many :notifications
 
   mount_uploader :image, ImageUploader
 

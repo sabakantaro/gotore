@@ -90,3 +90,17 @@ export const editEvent = (id, data) => {
 export const deleteEvent = (id) => {
   return client.delete(`/events/${id}`);
 };
+
+export const getNotifications = () => {
+  return client.get("/notifications", {
+    headers: {
+      "access-token": Cookies.get("_access_token"),
+      client: Cookies.get("_client"),
+      uid: Cookies.get("_uid"),
+    },
+  });
+};
+
+export const updateNotification = (id) => {
+  return client.patch(`/notifications/${id}`);
+};
