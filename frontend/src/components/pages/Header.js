@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { useNavigate, Link as RouterLink } from "react-router-dom";
 import Cookies from "js-cookie";
 import { signOut } from "../../lib/api/gotoreAPI";
@@ -8,20 +8,22 @@ import FitnessCenterIcon from "@mui/icons-material/FitnessCenter";
 import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
 import SearchIcon from "@mui/icons-material/Search";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
+import NotificationsIcon from "@mui/icons-material/Notifications";
 import Avatar from "@mui/material/Avatar";
 import CssBaseline from "@mui/material/CssBaseline";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
+import Badge from "@mui/material/Badge";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import GlobalStyles from "@mui/material/GlobalStyles";
 import Link from "@mui/material/Link";
 
-const Header = ({ isSignedIn, currentUser }) => {
+const Header = ({ isSignedIn, currentUser, notificationsCount }) => {
   const navigate = useNavigate();
 
   const theme = createTheme();
 
-  const handleSignOut = async () => {
+  const handleSignOut = useCallback(async () => {
     try {
       const res = await signOut();
 
@@ -39,7 +41,7 @@ const Header = ({ isSignedIn, currentUser }) => {
     } catch (err) {
       console.log(err);
     }
-  };
+  }, [navigate]);
 
   return (
     <ThemeProvider theme={theme}>
@@ -79,6 +81,17 @@ const Header = ({ isSignedIn, currentUser }) => {
                 underline='hover'
                 color='inherit'
                 component={RouterLink}
+                to={"/notifications"}
+                sx={{ mt: 1, mx: 3 }}
+              >
+                <Badge badgeContent={notificationsCount} color='primary'>
+                  <NotificationsIcon />
+                </Badge>
+              </Link>
+              <Link
+                underline='hover'
+                color='inherit'
+                component={RouterLink}
                 to={`/chatrooms`}
                 sx={{ mt: 1, mx: 3 }}
               >
@@ -95,11 +108,7 @@ const Header = ({ isSignedIn, currentUser }) => {
                   {currentUser?.name.charAt(0)}
                 </Avatar>
               </Link>
-              <Button
-                onClick={handleSignOut}
-                // variant='outlined'
-                sx={{ my: 1, mx: 1.5 }}
-              >
+              <Button onClick={handleSignOut} sx={{ my: 1, mx: 1.5 }}>
                 <ExitToAppIcon />
               </Button>
             </>

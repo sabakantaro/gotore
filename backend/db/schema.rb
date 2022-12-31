@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_12_30_074636) do
+ActiveRecord::Schema[7.0].define(version: 2022_12_31_025526) do
   create_table "categories", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name"
     t.string "description"
@@ -46,6 +46,16 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_30_074636) do
     t.integer "chat_room_id", null: false
     t.integer "user_id", null: false
     t.string "content", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "notifications", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.integer "user_id"
+    t.text "content"
+    t.text "image_url"
+    t.string "link_url"
+    t.boolean "is_checked"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
