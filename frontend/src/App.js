@@ -17,8 +17,6 @@ import NotificationsList from "./components/pages/notifications/NotificationsLis
 const App = () => {
   const [isSignedIn, setIsSignedIn] = useState(false);
   const [currentUser, setCurrentUser] = useState();
-  const [notificationsCount, setNotificationsCount] = useState(0);
-  const AuthContext = React.createContext();
 
   const handleGetCurrentUser = useCallback(async () => {
     try {
@@ -26,7 +24,6 @@ const App = () => {
       if (res) {
         setIsSignedIn(true);
         setCurrentUser(res.data?.currentUser);
-        setNotificationsCount(res.data?.notificationsCount);
       }
     } catch (err) {
       console.log(err);
@@ -38,51 +35,42 @@ const App = () => {
 
   return (
     <Router>
-      <Header
-        isSignedIn={isSignedIn}
-        currentUser={currentUser}
-        notificationsCount={notificationsCount}
-      />
-      <AuthContext.Provider>
-        <Routes>
-          <Route path='/' element={<Home currentUser={currentUser} />} />
-          <Route path='/signup' element={<SignUp />} />
-          <Route path='/signin' element={<SignIn />} />
-          <Route
-            exact
-            path='/chatrooms'
-            element={<ChatRooms currentUser={currentUser} />}
-          />
-          <Route
-            path='/chatroom/:id'
-            element={<ChatRoom currentUser={currentUser} />}
-          />
-          <Route
-            path='/events/:id'
-            element={<Event currentUser={currentUser} />}
-          />
-          <Route
-            path='/Event-create'
-            element={<CreateEvent currentUser={currentUser} />}
-          />
-          <Route
-            path='/Event-edit/:id'
-            element={<EditEvent currentUser={currentUser} />}
-          />
-          <Route
-            path='/users/:id'
-            element={<User currentUser={currentUser} />}
-          />
-          <Route
-            path='/user-edit/:id'
-            element={<EditUser currentUser={currentUser} />}
-          />
-          <Route
-            path='/notifications'
-            element={<NotificationsList currentUser={currentUser} />}
-          />
-        </Routes>
-      </AuthContext.Provider>
+      <Header isSignedIn={isSignedIn} currentUser={currentUser} />
+      <Routes>
+        <Route path='/' element={<Home currentUser={currentUser} />} />
+        <Route path='/signup' element={<SignUp />} />
+        <Route path='/signin' element={<SignIn />} />
+        <Route
+          exact
+          path='/chatrooms'
+          element={<ChatRooms currentUser={currentUser} />}
+        />
+        <Route
+          path='/chatroom/:id'
+          element={<ChatRoom currentUser={currentUser} />}
+        />
+        <Route
+          path='/events/:id'
+          element={<Event currentUser={currentUser} />}
+        />
+        <Route
+          path='/Event-create'
+          element={<CreateEvent currentUser={currentUser} />}
+        />
+        <Route
+          path='/Event-edit/:id'
+          element={<EditEvent currentUser={currentUser} />}
+        />
+        <Route path='/users/:id' element={<User currentUser={currentUser} />} />
+        <Route
+          path='/user-edit/:id'
+          element={<EditUser currentUser={currentUser} />}
+        />
+        <Route
+          path='/notifications'
+          element={<NotificationsList currentUser={currentUser} />}
+        />
+      </Routes>
     </Router>
   );
 };
