@@ -18,13 +18,11 @@ import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import CardActions from "@mui/material/CardActions";
 import Button from "@mui/material/Button";
-// import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
-// import FavoriteIcon from "@mui/icons-material/Favorite";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+import EventsFavoritesButton from "../events/EventsFavoritesButton";
 
 const Event = ({ currentUser }) => {
   const [event, setEvent] = useState([]);
-  // const [like, setLike] = useState(false);
   const params = useParams();
   const navigate = useNavigate();
 
@@ -39,7 +37,7 @@ const Event = ({ currentUser }) => {
     } catch (err) {
       console.log(err);
     }
-  }, [params.id]);
+  }, [params]);
 
   useEffect(() => {
     handleGetEvent();
@@ -63,7 +61,7 @@ const Event = ({ currentUser }) => {
     } catch (err) {
       console.log(err);
     }
-  }, [currentUser, navigate, event.id]);
+  }, [currentUser, navigate, event]);
 
   return (
     <>
@@ -115,6 +113,10 @@ const Event = ({ currentUser }) => {
                   }
                   alt='event image'
                 />
+                <EventsFavoritesButton
+                  event={event}
+                  currentUser={currentUser}
+                />
                 <div style={{ padding: 24 }}>
                   <CardHeader
                     sx={{ p: 0 }}
@@ -141,7 +143,6 @@ const Event = ({ currentUser }) => {
                       </Typography>
                     }
                   />
-
                   <CardHeader
                     sx={{ pt: 0, pl: 0 }}
                     avatar={
@@ -215,12 +216,6 @@ const Event = ({ currentUser }) => {
                   </Grid>
                   <Divider />
                   <CardActions sx={{ justifyContent: "center" }}>
-                    {/* <IconButton
-                      onClick={() => (like ? setLike(false) : setLike(true))}
-                    >
-                      {like ? <FavoriteIcon /> : <FavoriteBorderIcon />}
-                      <Typography variant='body1'>{event.id}</Typography>
-                    </IconButton> */}
                     <Button
                       color='primary'
                       variant='contained'

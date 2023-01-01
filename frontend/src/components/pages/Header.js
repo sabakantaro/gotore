@@ -18,7 +18,7 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import GlobalStyles from "@mui/material/GlobalStyles";
 import Link from "@mui/material/Link";
 
-const Header = ({ isSignedIn, currentUser, notificationsCount }) => {
+const Header = ({ isSignedIn, currentUser }) => {
   const navigate = useNavigate();
 
   const theme = createTheme();
@@ -84,7 +84,10 @@ const Header = ({ isSignedIn, currentUser, notificationsCount }) => {
                 to={"/notifications"}
                 sx={{ mt: 1, mx: 3 }}
               >
-                <Badge badgeContent={notificationsCount} color='primary'>
+                <Badge
+                  badgeContent={currentUser.myNotificationsCount}
+                  color='primary'
+                >
                   <NotificationsIcon />
                 </Badge>
               </Link>

@@ -19,6 +19,18 @@ class User < ActiveRecord::Base
     image.thumb.url
   end
 
+  def my_favorite_event_ids
+    EventsFavorite.where(user_id: id).pluck(:event_id)
+  end
+
+  def my_favorite_events
+    Event.where(id: my_favorite_event_ids)
+  end
+
+  def my_notifications_count
+    Notification.where(user_id: id, is_checked: false).count
+  end
+
   def update_without_current_password(params, *options)
     params.delete(:current_password)
 

@@ -7,7 +7,7 @@ class Api::V1::EventsController < ApplicationController
 	end
 
 	def show
-		render json: { event: @event.as_json(methods: :image_url, include: [:user, :category]) }, status: :ok
+		render json: { event: event_to_json(@event) }, status: :ok
 	end
 
 	def create
@@ -43,7 +43,13 @@ class Api::V1::EventsController < ApplicationController
 			methods: %i[image_url],
 			include: [
 				user: {
-					methods: [:image_url],
+					methods: %i[image_url],
+				},
+				category: {
+					only: %i[id name]
+				},
+				events_favorites: {
+					only: %i[id]
 				},
 			],
 		)

@@ -35,6 +35,10 @@ export const getCurrentUser = () => {
   }
 };
 
+export const getUser = (id) => {
+  return client.get(`/users/${id}`);
+};
+
 export const editUser = (id, data) => {
   return client.put(`/users/${id}`, data);
 };
@@ -103,4 +107,18 @@ export const getNotifications = () => {
 
 export const updateNotification = (id) => {
   return client.patch(`/notifications/${id}`);
+};
+
+export const createEventsFavorites = (eventId, data) => {
+  return client.post(`/events/${eventId}/events_favorites`, data);
+};
+
+export const deleteEventsFavorites = (eventId) => {
+  return client.delete(`/events/${eventId}/events_favorites`, {
+    headers: {
+      "access-token": Cookies.get("_access_token"),
+      client: Cookies.get("_client"),
+      uid: Cookies.get("_uid"),
+    },
+  });
 };
