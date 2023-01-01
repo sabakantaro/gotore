@@ -1,5 +1,5 @@
-import React from "react";
-import { Link as RouterLink } from "react-router-dom";
+import React, { useEffect, useState, useCallback } from "react";
+import { Link as RouterLink, useParams } from "react-router-dom";
 import CardHeader from "@mui/material/CardHeader";
 import CardMedia from "@mui/material/CardMedia";
 import Avatar from "@mui/material/Avatar";
@@ -12,8 +12,29 @@ import Link from "@mui/material/Link";
 import Breadcrumbs from "@mui/material/Breadcrumbs";
 import IconButton from "@mui/material/IconButton";
 import Edit from "@mui/icons-material/Edit";
+import EventBox from "../events/EventBox";
+import { getUser } from "../../../lib/api/gotoreAPI";
 
-const Post = ({ currentUser }) => {
+const User = ({ currentUser }) => {
+  const [events, setEvents] = useState([]);
+  const [user, setUser] = useState([]);
+  const params = useParams();
+
+  const handleGetUser = useCallback(async () => {
+    try {
+      const res = await getUser(params.id);
+      console.log(res.data.favoriteEvents);
+      setUser(res.data.user);
+      setEvents(res.data.favoriteEvents);
+    } catch (err) {
+      console.log(err);
+    }
+  }, [params]);
+
+  useEffect(() => {
+    handleGetUser();
+  }, [handleGetUser]);
+
   return (
     <>
       <Box
@@ -32,7 +53,7 @@ const Post = ({ currentUser }) => {
           <Link underline='hover' color='inherit' component={RouterLink} to='/'>
             TOP
           </Link>
-          <Typography color='text.primary'>{currentUser?.name}</Typography>
+          <Typography color='text.primary'>{user?.name}</Typography>
         </Breadcrumbs>
 
         <Container component='main' maxWidth='sm' sx={{ mb: 4 }}>
@@ -41,8 +62,8 @@ const Post = ({ currentUser }) => {
               sx={{ borderRadius: "4px 4px 0 0", height: 120 }}
               component='img'
               src={
-                currentUser?.image
-                  ? currentUser?.image?.url
+                user?.image
+                  ? user?.image?.url
                   : "https://source.unsplash.com/random"
               }
               alt='Event image'
@@ -65,20 +86,22 @@ const Post = ({ currentUser }) => {
                     <Avatar
                       alt='Remy Sharp'
                       src={
-                        currentUser?.image
-                          ? currentUser.image.url
+                        user?.image
+                          ? user.image.url
                           : "https://source.unsplash.com/random"
                       }
                       sx={{ width: 112, height: 112, mt: -8 }}
                     />
                   }
                   action={
-                    <IconButton
-                      component={RouterLink}
-                      to={`/user-edit/${currentUser?.id}`}
-                    >
-                      <Edit />
-                    </IconButton>
+                    currentUser?.id === user?.id && (
+                      <IconButton
+                        component={RouterLink}
+                        to={`/user-edit/${user?.id}`}
+                      >
+                        <Edit />
+                      </IconButton>
+                    )
                   }
                   sx={{ mt: -3 }}
                 />
@@ -96,7 +119,7 @@ const Post = ({ currentUser }) => {
                       variant='body3'
                       sx={{ fontSize: 14, fontWeight: "bold", ml: 1 }}
                     >
-                      {currentUser?.name ? currentUser.name : "To be decided"}
+                      {user?.name ? user.name : "To be decided"}
                     </Typography>
                   </Grid>
                 </Grid>
@@ -114,7 +137,7 @@ const Post = ({ currentUser }) => {
                       variant='body3'
                       sx={{ fontSize: 14, fontWeight: "bold", ml: 1 }}
                     >
-                      {currentUser?.name}
+                      {user?.name}
                     </Typography>
                   </Grid>
                 </Grid>
@@ -122,9 +145,28 @@ const Post = ({ currentUser }) => {
             </Paper>
           </Grid>
         </Container>
+        {events && (
+          <Container maxWidth='md'>
+            <Typography
+              variant='body3'
+              sx={{ fontSize: 20, fontWeight: "bold" }}
+            >
+              Favorite events
+            </Typography>
+            <Grid container sx={{ mb: 5 }} spacing={4}>
+              {events.map((event) => (
+                <EventBox
+                  key={event.id}
+                  event={event}
+                  currentUser={currentUser}
+                />
+              ))}
+            </Grid>
+          </Container>
+        )}
       </Box>
     </>
   );
 };
 
-export default Post;
+export default User;
