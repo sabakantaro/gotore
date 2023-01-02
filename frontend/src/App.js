@@ -13,6 +13,7 @@ import EditUser from "./components/pages/users/Edit";
 import ChatRooms from "./components/pages/chat_rooms/ChatRooms";
 import ChatRoom from "./components/pages/chat_rooms/ChatRoom";
 import NotificationsList from "./components/pages/notifications/NotificationsList";
+import Relationships from "./components/pages/users/Relationships";
 
 const App = () => {
   const [isSignedIn, setIsSignedIn] = useState(false);
@@ -69,6 +70,10 @@ const App = () => {
         <Route
           path='/notifications'
           element={<NotificationsList currentUser={currentUser} />}
+        />
+        <Route
+          path='/users/:userId/relationships/:id'
+          element={<Relationships />}
         />
       </Routes>
     </Router>
