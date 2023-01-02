@@ -36,7 +36,13 @@ export const getCurrentUser = () => {
 };
 
 export const getUser = (id) => {
-  return client.get(`/users/${id}`);
+  return client.get(`/users/${id}`, {
+    headers: {
+      "access-token": Cookies.get("_access_token"),
+      client: Cookies.get("_client"),
+      uid: Cookies.get("_uid"),
+    },
+  });
 };
 
 export const editUser = (id, data) => {
@@ -121,4 +127,26 @@ export const deleteEventsFavorites = (eventId) => {
       uid: Cookies.get("_uid"),
     },
   });
+};
+
+export const follow = (userId, data) => {
+  return client.post(`/users/${userId}/relationships`, data);
+};
+
+export const unfollow = (userId) => {
+  return client.delete(`/users/${userId}/relationships`, {
+    headers: {
+      "access-token": Cookies.get("_access_token"),
+      client: Cookies.get("_client"),
+      uid: Cookies.get("_uid"),
+    },
+  });
+};
+
+export const getFollowings = (userId) => {
+  return client.get(`/users/${userId}/followings`);
+};
+
+export const getFollowers = (userId) => {
+  return client.get(`/users/${userId}/followers`);
 };

@@ -12,20 +12,22 @@ import Link from "@mui/material/Link";
 import Breadcrumbs from "@mui/material/Breadcrumbs";
 import IconButton from "@mui/material/IconButton";
 import Edit from "@mui/icons-material/Edit";
+import Button from "@mui/material/Button";
 import EventBox from "../events/EventBox";
-import { getUser } from "../../../lib/api/gotoreAPI";
+import { getUser, follow, unfollow } from "../../../lib/api/gotoreAPI";
 
 const User = ({ currentUser }) => {
   const [events, setEvents] = useState([]);
   const [user, setUser] = useState([]);
+  const [isFollowed, setIsFollowed] = useState(false);
   const params = useParams();
 
   const handleGetUser = useCallback(async () => {
     try {
       const res = await getUser(params.id);
-      console.log(res.data.favoriteEvents);
       setUser(res.data.user);
       setEvents(res.data.favoriteEvents);
+      setIsFollowed(res.data.isFollowed);
     } catch (err) {
       console.log(err);
     }
@@ -34,6 +36,21 @@ const User = ({ currentUser }) => {
   useEffect(() => {
     handleGetUser();
   }, [handleGetUser]);
+
+  const handleFollowStatus = useCallback(async () => {
+    try {
+      const data = { followed_id: user.id, follower_id: currentUser.id };
+      if (isFollowed) {
+        await unfollow(user.id, data);
+        setIsFollowed(false);
+      } else {
+        await follow(user.id, data);
+        setIsFollowed(true);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  }, [currentUser, isFollowed, user]);
 
   return (
     <>
@@ -94,17 +111,53 @@ const User = ({ currentUser }) => {
                     />
                   }
                   action={
-                    currentUser?.id === user?.id && (
+                    currentUser?.id === user?.id ? (
                       <IconButton
                         component={RouterLink}
                         to={`/user-edit/${user?.id}`}
                       >
                         <Edit />
                       </IconButton>
+                    ) : (
+                      <Button
+                        variant={isFollowed ? "outlined" : "contained"}
+                        size='small'
+                        onClick={() => {
+                          handleFollowStatus();
+                        }}
+                        sx={{ mt: 1.5 }}
+                      >
+                        {isFollowed ? "unfollow" : "follow"}
+                      </Button>
                     )
                   }
                   sx={{ mt: -3 }}
                 />
+                <Typography
+                  variant='body3'
+                  sx={{ fontSize: 20, fontWeight: "bold" }}
+                >
+                  {user?.name}
+                </Typography>
+                <Grid container sx={{ mt: 0.5 }}>
+                  <Link
+                    underline='hover'
+                    color='inherit'
+                    component={RouterLink}
+                    to={`/users/${user.id}/relationships/0`}
+                  >
+                    Followers {user?.followersCount}
+                  </Link>
+                  {"　/　"}
+                  <Link
+                    underline='hover'
+                    color='inherit'
+                    component={RouterLink}
+                    to={`/users/${user.id}/relationships/1`}
+                  >
+                    Followings {user?.followingsCount}
+                  </Link>
+                </Grid>
                 <Grid container sx={{ mt: 0.5 }}>
                   <Grid item xs={6} sx={{ backgroundColor: "lightgray" }}>
                     <Typography
