@@ -14,6 +14,7 @@ import ChatRooms from "./components/pages/chat_rooms/ChatRooms";
 import ChatRoom from "./components/pages/chat_rooms/ChatRoom";
 import NotificationsList from "./components/pages/notifications/NotificationsList";
 import Relationships from "./components/pages/users/Relationships";
+import Evaluations from "./components/pages/users/Evaluations";
 
 const App = () => {
   const [isSignedIn, setIsSignedIn] = useState(false);
@@ -74,6 +75,10 @@ const App = () => {
         <Route
           path='/users/:userId/relationships/:id'
           element={<Relationships />}
+        />
+        <Route
+          path='/users/:id/evaluations'
+          element={<Evaluations currentUser={currentUser} />}
         />
       </Routes>
     </Router>

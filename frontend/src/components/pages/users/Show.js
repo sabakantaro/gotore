@@ -13,6 +13,7 @@ import Breadcrumbs from "@mui/material/Breadcrumbs";
 import IconButton from "@mui/material/IconButton";
 import Edit from "@mui/icons-material/Edit";
 import Button from "@mui/material/Button";
+import Rating from "@mui/material/Rating";
 import EventBox from "../events/EventBox";
 import { getUser, follow, unfollow } from "../../../lib/api/gotoreAPI";
 
@@ -139,6 +140,14 @@ const User = ({ currentUser }) => {
                 >
                   {user?.name}
                 </Typography>
+                {user?.evaluationScore && (
+                  <Rating
+                    name='half-rating-read'
+                    defaultValue={user?.evaluationScore}
+                    precision={0.5}
+                    readOnly
+                  />
+                )}
                 <Grid container sx={{ mt: 0.5 }}>
                   <Link
                     underline='hover'

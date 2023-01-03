@@ -25,6 +25,8 @@ class Api::V1::ParticipatesController < ApplicationController
 			event.user.image.url
 			"/chatroom/#{participate.user_id}",
 		)
+
+		SendNotificationToParticipantJob.set(2.hours.after(event.meeting_datetime)).perform_later(participate.user_id, event.id)
 	end
 
 	private
