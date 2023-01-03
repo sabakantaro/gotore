@@ -16,6 +16,10 @@ class User < ActiveRecord::Base
   has_many :reverse_of_relationships, class_name: "Relationship", foreign_key: "followed_id", dependent: :destroy
   has_many :followings, through: :relationships, source: :followed
   has_many :followers, through: :reverse_of_relationships, source: :follower
+  has_many :users_evaluations, class_name: "UsersEvaluation", foreign_key: "evaluator_id", dependent: :destroy
+  has_many :reverse_of_users_evaluations, class_name: "UsersEvaluation", foreign_key: "evaluated_id", dependent: :destroy
+  has_many :evaluatings, through: :users_evaluations, source: :evaluated
+  has_many :evaluators, through: :reverse_of_users_evaluations, source: :evaluator
   mount_uploader :image, ImageUploader
 
   def image_url
@@ -52,6 +56,16 @@ class User < ActiveRecord::Base
 
   def followings_count
     self.followings.count
+  end
+
+  def evaluate(user_id, evaluation)
+    users_evaluations.create(evaluated_id: user_id, evaluation: evaluation)
+  end
+
+  def evaluation_score
+    evaluations = reverse_of_users_evaluations.pluck(:evaluation).map!(&:to_i)
+    return 0 if evaluations.blank?
+    (evaluations.sum / evaluations.length).to_f
   end
 
   def update_without_current_password(params, *options)

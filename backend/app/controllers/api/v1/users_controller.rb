@@ -26,7 +26,7 @@ class Api::V1::UsersController < ApplicationController
 	def user_to_json(user)
     user.as_json(
       only: %i[id uid name email image],
-      methods: %i[image_url my_favorite_event_ids my_notifications_count followings_count followers_count],
+      methods: %i[image_url my_favorite_event_ids my_notifications_count followings_count followers_count evaluation_score],
     )
   end
 
