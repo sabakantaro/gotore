@@ -75,7 +75,7 @@ const NotificationsList = () => {
                         style={{
                           flexGrow: 1,
                           minWidth: 340,
-                          maxWidth: "100%",
+                          maxWidth: 340,
                         }}
                       >
                         <ListItem

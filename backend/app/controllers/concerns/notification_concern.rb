@@ -7,6 +7,7 @@ module NotificationConcern
       content: content,
       image_url: image_url,
       link_url: link_url,
+      is_checked: false,
     )
   end
 end

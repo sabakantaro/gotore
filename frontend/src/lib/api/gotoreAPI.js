@@ -150,3 +150,7 @@ export const getFollowings = (userId) => {
 export const getFollowers = (userId) => {
   return client.get(`/users/${userId}/followers`);
 };
+
+export const evaluate = (id, data) => {
+  return client.post(`/users/${id}/evaluations`, data);
+};
