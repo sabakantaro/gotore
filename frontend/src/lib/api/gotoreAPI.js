@@ -154,3 +154,17 @@ export const getFollowers = (userId) => {
 export const evaluate = (id, data) => {
   return client.post(`/users/${id}/evaluations`, data);
 };
+
+export const createComment = (eventId, data) => {
+  return client.post(`/events/${eventId}/comments`, data);
+};
+
+export const deleteComment = (eventId, id) => {
+  return client.delete(`/events/${eventId}/comments/${id}`, {
+    headers: {
+      "access-token": Cookies.get("_access_token"),
+      client: Cookies.get("_client"),
+      uid: Cookies.get("_uid"),
+    },
+  });
+};
