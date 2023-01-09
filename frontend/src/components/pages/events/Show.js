@@ -4,7 +4,12 @@ import CardHeader from "@mui/material/CardHeader";
 import CardMedia from "@mui/material/CardMedia";
 import Avatar from "@mui/material/Avatar";
 import Typography from "@mui/material/Typography";
-import { getEvent, createParticipate } from "../../../lib/api/gotoreAPI";
+import {
+  getEvent,
+  createParticipate,
+  deleteComment,
+  createComment,
+} from "../../../lib/api/gotoreAPI";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
@@ -18,11 +23,20 @@ import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import CardActions from "@mui/material/CardActions";
 import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import EventsFavoritesButton from "../events/EventsFavoritesButton";
+import Stack from "@mui/material/Stack";
+import List from "@mui/material/List";
+import DeleteIcon from "@mui/icons-material/Delete";
+import ListItemText from "@mui/material/ListItemText";
+import ListItemAvatar from "@mui/material/ListItemAvatar";
+import ListItem from "@mui/material/ListItem";
 
 const Event = ({ currentUser }) => {
   const [event, setEvent] = useState([]);
+  const [comments, setComments] = useState([]);
+  const [content, setContent] = useState("");
   const params = useParams();
   const navigate = useNavigate();
 
@@ -31,6 +45,7 @@ const Event = ({ currentUser }) => {
       const res = await getEvent(params.id);
       if (res) {
         setEvent(res.data.event);
+        setComments(res.data.comments);
       } else {
         console.log("No event");
       }
@@ -62,6 +77,41 @@ const Event = ({ currentUser }) => {
       console.log(err);
     }
   }, [currentUser, navigate, event]);
+
+  const handleCreateComment = useCallback(async () => {
+    const data = {
+      user_id: currentUser?.id,
+      event_id: event.id,
+      content: content,
+    };
+    try {
+      const res = await createComment(event.id, data);
+      if (res) {
+        setContent("");
+        handleGetEvent();
+      } else {
+        console.log("Failed");
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  }, [currentUser, event, content, handleGetEvent]);
+
+  const handleDeleteComment = useCallback(
+    async (commentId) => {
+      try {
+        const res = await deleteComment(event.id, commentId);
+        if (res) {
+          handleGetEvent();
+        } else {
+          console.log("Failed");
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    },
+    [event, handleGetEvent]
+  );
 
   return (
     <>
@@ -248,6 +298,73 @@ const Event = ({ currentUser }) => {
                     }}
                   />
                 </div>
+                <Divider />
+                <Typography
+                  sx={{
+                    mt: 3,
+                    pl: 2,
+                  }}
+                  variant='body1'
+                >
+                  Comments
+                </Typography>
+                <List
+                  sx={{
+                    width: "100%",
+                    bgcolor: "background.paper",
+                    pr: 1.5,
+                  }}
+                >
+                  {comments?.map((comment) => (
+                    <>
+                      <ListItem alignItems='flex-start'>
+                        <ListItemAvatar>
+                          <Avatar
+                            alt='User Name'
+                            src={comment?.user.imageUrl}
+                          />
+                        </ListItemAvatar>
+                        <ListItemText primary={comment.content} />
+                        {currentUser?.id === comment.userId && (
+                          <Stack
+                            direction='row'
+                            alignItems='center'
+                            spacing={1}
+                          >
+                            <IconButton aria-label='delete' size='small'>
+                              <DeleteIcon
+                                fontSize='small'
+                                onClick={() => handleDeleteComment(comment.id)}
+                              />
+                            </IconButton>
+                          </Stack>
+                        )}
+                      </ListItem>
+
+                      <Divider variant='inset' component='li' />
+                    </>
+                  ))}
+                </List>
+                <TextField
+                  id='outlined-multiline-static'
+                  multiline
+                  rows={4}
+                  sx={{ p: 1.5, pt: 1 }}
+                  value={content}
+                  placeholder="Hello, I'm Muscle! Where is this event held? I'd like to know detail place."
+                  onChange={(e) => setContent(e.target.value)}
+                  fullWidth
+                />
+                <CardActions sx={{ justifyContent: "center" }}>
+                  <Button
+                    color='primary'
+                    variant='contained'
+                    onClick={handleCreateComment}
+                    fullWidth
+                  >
+                    send
+                  </Button>
+                </CardActions>
               </Paper>
             </Grid>
           </Grid>

@@ -6,12 +6,13 @@ class User < ActiveRecord::Base
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
   include DeviseTokenAuth::Concerns::User
-  has_many :events
+  has_many :events, dependent: :destroy
   has_many :participates
   has_many :chat_room_users
   has_many :chat_rooms, through: :chat_room_users
   has_many :messages
-  has_many :notifications
+  has_many :comments
+  has_many :notifications, dependent: :destroy
   has_many :relationships, class_name: "Relationship", foreign_key: "follower_id", dependent: :destroy
   has_many :reverse_of_relationships, class_name: "Relationship", foreign_key: "followed_id", dependent: :destroy
   has_many :followings, through: :relationships, source: :followed

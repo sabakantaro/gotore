@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_01_03_033304) do
+ActiveRecord::Schema[7.0].define(version: 2023_01_03_092959) do
   create_table "categories", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name"
     t.string "description"
@@ -26,6 +26,14 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_03_033304) do
   end
 
   create_table "chat_rooms", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "comments", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.text "content"
+    t.integer "user_id", default: 0, null: false
+    t.integer "event_id", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

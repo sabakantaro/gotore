@@ -7,7 +7,7 @@ class Api::V1::EventsController < ApplicationController
 	end
 
 	def show
-		render json: { event: event_to_json(@event) }, status: :ok
+		render json: { event: event_to_json(@event), comments: comment_to_json(@event.comments) }, status: :ok
 	end
 
 	def create
@@ -50,6 +50,17 @@ class Api::V1::EventsController < ApplicationController
 				},
 				events_favorites: {
 					only: %i[id]
+				},
+			],
+		)
+	end
+
+	def comment_to_json(comments)
+		comments.as_json(
+			include: [
+				user: {
+					only: %i[id name],
+					methods: %i[image_url],
 				},
 			],
 		)
