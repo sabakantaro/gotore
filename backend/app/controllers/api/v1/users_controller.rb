@@ -25,7 +25,7 @@ class Api::V1::UsersController < ApplicationController
 
 	def user_to_json(user)
     user.as_json(
-      only: %i[id uid name email image],
+      only: %i[id uid name email image profile province_id],
       methods: %i[image_url my_favorite_event_ids my_notifications_count followings_count followers_count evaluation_score],
     )
   end
@@ -48,7 +48,7 @@ class Api::V1::UsersController < ApplicationController
 	end
 
 	def user_params
-	params.require(:user).permit(:image, :name, :prefecture, :profile)
+	params.require(:user).permit(:image, :name, :province_id, :profile)
 	end
 end
 

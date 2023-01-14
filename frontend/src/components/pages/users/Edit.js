@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import CssBaseline from "@mui/material/CssBaseline";
 import Box from "@mui/material/Box";
@@ -10,19 +10,41 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import TextField from "@mui/material/TextField";
 import IconButton from "@mui/material/IconButton";
 import CardMedia from "@mui/material/CardMedia";
+import Select from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
+import InputLabel from "@mui/material/InputLabel";
+import FormControl from "@mui/material/FormControl";
 import Cancel from "@mui/icons-material/Cancel";
 import CameraAlt from "@mui/icons-material/CameraAlt";
-import { editUser } from "../../../lib/api/gotoreAPI";
+import { editUser, getProvinces } from "../../../lib/api/gotoreAPI";
 import "react-datepicker/dist/react-datepicker.css";
 
 const theme = createTheme();
 
 export default function EditUser({ currentUser }) {
   const [name, setName] = useState(currentUser?.name);
+  const [profile, setProfile] = useState(currentUser?.profile);
   const [image, setImage] = useState(currentUser?.image?.url);
   const [preview, setPreview] = useState(currentUser?.image?.url);
+  const [provinceId, setProvinceId] = useState(currentUser?.provinceId);
+  const [provincesList, setProvincesList] = useState([]);
   const navigate = useNavigate();
   const params = useParams();
+
+  const handleGetProvinces = useCallback(async () => {
+    try {
+      const res = await getProvinces();
+      if (res.data) {
+        setProvincesList(res.data.provinces);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  }, []);
+
+  useEffect(() => {
+    handleGetProvinces();
+  }, [handleGetProvinces]);
 
   const uploadImage = useCallback((e) => {
     const file = e.target.files[0];
@@ -39,16 +61,10 @@ export default function EditUser({ currentUser }) {
     if (!image) return;
     formData.append("user[image]", image);
     formData.append("user[name]", name);
-    // formData.append("user[email]", currentUser.email);
-    // formData.append("user[password]", currentUser.password);
-
-    console.log(formData);
+    formData.append("user[profile]", profile);
+    formData.append("user[province_id]", provinceId);
     return formData;
-  }, [
-    image,
-    name,
-    // currentUser
-  ]);
+  }, [image, name, profile, provinceId]);
 
   const handleSubmit = useCallback(
     async (e) => {
@@ -125,8 +141,35 @@ export default function EditUser({ currentUser }) {
               label='Name'
               name='name'
               autoComplete='name'
-              autoFocus
             />
+            <TextField
+              value={profile}
+              onChange={(e) => setProfile(e.target.value)}
+              margin='normal'
+              required
+              fullWidth
+              id='profile'
+              label='Profile'
+              name='profile'
+              autoComplete='profile'
+            />
+            <FormControl fullWidth required margin='normal'>
+              <InputLabel id='demo-simple-select-label'>Province</InputLabel>
+              <Select
+                label='Province'
+                labelId='demo-simple-select-label'
+                id='demo-simple-select'
+                value={provinceId}
+                onChange={(e) => setProvinceId(e.target.value)}
+              >
+                {provincesList &&
+                  provincesList.map((province) => (
+                    <MenuItem key={province.id} value={province.id}>
+                      {province.name}
+                    </MenuItem>
+                  ))}
+              </Select>
+            </FormControl>
             <Button
               type='submit'
               fullWidth

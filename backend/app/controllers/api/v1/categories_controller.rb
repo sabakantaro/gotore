@@ -1,7 +1,6 @@
 class Api::V1::CategoriesController < ApplicationController
 	def index
-		categories = Category.all.as_json()
-		render json: { categories: categories }, status: :ok
+		render json: { categories: Category.all.as_json() }, status: :ok
 	end
 end
 
