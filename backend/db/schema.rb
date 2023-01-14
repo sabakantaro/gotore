@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_01_03_092959) do
+ActiveRecord::Schema[7.0].define(version: 2023_01_09_071036) do
   create_table "categories", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name"
     t.string "description"
@@ -38,9 +38,16 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_03_092959) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "countries", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "events", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "title"
     t.text "body"
+    t.integer "province_id", default: 0, null: false
     t.string "place"
     t.datetime "meeting_datetime"
     t.integer "user_id"
@@ -82,6 +89,13 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_03_092959) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "provinces", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.string "name"
+    t.integer "country_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "relationships", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.integer "follower_id"
     t.integer "followed_id"
@@ -109,6 +123,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_03_092959) do
     t.date "birthday"
     t.string "profile"
     t.integer "prefecture", default: 0, null: false
+    t.integer "province_id", default: 0, null: false
     t.text "tokens"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false

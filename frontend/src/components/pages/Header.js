@@ -85,7 +85,7 @@ const Header = ({ isSignedIn, currentUser }) => {
                 sx={{ mt: 1, mx: 3 }}
               >
                 <Badge
-                  badgeContent={currentUser.myNotificationsCount}
+                  badgeContent={currentUser?.myNotificationsCount}
                   color='primary'
                 >
                   <NotificationsIcon />

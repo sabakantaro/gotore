@@ -53,6 +53,10 @@ export const getCategories = () => {
   return client.get("/categories");
 };
 
+export const getProvinces = () => {
+  return client.get("/provinces");
+};
+
 export const createParticipate = (data) => {
   return client.post("/participates", data);
 };
@@ -82,7 +86,13 @@ export const createMessage = (data) => {
 };
 
 export const getEvents = () => {
-  return client.get("/events");
+  return client.get("/events", {
+    headers: {
+      "access-token": Cookies.get("_access_token"),
+      client: Cookies.get("_client"),
+      uid: Cookies.get("_uid"),
+    },
+  });
 };
 
 export const getEvent = (id) => {

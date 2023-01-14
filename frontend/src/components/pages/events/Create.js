@@ -16,7 +16,11 @@ import IconButton from "@mui/material/IconButton";
 import CardMedia from "@mui/material/CardMedia";
 import Cancel from "@mui/icons-material/Cancel";
 import CameraAlt from "@mui/icons-material/CameraAlt";
-import { createEvent, getCategories } from "../../../lib/api/gotoreAPI";
+import {
+  createEvent,
+  getCategories,
+  getProvinces,
+} from "../../../lib/api/gotoreAPI";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import moment from "moment";
@@ -29,7 +33,9 @@ export default function CreateEvent({ currentUser }) {
   const [place, setPlace] = useState("");
   const [meetingDatetime, setMeetingDatetime] = useState(new Date());
   const [categoryId, setCategoryId] = useState(1);
+  const [provinceId, setProvinceId] = useState(0);
   const [categoriesList, setcategoriesList] = useState([]);
+  const [provincesList, setProvincesList] = useState([]);
   const [image, setImage] = useState("");
   const [preview, setPreview] = useState("");
   const navigate = useNavigate();
@@ -46,9 +52,21 @@ export default function CreateEvent({ currentUser }) {
     }
   }, []);
 
+  const handleGetProvinces = useCallback(async () => {
+    try {
+      const res = await getProvinces();
+      if (res.data) {
+        setProvincesList(res.data.provinces);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  }, []);
+
   useEffect(() => {
     handleGetCategories();
-  }, [handleGetCategories]);
+    handleGetProvinces();
+  }, [handleGetCategories, handleGetProvinces]);
 
   const parseAsMoment = (dateTimeStr) => {
     return moment.utc(dateTimeStr, "YYYY-MM-DDTHH:mm:00Z", "ja").utcOffset(9);
@@ -181,6 +199,23 @@ export default function CreateEvent({ currentUser }) {
                   categoriesList.map((category) => (
                     <MenuItem key={category.id} value={category.id}>
                       {category.name}
+                    </MenuItem>
+                  ))}
+              </Select>
+            </FormControl>
+            <FormControl fullWidth required margin='normal'>
+              <InputLabel id='demo-simple-select-label'>Province</InputLabel>
+              <Select
+                label='Province'
+                labelId='demo-simple-select-label'
+                id='demo-simple-select'
+                value={provinceId}
+                onChange={(e) => setProvinceId(e.target.value)}
+              >
+                {provincesList &&
+                  provincesList.map((province) => (
+                    <MenuItem key={province.id} value={province.id}>
+                      {province.name}
                     </MenuItem>
                   ))}
               </Select>
