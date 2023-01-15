@@ -1,4 +1,6 @@
 class Event < ApplicationRecord
+	include EventSearchable
+
 	has_one :participates
 	has_many :events_favorites, dependent: :destroy
 	has_many :comments, dependent: :destroy

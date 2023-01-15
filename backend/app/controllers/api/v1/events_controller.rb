@@ -2,7 +2,8 @@ class Api::V1::EventsController < ApplicationController
 	before_action :set_event, only: [:show, :update, :destroy]
 
 	def index
-		events = Event.where(province_id: current_api_v1_user.province_id).order(meeting_datetime: :desc)
+		events = params[:keyword].present? ? Event.search(params[:keyword]).records.order(meeting_datetime: :desc).to_a : Event.where(province_id: current_api_v1_user.province_id).order(meeting_datetime: :desc)
+		events = params[:datetime].present? ? Event.search_by_datetime(params[:datetime]).records.to_a : events
 		render json: { events: event_to_json(events) }, status: :ok
 	end
 
