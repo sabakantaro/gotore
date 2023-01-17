@@ -3,7 +3,7 @@ class Api::V1::EventsController < ApplicationController
 
 	def index
 		events = params[:keyword].present? ? Event.search(params[:keyword]).records.order(meeting_datetime: :desc).to_a : Event.where(province_id: current_api_v1_user.province_id).order(meeting_datetime: :desc)
-		events = params[:datetime].present? ? Event.search_by_datetime(params[:datetime]).records.to_a : events
+		events = params[:datetime].present? ? Event.search_by_date(params[:datetime]).order(meeting_datetime: :desc) : events
 		render json: { events: event_to_json(events) }, status: :ok
 	end
 

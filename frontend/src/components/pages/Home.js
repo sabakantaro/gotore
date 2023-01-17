@@ -67,7 +67,7 @@ const Home = ({ currentUser }) => {
   const handleSearchEventsByDatetime = useCallback(async (date) => {
     try {
       const res = await searchEventsByDatetime(
-        moment(date).format("YYYY-MM-DDTHH:mm:00Z")
+        moment(date).format("YYYY-MM-DD")
       );
       if (res) {
         console.log(res.data.events);

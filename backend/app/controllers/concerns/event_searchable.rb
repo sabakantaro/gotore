@@ -50,24 +50,10 @@ module EventSearchable
       __elasticsearch__.search({
         query: {
           multi_match: {
-            # type: 'cross_fields',
             fields: %w(id title body place user category),
             query: keyword,
             fuzziness: 'AUTO',
             prefix_length: 2
-          }
-        }
-      })
-    end
-
-    def search_by_datetime(datetime)
-      # raise datetime.inspect
-      __elasticsearch__.search({
-        query: {
-          range: {
-            date: {
-              lte: datetime,
-            }
           }
         }
       })
