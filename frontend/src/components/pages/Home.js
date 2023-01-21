@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Link } from "react-router-dom";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import Grid from "@mui/material/Grid";
@@ -24,14 +23,19 @@ import SearchIcon from "@mui/icons-material/Search";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import moment from "moment";
-import TextField from "@mui/material/TextField";
 
 const theme = createTheme();
 
 const Home = ({ currentUser }) => {
   const [events, setEvents] = useState([]);
   const [keyword, setKeyword] = useState("");
-  const [meetingDatetime, setMeetingDatetime] = useState(new Date());
+  const [meetingDatetime, setMeetingDatetime] = useState("");
+
+  const eventSearchTitle = meetingDatetime
+    ? `Events held at '${moment(meetingDatetime).format("YYYY-MM-DD")}'`
+    : keyword
+    ? `Events related to the word '${keyword}'`
+    : "Recommended Events";
 
   const handleGetEvents = useCallback(async () => {
     try {
@@ -56,6 +60,7 @@ const Home = ({ currentUser }) => {
       if (res) {
         console.log(res.data.events);
         setEvents(res.data.events);
+        setMeetingDatetime("");
       } else {
         console.log("No events");
       }
@@ -123,9 +128,9 @@ const Home = ({ currentUser }) => {
       paddingLeft: `calc(1em + ${theme.spacing(4)})`,
       transition: theme.transitions.create("width"),
       width: "100%",
-      [theme.breakpoints.up("sm")]: {
-        width: "12ch",
-      },
+      // [theme.breakpoints.up("sm")]: {
+      //   width: "12ch",
+      // },
     },
   }));
 
@@ -169,7 +174,7 @@ const Home = ({ currentUser }) => {
                   <StyledInputBase
                     autoFocus
                     fullWidth
-                    placeholder='Search…'
+                    placeholder='Search by free words. User name or place, etc.'
                     inputProps={{ "aria-label": "search" }}
                     defaultValue={keyword}
                     onChange={(e) => setKeyword(e.target.value)}
@@ -180,23 +185,6 @@ const Home = ({ currentUser }) => {
                     }}
                   />
                 </Search>
-                <DatePicker
-                  selected={moment(meetingDatetime).toDate()}
-                  onChange={(date) => onChange(date)}
-                  customInput={
-                    <TextField
-                      margin='normal'
-                      fullWidth
-                      id='datetime'
-                      label='Datetime'
-                      name='datetime'
-                      autoComplete='datetime'
-                      inputProps={{ readOnly: true }}
-                    >
-                      {parseAsMoment(meetingDatetime).format("YYYY/MM/DD")}
-                    </TextField>
-                  }
-                />
               </Stack>
               <Stack
                 sx={{ pt: 4 }}
@@ -207,15 +195,73 @@ const Home = ({ currentUser }) => {
                 <Button
                   color='primary'
                   variant='contained'
-                  component={Link}
-                  to='/event-create'
+                  onClick={() =>
+                    onChange(parseAsMoment(new Date()).format("YYYY/MM/DD"))
+                  }
+                  style={{ borderRadius: 32 }}
                 >
-                  Gather friends
+                  Today
                 </Button>
+                <Button
+                  color='primary'
+                  variant='contained'
+                  onClick={() => {
+                    const now = new Date();
+                    let yesterday = new Date(
+                      now.getFullYear(),
+                      now.getMonth(),
+                      now.getDate() + 1
+                    );
+                    onChange(moment(yesterday).format("YYYY/MM/DD"));
+                  }}
+                  style={{ borderRadius: 32 }}
+                >
+                  Tommorow
+                </Button>
+                <Button
+                  color='primary'
+                  variant='contained'
+                  onClick={() => {
+                    const now = new Date();
+                    let yesterday = new Date(
+                      now.getFullYear(),
+                      now.getMonth(),
+                      now.getDate() + 2
+                    );
+                    onChange(moment(yesterday).format("YYYY/MM/DD"));
+                  }}
+                  style={{ borderRadius: 32 }}
+                >
+                  Day after tommorow
+                </Button>
+                <Box>
+                  <DatePicker
+                    selected={
+                      meetingDatetime && moment(meetingDatetime).toDate()
+                    }
+                    onChange={(date) => onChange(date)}
+                    customInput={
+                      <Button
+                        id='datetime'
+                        color='primary'
+                        variant='outlined'
+                        style={{ borderRadius: 32, height: 60 }}
+                      >
+                        Search by other date
+                      </Button>
+                    }
+                  />
+                </Box>
               </Stack>
             </Container>
           </Box>
           <Container sx={{ py: 8 }} maxWidth='md'>
+            <Typography
+              variant='body3'
+              sx={{ fontSize: 20, fontWeight: "bold" }}
+            >
+              {eventSearchTitle}
+            </Typography>
             <Grid container spacing={4}>
               {events.map((event) => (
                 <EventBox
