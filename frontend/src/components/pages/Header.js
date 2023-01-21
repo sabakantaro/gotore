@@ -6,6 +6,7 @@ import AppBar from "@mui/material/AppBar";
 import Button from "@mui/material/Button";
 import FitnessCenterIcon from "@mui/icons-material/FitnessCenter";
 import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
+import SendIcon from "@mui/icons-material/Send";
 import SearchIcon from "@mui/icons-material/Search";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import NotificationsIcon from "@mui/icons-material/Notifications";
@@ -68,6 +69,15 @@ const Header = ({ isSignedIn, currentUser }) => {
           </Typography>
           {isSignedIn ? (
             <>
+              <Link
+                underline='hover'
+                color='inherit'
+                component={RouterLink}
+                to='/event-create'
+                sx={{ mt: 1, mx: 3 }}
+              >
+                <SendIcon />
+              </Link>
               <Link
                 underline='hover'
                 color='inherit'

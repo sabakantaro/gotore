@@ -95,6 +95,26 @@ export const getEvents = () => {
   });
 };
 
+export const searchEvents = (keyword) => {
+  return client.get(`/events?keyword=${keyword}`, {
+    headers: {
+      "access-token": Cookies.get("_access_token"),
+      client: Cookies.get("_client"),
+      uid: Cookies.get("_uid"),
+    },
+  });
+};
+
+export const searchEventsByDatetime = (datetime) => {
+  return client.get(`/events?datetime=${datetime}`, {
+    headers: {
+      "access-token": Cookies.get("_access_token"),
+      client: Cookies.get("_client"),
+      uid: Cookies.get("_uid"),
+    },
+  });
+};
+
 export const getEvent = (id) => {
   return client.get(`/events/${id}`);
 };
