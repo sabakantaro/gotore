@@ -23,6 +23,13 @@ class User < ActiveRecord::Base
   has_many :evaluators, through: :reverse_of_users_evaluations, source: :evaluator
   mount_uploader :image, ImageUploader
 
+	def as_json(options = {})
+		super(
+      only: %i[id uid name email image profile city_id birth_date gender],
+      methods: %i[image_url my_favorite_event_ids my_notifications_count],
+    )
+	end
+
   def image_url
     image.thumb.url
   end

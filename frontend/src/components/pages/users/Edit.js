@@ -26,7 +26,7 @@ export default function EditUser({ currentUser }) {
   const [profile, setProfile] = useState(currentUser?.profile);
   const [image, setImage] = useState(currentUser?.image?.url);
   const [preview, setPreview] = useState(currentUser?.image?.url);
-  const [provinceId, setProvinceId] = useState(currentUser?.provinceId);
+  const [cityId, setCityId] = useState(currentUser?.cityId);
   const [provincesList, setProvincesList] = useState([]);
   const navigate = useNavigate();
   const params = useParams();
@@ -62,9 +62,9 @@ export default function EditUser({ currentUser }) {
     formData.append("user[image]", image);
     formData.append("user[name]", name);
     formData.append("user[profile]", profile);
-    formData.append("user[province_id]", provinceId);
+    formData.append("user[city_id]", cityId);
     return formData;
-  }, [image, name, profile, provinceId]);
+  }, [image, name, profile, cityId]);
 
   const handleSubmit = useCallback(
     async (e) => {
@@ -159,8 +159,8 @@ export default function EditUser({ currentUser }) {
                 label='Province'
                 labelId='demo-simple-select-label'
                 id='demo-simple-select'
-                value={provinceId}
-                onChange={(e) => setProvinceId(e.target.value)}
+                value={cityId}
+                onChange={(e) => setCityId(e.target.value)}
               >
                 {provincesList &&
                   provincesList.map((province) => (

@@ -89,7 +89,7 @@ const EventBox = ({ event, currentUser }) => {
                     textOverflow: "ellipsis",
                   }}
                 >
-                  {event.place ? event.place : "To be decided"}
+                  {event.address ? event.address : "To be decided"}
                 </Typography>
               </Grid>
             </Grid>

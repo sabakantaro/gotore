@@ -8,11 +8,15 @@ class Event < ApplicationRecord
 	belongs_to :category, optional: true
 	mount_uploader :image, ImageUploader
 
-	scope :search_results, ->(province_id, keyword, datetime) do
-		# where(province_id: province_id) # If the number of data increaced, use this.
-		order(meeting_datetime: :desc)
-			.search_by_datetime(datetime)
+	scope :search_results, ->(city_id, keyword, datetime) do
+		search_by_datetime(datetime)
+			.order_by_city(city_id)
 			.search_by_keyword(keyword)
+	end
+
+	scope :order_by_city, ->(city_id) do
+		return order(meeting_datetime: :desc) if city_id.blank?
+		order(Arel.sql("events.city_id IN ('#{city_id}') DESC, events.meeting_datetime DESC"))
 	end
 
 	scope :search_by_keyword, ->(keyword) do
@@ -25,6 +29,23 @@ class Event < ApplicationRecord
     where('events.meeting_datetime >= ?', datetime.to_date.beginning_of_day)
       .where('events.meeting_datetime <= ?', datetime.to_date.end_of_day)
   end
+
+	def as_json(options = {})
+		super(
+			methods: %i[image_url],
+			include: [
+				user: {
+					methods: %i[image_url],
+				},
+				category: {
+					only: %i[id name]
+				},
+				events_favorites: {
+					only: %i[id]
+				},
+			],
+		)
+	end
 
 	def image_url
 		image.thumb.url

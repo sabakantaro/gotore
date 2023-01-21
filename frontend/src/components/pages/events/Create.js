@@ -30,10 +30,10 @@ const theme = createTheme();
 export default function CreateEvent({ currentUser }) {
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
-  const [place, setPlace] = useState("");
+  const [address, setAddress] = useState("");
   const [meetingDatetime, setMeetingDatetime] = useState(new Date());
   const [categoryId, setCategoryId] = useState(1);
-  const [provinceId, setProvinceId] = useState(0);
+  const [cityId, setCityId] = useState(0);
   const [categoriesList, setcategoriesList] = useState([]);
   const [provincesList, setProvincesList] = useState([]);
   const [image, setImage] = useState("");
@@ -88,14 +88,14 @@ export default function CreateEvent({ currentUser }) {
     formData.append("event[image]", image);
     formData.append("event[title]", title);
     formData.append("event[body]", body);
-    formData.append("event[place]", place);
+    formData.append("event[address]", address);
     formData.append("event[meeting_datetime]", meetingDatetime);
     formData.append("event[category_id]", categoryId);
     formData.append("event[user_id]", currentUser?.id || null);
 
     console.log(formData);
     return formData;
-  }, [body, categoryId, currentUser, image, meetingDatetime, place, title]);
+  }, [body, categoryId, currentUser, image, meetingDatetime, address, title]);
 
   const handleSubmit = useCallback(
     async (e) => {
@@ -209,8 +209,8 @@ export default function CreateEvent({ currentUser }) {
                 label='Province'
                 labelId='demo-simple-select-label'
                 id='demo-simple-select'
-                value={provinceId}
-                onChange={(e) => setProvinceId(e.target.value)}
+                value={cityId}
+                onChange={(e) => setCityId(e.target.value)}
               >
                 {provincesList &&
                   provincesList.map((province) => (
@@ -221,16 +221,14 @@ export default function CreateEvent({ currentUser }) {
               </Select>
             </FormControl>
             <TextField
-              value={place}
-              onChange={(e) => setPlace(e.target.value)}
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
               margin='normal'
               required
               fullWidth
-              id='place'
-              label='Place'
-              name='place'
-              autoComplete='place'
-              autoFocus
+              id='address'
+              label='Address'
+              name='address'
             />
             <DatePicker
               selected={moment(meetingDatetime).toDate()}
@@ -243,8 +241,6 @@ export default function CreateEvent({ currentUser }) {
                   id='datetime'
                   label='Datetime'
                   name='datetime'
-                  autoComplete='datetime'
-                  autoFocus
                   inputProps={{ readOnly: true }}
                 >
                   {parseAsMoment(meetingDatetime).format("YYYY/MM/DD")}

@@ -212,7 +212,7 @@ const Event = ({ currentUser }) => {
                           textOverflow: "ellipsis",
                         }}
                       >
-                        {event.place ? event.place : "Anytimefitness Vancouver"}
+                        {event.address}
                       </Typography>
                     }
                     color='text.secondary'
@@ -289,7 +289,7 @@ const Event = ({ currentUser }) => {
                 <div style={{ padding: 12, width: "100%" }}>
                   <iframe
                     title='Google Map'
-                    src={`https://www.google.com/maps?output=embed&q=${event.place}`}
+                    src={`https://www.google.com/maps?output=embed&q=${event.address}`}
                     style={{
                       border: 0,
                       borderRadius: 3,
@@ -351,7 +351,7 @@ const Event = ({ currentUser }) => {
                   rows={4}
                   sx={{ p: 1.5, pt: 1 }}
                   value={content}
-                  placeholder="Hello, I'm Muscle! Where is this event held? I'd like to know detail place."
+                  placeholder="Hello, I'm Muscle! Where is this event held? I'd like to know detail address."
                   onChange={(e) => setContent(e.target.value)}
                   fullWidth
                 />

@@ -174,7 +174,7 @@ const Home = ({ currentUser }) => {
                   <StyledInputBase
                     autoFocus
                     fullWidth
-                    placeholder='Search by free words. User name or place, etc.'
+                    placeholder='Search by free words. User name or address, etc.'
                     inputProps={{ "aria-label": "search" }}
                     defaultValue={keyword}
                     onChange={(e) => setKeyword(e.target.value)}
