@@ -12,7 +12,7 @@ Rails.application.routes.draw do
       resources :chat_rooms
       resources :messages
       resources :categories
-      resources :provinces
+      resources :cities
       resources :events do
         resource :events_favorites
         resources :comments, only: [:create, :destroy]

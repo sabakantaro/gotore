@@ -3,11 +3,14 @@ class Api::V1::EventsController < ApplicationController
 
 	def index
 		events = Event.search_results(api_v1_user_signed_in? ? current_api_v1_user.city_id : nil, params[:keyword], params[:datetime])
-		render json: { events: events.as_json() }, status: :ok
+		render json: { events: events.includes(:user, :category, :events_favorites).as_json() }, status: :ok
 	end
 
 	def show
-		render json: { event: @event.as_json(), comments: @event.comments.as_json() }, status: :ok
+		render json: {
+			event: @event.as_json(),
+			comments: @event.comments.includes(:user).as_json()
+		}, status: :ok
 	end
 
 	def create

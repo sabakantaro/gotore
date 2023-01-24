@@ -65,8 +65,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_21_084849) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "city_id", default: 0, null: false
+    t.text "address"
     t.index ["category_id"], name: "index_events_on_category_id"
-    t.index ["city_id"], name: "index_events_on_city_id"
     t.index ["meeting_datetime"], name: "index_events_on_meeting_datetime"
     t.index ["user_id"], name: "index_events_on_user_id"
   end

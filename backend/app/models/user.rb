@@ -38,6 +38,10 @@ class User < ActiveRecord::Base
     EventsFavorite.where(user_id: id).pluck(:event_id)
   end
 
+  def participate_events
+    Event.where(id: participates.pluck(:event_id))
+  end
+
   def my_favorite_events
     Event.where(id: my_favorite_event_ids)
   end

@@ -2,7 +2,7 @@ class Comment < ApplicationRecord
   belongs_to :user, optional: true
   belongs_to :event, optional: true
 
-	def as_json((options = {}))
+	def as_json(options = {})
 		super(
 			include: [
 				user: {

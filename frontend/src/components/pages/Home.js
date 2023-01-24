@@ -12,11 +12,7 @@ import {
   styled,
   alpha,
 } from "@mui/material/styles";
-import {
-  getEvents,
-  searchEvents,
-  searchEventsByDatetime,
-} from "../../lib/api/gotoreAPI";
+import { getEvents, searchEvents } from "../../lib/api/gotoreAPI";
 import EventBox from "../pages/events/EventBox";
 import InputBase from "@mui/material/InputBase";
 import SearchIcon from "@mui/icons-material/Search";
@@ -40,11 +36,7 @@ const Home = ({ currentUser }) => {
   const handleGetEvents = useCallback(async () => {
     try {
       const res = await getEvents();
-      if (res) {
-        setEvents(res.data.events);
-      } else {
-        console.log("No events");
-      }
+      setEvents(res.data.events);
     } catch (err) {
       console.log(err);
     }
@@ -54,43 +46,30 @@ const Home = ({ currentUser }) => {
     handleGetEvents();
   }, [handleGetEvents]);
 
-  const handleSearchEvents = useCallback(async () => {
-    try {
-      const res = await searchEvents(keyword);
-      if (res) {
-        console.log(res.data.events);
-        setEvents(res.data.events);
-        setMeetingDatetime("");
-      } else {
-        console.log("No events");
+  const handleSearchEvents = useCallback(
+    async (date) => {
+      try {
+        if (date) {
+          const res = await searchEvents("", date);
+          setEvents(res.data.events);
+        } else {
+          const res = await searchEvents(keyword, "");
+          setEvents(res.data.events);
+          setMeetingDatetime("");
+        }
+      } catch (err) {
+        console.log(err);
       }
-    } catch (err) {
-      console.log(err);
-    }
-  }, [keyword]);
-
-  const handleSearchEventsByDatetime = useCallback(async (date) => {
-    try {
-      const res = await searchEventsByDatetime(
-        moment(date).format("YYYY-MM-DD")
-      );
-      if (res) {
-        console.log(res.data.events);
-        setEvents(res.data.events);
-      } else {
-        console.log("No events");
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  }, []);
+    },
+    [keyword]
+  );
 
   const onChange = useCallback(
     async (date) => {
       setMeetingDatetime(date);
-      handleSearchEventsByDatetime(date);
+      handleSearchEvents(date);
     },
-    [handleSearchEventsByDatetime]
+    [handleSearchEvents]
   );
 
   const parseAsMoment = (dateTimeStr) => {
@@ -128,9 +107,6 @@ const Home = ({ currentUser }) => {
       paddingLeft: `calc(1em + ${theme.spacing(4)})`,
       transition: theme.transitions.create("width"),
       width: "100%",
-      // [theme.breakpoints.up("sm")]: {
-      //   width: "12ch",
-      // },
     },
   }));
 
@@ -146,7 +122,7 @@ const Home = ({ currentUser }) => {
               pb: 6,
             }}
           >
-            <Container maxWidth='sm'>
+            <Container maxWidth='sm' fixed>
               <Typography
                 component='h1'
                 variant='h2'
@@ -174,7 +150,7 @@ const Home = ({ currentUser }) => {
                   <StyledInputBase
                     autoFocus
                     fullWidth
-                    placeholder='Search by free words. User name or address, etc.'
+                    placeholder='Search by free words.'
                     inputProps={{ "aria-label": "search" }}
                     defaultValue={keyword}
                     onChange={(e) => setKeyword(e.target.value)}
@@ -187,9 +163,9 @@ const Home = ({ currentUser }) => {
                 </Search>
               </Stack>
               <Stack
-                sx={{ pt: 4 }}
+                sx={{ pt: 2 }}
                 direction='row'
-                spacing={2}
+                spacing={0.5}
                 justifyContent='center'
               >
                 <Button
@@ -198,7 +174,7 @@ const Home = ({ currentUser }) => {
                   onClick={() =>
                     onChange(parseAsMoment(new Date()).format("YYYY/MM/DD"))
                   }
-                  style={{ borderRadius: 32 }}
+                  style={{ borderRadius: 32, fontSize: 11 }}
                 >
                   Today
                 </Button>
@@ -214,7 +190,7 @@ const Home = ({ currentUser }) => {
                     );
                     onChange(moment(yesterday).format("YYYY/MM/DD"));
                   }}
-                  style={{ borderRadius: 32 }}
+                  style={{ borderRadius: 32, fontSize: 11 }}
                 >
                   Tommorow
                 </Button>
@@ -230,7 +206,7 @@ const Home = ({ currentUser }) => {
                     );
                     onChange(moment(yesterday).format("YYYY/MM/DD"));
                   }}
-                  style={{ borderRadius: 32 }}
+                  style={{ borderRadius: 32, fontSize: 11 }}
                 >
                   Day after tommorow
                 </Button>
@@ -245,9 +221,9 @@ const Home = ({ currentUser }) => {
                         id='datetime'
                         color='primary'
                         variant='outlined'
-                        style={{ borderRadius: 32, height: 60 }}
+                        style={{ borderRadius: 32, fontSize: 11 }}
                       >
-                        Search by other date
+                        other date
                       </Button>
                     }
                   />
@@ -255,14 +231,14 @@ const Home = ({ currentUser }) => {
               </Stack>
             </Container>
           </Box>
-          <Container sx={{ py: 8 }} maxWidth='md'>
+          <Container maxWidth='md'>
             <Typography
               variant='body3'
               sx={{ fontSize: 20, fontWeight: "bold" }}
             >
               {eventSearchTitle}
             </Typography>
-            <Grid container spacing={4}>
+            <Grid container sx={{ mb: 5 }} spacing={4}>
               {events.map((event) => (
                 <EventBox
                   key={event.id}

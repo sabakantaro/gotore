@@ -1,11 +1,12 @@
 class Event < ApplicationRecord
 	include EventSearchable
 
-	has_one :participates
+	has_one :participate, dependent: :destroy
 	has_many :events_favorites, dependent: :destroy
 	has_many :comments, dependent: :destroy
 	belongs_to :user, optional: true
 	belongs_to :category, optional: true
+	belongs_to :city, optional: true
 	mount_uploader :image, ImageUploader
 
 	scope :search_results, ->(city_id, keyword, datetime) do
@@ -42,6 +43,12 @@ class Event < ApplicationRecord
 				},
 				events_favorites: {
 					only: %i[id]
+				},
+				city: {
+					only: %i[id name]
+				},
+				participate: {
+					only: %i[id user_id event_id]
 				},
 			],
 		)

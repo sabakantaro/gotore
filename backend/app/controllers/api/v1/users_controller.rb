@@ -4,8 +4,9 @@ class Api::V1::UsersController < ApplicationController
 	def show
 		render json: {
 			user: @user.as_json(),
-			favorite_events: @user.my_favorite_events.as_json(),
-			is_followed: current_api_v1_user.following?(@user),
+			participate_events: @user.participate_events.includes(:user, :category, :events_favorites).as_json(),
+			favorite_events: @user.my_favorite_events.includes(:user, :category, :events_favorites).as_json(),
+			is_followed: api_v1_user_signed_in? && current_api_v1_user.following?(@user),
 		}, status: :ok
 	end
 

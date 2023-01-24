@@ -16,7 +16,7 @@ import InputLabel from "@mui/material/InputLabel";
 import FormControl from "@mui/material/FormControl";
 import Cancel from "@mui/icons-material/Cancel";
 import CameraAlt from "@mui/icons-material/CameraAlt";
-import { editUser, getProvinces } from "../../../lib/api/gotoreAPI";
+import { editUser, getcities } from "../../../lib/api/gotoreAPI";
 import "react-datepicker/dist/react-datepicker.css";
 
 const theme = createTheme();
@@ -27,15 +27,15 @@ export default function EditUser({ currentUser }) {
   const [image, setImage] = useState(currentUser?.image?.url);
   const [preview, setPreview] = useState(currentUser?.image?.url);
   const [cityId, setCityId] = useState(currentUser?.cityId);
-  const [provincesList, setProvincesList] = useState([]);
+  const [citiesList, setcitiesList] = useState([]);
   const navigate = useNavigate();
   const params = useParams();
 
-  const handleGetProvinces = useCallback(async () => {
+  const handleGetcities = useCallback(async () => {
     try {
-      const res = await getProvinces();
+      const res = await getcities();
       if (res.data) {
-        setProvincesList(res.data.provinces);
+        setcitiesList(res.data.cities);
       }
     } catch (err) {
       console.log(err);
@@ -43,8 +43,8 @@ export default function EditUser({ currentUser }) {
   }, []);
 
   useEffect(() => {
-    handleGetProvinces();
-  }, [handleGetProvinces]);
+    handleGetcities();
+  }, [handleGetcities]);
 
   const uploadImage = useCallback((e) => {
     const file = e.target.files[0];
@@ -154,18 +154,18 @@ export default function EditUser({ currentUser }) {
               autoComplete='profile'
             />
             <FormControl fullWidth required margin='normal'>
-              <InputLabel id='demo-simple-select-label'>Province</InputLabel>
+              <InputLabel id='demo-simple-select-label'>citie</InputLabel>
               <Select
-                label='Province'
+                label='citie'
                 labelId='demo-simple-select-label'
                 id='demo-simple-select'
                 value={cityId}
                 onChange={(e) => setCityId(e.target.value)}
               >
-                {provincesList &&
-                  provincesList.map((province) => (
-                    <MenuItem key={province.id} value={province.id}>
-                      {province.name}
+                {citiesList &&
+                  citiesList.map((citie) => (
+                    <MenuItem key={citie.id} value={citie.id}>
+                      {citie.name}
                     </MenuItem>
                   ))}
               </Select>
