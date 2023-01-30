@@ -9,7 +9,6 @@ import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
 import Paper from "@mui/material/Paper";
 import Link from "@mui/material/Link";
-import Breadcrumbs from "@mui/material/Breadcrumbs";
 import IconButton from "@mui/material/IconButton";
 import Edit from "@mui/icons-material/Edit";
 import Button from "@mui/material/Button";
@@ -18,7 +17,8 @@ import EventBox from "../events/EventBox";
 import { getUser, follow, unfollow } from "../../../lib/api/gotoreAPI";
 
 const User = ({ currentUser }) => {
-  const [events, setEvents] = useState([]);
+  const [favoriteEvents, setFavoriteEvents] = useState([]);
+  const [participateEvents, setParticipateEvents] = useState([]);
   const [user, setUser] = useState([]);
   const [isFollowed, setIsFollowed] = useState(false);
   const params = useParams();
@@ -27,7 +27,8 @@ const User = ({ currentUser }) => {
     try {
       const res = await getUser(params.id);
       setUser(res.data.user);
-      setEvents(res.data.favoriteEvents);
+      setFavoriteEvents(res.data.favoriteEvents);
+      setParticipateEvents(res.data.participateEvents);
       setIsFollowed(res.data.isFollowed);
     } catch (err) {
       console.log(err);
@@ -65,15 +66,9 @@ const User = ({ currentUser }) => {
           flexGrow: 1,
           height: "100vh",
           overflow: "auto",
+          pt: 4,
         }}
       >
-        <Breadcrumbs aria-label='breadcrumb' sx={{ m: 2, ml: 18 }}>
-          <Link underline='hover' color='inherit' component={RouterLink} to='/'>
-            TOP
-          </Link>
-          <Typography color='text.primary'>{user?.name}</Typography>
-        </Breadcrumbs>
-
         <Container component='main' maxWidth='sm' sx={{ mb: 4 }}>
           <Grid item xs={12} md={4} lg={4}>
             <CardMedia
@@ -207,7 +202,26 @@ const User = ({ currentUser }) => {
             </Paper>
           </Grid>
         </Container>
-        {events && (
+        {participateEvents && (
+          <Container maxWidth='md'>
+            <Typography
+              variant='body3'
+              sx={{ fontSize: 20, fontWeight: "bold" }}
+            >
+              Participate events
+            </Typography>
+            <Grid container sx={{ mb: 5 }} spacing={4}>
+              {participateEvents.map((event) => (
+                <EventBox
+                  key={event.id}
+                  event={event}
+                  currentUser={currentUser}
+                />
+              ))}
+            </Grid>
+          </Container>
+        )}
+        {favoriteEvents && (
           <Container maxWidth='md'>
             <Typography
               variant='body3'
@@ -216,7 +230,7 @@ const User = ({ currentUser }) => {
               Favorite events
             </Typography>
             <Grid container sx={{ mb: 5 }} spacing={4}>
-              {events.map((event) => (
+              {favoriteEvents.map((event) => (
                 <EventBox
                   key={event.id}
                   event={event}

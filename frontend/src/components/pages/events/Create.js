@@ -19,7 +19,7 @@ import CameraAlt from "@mui/icons-material/CameraAlt";
 import {
   createEvent,
   getCategories,
-  getProvinces,
+  getcities,
 } from "../../../lib/api/gotoreAPI";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -30,12 +30,12 @@ const theme = createTheme();
 export default function CreateEvent({ currentUser }) {
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
-  const [place, setPlace] = useState("");
+  const [address, setAddress] = useState("");
   const [meetingDatetime, setMeetingDatetime] = useState(new Date());
   const [categoryId, setCategoryId] = useState(1);
-  const [provinceId, setProvinceId] = useState(0);
+  const [cityId, setCityId] = useState(0);
   const [categoriesList, setcategoriesList] = useState([]);
-  const [provincesList, setProvincesList] = useState([]);
+  const [citiesList, setcitiesList] = useState([]);
   const [image, setImage] = useState("");
   const [preview, setPreview] = useState("");
   const navigate = useNavigate();
@@ -52,11 +52,11 @@ export default function CreateEvent({ currentUser }) {
     }
   }, []);
 
-  const handleGetProvinces = useCallback(async () => {
+  const handleGetcities = useCallback(async () => {
     try {
-      const res = await getProvinces();
+      const res = await getcities();
       if (res.data) {
-        setProvincesList(res.data.provinces);
+        setcitiesList(res.data.cities);
       }
     } catch (err) {
       console.log(err);
@@ -65,8 +65,8 @@ export default function CreateEvent({ currentUser }) {
 
   useEffect(() => {
     handleGetCategories();
-    handleGetProvinces();
-  }, [handleGetCategories, handleGetProvinces]);
+    handleGetcities();
+  }, [handleGetCategories, handleGetcities]);
 
   const parseAsMoment = (dateTimeStr) => {
     return moment.utc(dateTimeStr, "YYYY-MM-DDTHH:mm:00Z", "ja").utcOffset(9);
@@ -88,14 +88,14 @@ export default function CreateEvent({ currentUser }) {
     formData.append("event[image]", image);
     formData.append("event[title]", title);
     formData.append("event[body]", body);
-    formData.append("event[place]", place);
+    formData.append("event[address]", address);
     formData.append("event[meeting_datetime]", meetingDatetime);
     formData.append("event[category_id]", categoryId);
     formData.append("event[user_id]", currentUser?.id || null);
 
     console.log(formData);
     return formData;
-  }, [body, categoryId, currentUser, image, meetingDatetime, place, title]);
+  }, [body, categoryId, currentUser, image, meetingDatetime, address, title]);
 
   const handleSubmit = useCallback(
     async (e) => {
@@ -204,33 +204,31 @@ export default function CreateEvent({ currentUser }) {
               </Select>
             </FormControl>
             <FormControl fullWidth required margin='normal'>
-              <InputLabel id='demo-simple-select-label'>Province</InputLabel>
+              <InputLabel id='demo-simple-select-label'>citie</InputLabel>
               <Select
-                label='Province'
+                label='citie'
                 labelId='demo-simple-select-label'
                 id='demo-simple-select'
-                value={provinceId}
-                onChange={(e) => setProvinceId(e.target.value)}
+                value={cityId}
+                onChange={(e) => setCityId(e.target.value)}
               >
-                {provincesList &&
-                  provincesList.map((province) => (
-                    <MenuItem key={province.id} value={province.id}>
-                      {province.name}
+                {citiesList &&
+                  citiesList.map((citie) => (
+                    <MenuItem key={citie.id} value={citie.id}>
+                      {citie.name}
                     </MenuItem>
                   ))}
               </Select>
             </FormControl>
             <TextField
-              value={place}
-              onChange={(e) => setPlace(e.target.value)}
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
               margin='normal'
               required
               fullWidth
-              id='place'
-              label='Place'
-              name='place'
-              autoComplete='place'
-              autoFocus
+              id='address'
+              label='Address'
+              name='address'
             />
             <DatePicker
               selected={moment(meetingDatetime).toDate()}
@@ -243,8 +241,6 @@ export default function CreateEvent({ currentUser }) {
                   id='datetime'
                   label='Datetime'
                   name='datetime'
-                  autoComplete='datetime'
-                  autoFocus
                   inputProps={{ readOnly: true }}
                 >
                   {parseAsMoment(meetingDatetime).format("YYYY/MM/DD")}

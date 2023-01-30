@@ -11,7 +11,7 @@ module EventSearchable
         indexes :id,    type: 'integer'
         indexes :title, type: 'text'
         indexes :body,  type: 'text'
-        indexes :place, type: 'text'
+        indexes :address, type: 'text'
         indexes :user, type: 'keyword'
         indexes :category, type: 'text'
       end
@@ -20,7 +20,7 @@ module EventSearchable
     def as_indexed_json(*)
       attributes
         .symbolize_keys
-        .slice(:id, :title, :body, :place)
+        .slice(:id, :title, :body, :address)
         .merge(user: user_name, category: category_name)
     end
   end
@@ -50,7 +50,7 @@ module EventSearchable
       __elasticsearch__.search({
         query: {
           multi_match: {
-            fields: %w(id title body place user category),
+            fields: %w(id title body address user category),
             query: keyword,
             fuzziness: 'AUTO',
             prefix_length: 2

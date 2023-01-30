@@ -1,14 +1,11 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { Link as RouterLink, useParams } from "react-router-dom";
-
+import { useParams } from "react-router-dom";
 import { Grid, Typography } from "@mui/material";
 import Avatar from "@mui/material/Avatar";
 import TextField from "@mui/material/TextField";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
-import Breadcrumbs from "@mui/material/Breadcrumbs";
 import Button from "@mui/material/Button";
-import Link from "@mui/material/Link";
 import SendIcon from "@mui/icons-material/Send";
 import { getChatRoom, createMessage } from "../../../lib/api/gotoreAPI";
 
@@ -94,18 +91,6 @@ const ChatRoom = ({ currentUser }) => {
             overflow: "auto",
           }}
         >
-          <Breadcrumbs aria-label='breadcrumb' sx={{ m: 2, ml: 18 }}>
-            <Link
-              underline='hover'
-              color='inherit'
-              component={RouterLink}
-              to='/'
-            >
-              TOP
-            </Link>
-            <Typography color='text.primary'>{currentUser?.name}</Typography>
-          </Breadcrumbs>
-
           <Container
             component='main'
             maxWidth='sm'

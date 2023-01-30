@@ -23,12 +23,23 @@ class User < ActiveRecord::Base
   has_many :evaluators, through: :reverse_of_users_evaluations, source: :evaluator
   mount_uploader :image, ImageUploader
 
+	def as_json(options = {})
+		super(
+      only: %i[id uid name email image profile city_id birth_date gender],
+      methods: %i[image_url my_favorite_event_ids my_notifications_count],
+    )
+	end
+
   def image_url
     image.thumb.url
   end
 
   def my_favorite_event_ids
     EventsFavorite.where(user_id: id).pluck(:event_id)
+  end
+
+  def participate_events
+    Event.where(id: participates.pluck(:event_id))
   end
 
   def my_favorite_events
