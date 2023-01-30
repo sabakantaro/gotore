@@ -2,12 +2,15 @@ class Api::V1::EventsController < ApplicationController
 	before_action :set_event, only: [:show, :update, :destroy]
 
 	def index
-		events = Event.search_results(current_api_v1_user.id, params[:keyword], params[:datetime])
-		render json: { events: event_to_json(events) }, status: :ok
+		events = Event.search_results(api_v1_user_signed_in? ? current_api_v1_user.city_id : nil, params[:keyword], params[:datetime])
+		render json: { events: events.includes(:user, :category, :events_favorites).as_json() }, status: :ok
 	end
 
 	def show
-		render json: { event: event_to_json(@event), comments: comment_to_json(@event.comments) }, status: :ok
+		render json: {
+			event: @event.as_json(),
+			comments: @event.comments.includes(:user).as_json()
+		}, status: :ok
 	end
 
 	def create
@@ -38,36 +41,8 @@ class Api::V1::EventsController < ApplicationController
 		@event = Event.find_by(id: params[:id])
 	end
 
-	def event_to_json(events)
-		events.as_json(
-			methods: %i[image_url],
-			include: [
-				user: {
-					methods: %i[image_url],
-				},
-				category: {
-					only: %i[id name]
-				},
-				events_favorites: {
-					only: %i[id]
-				},
-			],
-		)
-	end
-
-	def comment_to_json(comments)
-		comments.as_json(
-			include: [
-				user: {
-					only: %i[id name],
-					methods: %i[image_url],
-				},
-			],
-		)
-	end
-
 	def event_params
-		params.require(:event).permit(:title, :body, :place, :meeting_datetime, :category_id, :image, :user_id)
+		params.require(:event).permit(:title, :body, :address, :meeting_datetime, :category_id, :image, :user_id)
 	end
 end
 

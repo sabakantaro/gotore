@@ -20,7 +20,7 @@ import {
   editEvent,
   getEvent,
   getCategories,
-  getProvinces,
+  getcities,
 } from "../../../lib/api/gotoreAPI";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -31,12 +31,12 @@ const theme = createTheme();
 export default function EditEvent({ currentUser }) {
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
-  const [place, setPlace] = useState("");
+  const [address, setAddress] = useState("");
   const [meetingDatetime, setMeetingDatetime] = useState(new Date());
   const [categoryId, setCategoryId] = useState(0);
-  const [provinceId, setProvinceId] = useState(0);
+  const [cityId, setCityId] = useState(0);
   const [categoriesList, setcategoriesList] = useState([]);
-  const [provincesList, setProvincesList] = useState([]);
+  const [citiesList, setcitiesList] = useState([]);
   const [image, setImage] = useState("");
   const [preview, setPreview] = useState("");
   const params = useParams();
@@ -45,21 +45,16 @@ export default function EditEvent({ currentUser }) {
   const handleGetEvent = useCallback(async () => {
     try {
       const res = await getEvent(params.id);
-      if (res.data.event) {
-        const event = res.data.event;
-        setTitle(event.title);
-        setBody(event.body);
-        setPlace(event.place);
-        setMeetingDatetime(
-          event.meetingDatetime !== null ? event.meetingDatetime : new Date()
-        );
-        setCategoryId(event.categoryId);
-        setImage(event.imageUrl);
-        setPreview(event.imageUrl);
-        console.log(event);
-      } else {
-        console.log("No event");
-      }
+      const event = res.data.event;
+      setTitle(event.title);
+      setBody(event.body);
+      setAddress(event.address);
+      setMeetingDatetime(
+        event.meetingDatetime !== null ? event.meetingDatetime : new Date()
+      );
+      setCategoryId(event.categoryId);
+      setImage(event.imageUrl);
+      setPreview(event.imageUrl);
     } catch (err) {
       console.log(err);
     }
@@ -68,20 +63,16 @@ export default function EditEvent({ currentUser }) {
   const handleGetCategories = useCallback(async () => {
     try {
       const res = await getCategories();
-      if (res.data) {
-        setcategoriesList(res.data.categories);
-      }
+      setcategoriesList(res.data.categories);
     } catch (err) {
       console.log(err);
     }
   }, []);
 
-  const handleGetProvinces = useCallback(async () => {
+  const handleGetcities = useCallback(async () => {
     try {
-      const res = await getProvinces();
-      if (res.data) {
-        setProvincesList(res.data.provinces);
-      }
+      const res = await getcities();
+      setcitiesList(res.data.cities);
     } catch (err) {
       console.log(err);
     }
@@ -90,8 +81,8 @@ export default function EditEvent({ currentUser }) {
   useEffect(() => {
     handleGetEvent();
     handleGetCategories();
-    handleGetProvinces();
-  }, [handleGetEvent, handleGetCategories, handleGetProvinces]);
+    handleGetcities();
+  }, [handleGetEvent, handleGetCategories, handleGetcities]);
 
   useEffect(() => {
     handleGetEvent();
@@ -116,13 +107,13 @@ export default function EditEvent({ currentUser }) {
     formData.append("event[image]", image);
     formData.append("event[title]", title);
     formData.append("event[body]", body);
-    formData.append("event[place]", place);
+    formData.append("event[address]", address);
     formData.append("event[meeting_datetime]", meetingDatetime);
     formData.append("event[category_id]", categoryId);
     formData.append("event[user_id]", currentUser?.id || null);
 
     return formData;
-  }, [body, categoryId, currentUser, image, meetingDatetime, place, title]);
+  }, [body, categoryId, currentUser, image, meetingDatetime, address, title]);
 
   const handleSubmit = useCallback(
     async (e) => {
@@ -230,32 +221,32 @@ export default function EditEvent({ currentUser }) {
               </Select>
             </FormControl>
             <FormControl fullWidth required margin='normal'>
-              <InputLabel id='demo-simple-select-label'>Province</InputLabel>
+              <InputLabel id='demo-simple-select-label'>citie</InputLabel>
               <Select
-                label='Province'
+                label='citie'
                 labelId='demo-simple-select-label'
                 id='demo-simple-select'
-                value={provinceId}
-                onChange={(e) => setProvinceId(e.target.value)}
+                value={cityId}
+                onChange={(e) => setCityId(e.target.value)}
               >
-                {provincesList &&
-                  provincesList.map((province) => (
-                    <MenuItem key={province.id} value={province.id}>
-                      {province.name}
+                {citiesList &&
+                  citiesList.map((citie) => (
+                    <MenuItem key={citie.id} value={citie.id}>
+                      {citie.name}
                     </MenuItem>
                   ))}
               </Select>
             </FormControl>
             <TextField
-              value={place}
-              onChange={(e) => setPlace(e.target.value)}
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
               margin='normal'
               required
               fullWidth
-              id='place'
-              label='Place'
-              name='place'
-              autoComplete='place'
+              id='address'
+              label='Address'
+              name='address'
+              autoComplete='address'
             />
             <DatePicker
               selected={moment(meetingDatetime).toDate()}

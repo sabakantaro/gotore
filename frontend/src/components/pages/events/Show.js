@@ -10,15 +10,14 @@ import {
   deleteComment,
   createComment,
 } from "../../../lib/api/gotoreAPI";
+import AttendButton from "../events/AttendButton";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
 import Paper from "@mui/material/Paper";
-import Link from "@mui/material/Link";
 import moment from "moment";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
-import SearchForm from "./SearchForm";
-import Breadcrumbs from "@mui/material/Breadcrumbs";
+import Summary from "./Summary";
 import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import CardActions from "@mui/material/CardActions";
@@ -32,11 +31,24 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import ListItemText from "@mui/material/ListItemText";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
 import ListItem from "@mui/material/ListItem";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
+import Slide from "@mui/material/Slide";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
+
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction='up' ref={ref} {...props} />;
+});
 
 const Event = ({ currentUser }) => {
   const [event, setEvent] = useState([]);
   const [comments, setComments] = useState([]);
   const [content, setContent] = useState("");
+  const [open, setOpen] = useState(false);
   const params = useParams();
   const navigate = useNavigate();
 
@@ -63,16 +75,9 @@ const Event = ({ currentUser }) => {
       user_id: currentUser?.id,
       event_id: event.id,
     };
-
     try {
-      const res = await createParticipate(data);
-      console.log(res);
-
-      if (res) {
-        navigate(`/`);
-      } else {
-        console.log("Failed");
-      }
+      await createParticipate(data);
+      navigate(`/events/${event.id}/thanks`);
     } catch (err) {
       console.log(err);
     }
@@ -125,25 +130,19 @@ const Event = ({ currentUser }) => {
           flexGrow: 1,
           height: "100vh",
           overflow: "auto",
+          pt: 4,
         }}
       >
-        <Breadcrumbs aria-label='breadcrumb' sx={{ m: 2, ml: 18 }}>
-          <Link underline='hover' color='inherit' component={RouterLink} to='/'>
-            TOP
-          </Link>
-          <Typography color='text.primary'>{event.title}</Typography>
-        </Breadcrumbs>
         <Container maxWidth='lg' sx={{ mt: 0, mb: 4 }}>
           <Grid container spacing={3}>
             <Grid item xs={12} md={4} lg={4}>
               <Paper
                 sx={{
-                  p: 2,
                   display: "flex",
                   flexDirection: "column",
                 }}
               >
-                <SearchForm />
+                <Summary event={event} />
               </Paper>
             </Grid>
             <Grid item xs={12} md={8} lg={8}>
@@ -156,11 +155,7 @@ const Event = ({ currentUser }) => {
                 <CardMedia
                   sx={{ borderRadius: "4px 4px 0 0", height: 400 }}
                   component='img'
-                  src={
-                    event.imageUrl
-                      ? event.imageUrl
-                      : "https://source.unsplash.com/random"
-                  }
+                  src={event.imageUrl}
                   alt='event image'
                 />
                 <EventsFavoritesButton
@@ -189,7 +184,7 @@ const Event = ({ currentUser }) => {
                           mb: 0,
                         }}
                       >
-                        {event.title ? event.title : "New event"}
+                        {event.title}
                       </Typography>
                     }
                   />
@@ -212,7 +207,7 @@ const Event = ({ currentUser }) => {
                           textOverflow: "ellipsis",
                         }}
                       >
-                        {event.place ? event.place : "Anytimefitness Vancouver"}
+                        {event.address}
                       </Typography>
                     }
                     color='text.secondary'
@@ -240,9 +235,10 @@ const Event = ({ currentUser }) => {
                         variant='body3'
                         sx={{ fontSize: 14, fontWeight: "bold", ml: 1 }}
                       >
-                        {event.meetingDatetime
-                          ? moment(event.meetingDatetime).format("YYYY-MM-DD")
-                          : "To be decided"}
+                        {event.meetingDatetime &&
+                          moment(event.meetingDatetime).format(
+                            "dddd, MMMM DD, YYYY HH:mm"
+                          )}
                       </Typography>
                     </Grid>
                   </Grid>
@@ -265,17 +261,14 @@ const Event = ({ currentUser }) => {
                     </Grid>
                   </Grid>
                   <Divider />
-                  <CardActions sx={{ justifyContent: "center" }}>
-                    <Button
-                      color='primary'
-                      variant='contained'
-                      onClick={handleCreateParticipate}
-                      disabled={event.userId === currentUser?.id}
-                    >
-                      Participate it!
-                    </Button>
-                  </CardActions>
-                  <Divider />
+                  <Typography
+                    sx={{
+                      mt: 3,
+                    }}
+                    variant='h6'
+                  >
+                    Description
+                  </Typography>
                   <Typography
                     sx={{
                       mt: 1,
@@ -283,28 +276,16 @@ const Event = ({ currentUser }) => {
                     }}
                     variant='body1'
                   >
-                    {event.body ? event.body : "Hello!"}
+                    {event.body}
                   </Typography>
-                </div>
-                <div style={{ padding: 12, width: "100%" }}>
-                  <iframe
-                    title='Google Map'
-                    src={`https://www.google.com/maps?output=embed&q=${event.place}`}
-                    style={{
-                      border: 0,
-                      borderRadius: 3,
-                      width: "100%",
-                      height: 300,
-                    }}
-                  />
                 </div>
                 <Divider />
                 <Typography
                   sx={{
                     mt: 3,
-                    pl: 2,
+                    pl: 3,
                   }}
-                  variant='body1'
+                  variant='h6'
                 >
                   Comments
                 </Typography>
@@ -351,7 +332,7 @@ const Event = ({ currentUser }) => {
                   rows={4}
                   sx={{ p: 1.5, pt: 1 }}
                   value={content}
-                  placeholder="Hello, I'm Muscle! Where is this event held? I'd like to know detail place."
+                  placeholder="Hello, I'm Muscle! Where is this event held? I'd like to know detail address."
                   onChange={(e) => setContent(e.target.value)}
                   fullWidth
                 />
@@ -370,6 +351,66 @@ const Event = ({ currentUser }) => {
           </Grid>
         </Container>
       </Box>
+      {event.userId !== currentUser?.id && (
+        <AttendButton
+          openAttendModal={() => setOpen(true)}
+          disabled={event?.participate?.userId === currentUser?.id}
+        />
+      )}
+      <Dialog
+        open={open}
+        TransitionComponent={Transition}
+        keepMounted
+        onClose={() => setOpen(false)}
+        aria-describedby='attend-modal-slide'
+      >
+        <DialogTitle>Confirm your participation</DialogTitle>
+        <DialogContent>
+          <DialogContentText id='attend-modal-slide'>
+            {event.title}
+            <ListItem>
+              <ListItemIcon>
+                <AccessTimeIcon />
+              </ListItemIcon>
+              <ListItemText
+                primary={
+                  event.meetingDatetime &&
+                  moment(event.meetingDatetime).format(
+                    "dddd, MMMM DD, YYYY HH:mm"
+                  )
+                }
+              />
+            </ListItem>
+            <ListItem>
+              <ListItemIcon>
+                <LocationOnIcon />
+              </ListItemIcon>
+              <ListItemText
+                primary={event.city?.name}
+                secondary={event.address}
+              />
+            </ListItem>
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            color='primary'
+            variant='contained'
+            fullWidth
+            onClick={handleCreateParticipate}
+          >
+            OK
+          </Button>
+          <Button
+            color='primary'
+            variant='outlined'
+            fullWidth
+            onClick={() => setOpen(false)}
+          >
+            return
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };

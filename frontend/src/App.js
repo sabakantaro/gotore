@@ -6,6 +6,7 @@ import SignIn from "./components/pages/SignIn";
 import { getCurrentUser } from "./lib/api/gotoreAPI";
 import Header from "./components/pages/Header";
 import Event from "./components/pages/events/Show";
+import EventThanks from "./components/pages/events/Thanks";
 import CreateEvent from "./components/pages/events/Create";
 import EditEvent from "./components/pages/events/Edit";
 import User from "./components/pages/users/Show";
@@ -56,11 +57,15 @@ const App = () => {
           element={<Event currentUser={currentUser} />}
         />
         <Route
-          path='/Event-create'
+          path='/events/:id/thanks'
+          element={<EventThanks currentUser={currentUser} />}
+        />
+        <Route
+          path='/event-create'
           element={<CreateEvent currentUser={currentUser} />}
         />
         <Route
-          path='/Event-edit/:id'
+          path='/event-edit/:id'
           element={<EditEvent currentUser={currentUser} />}
         />
         <Route path='/users/:id' element={<User currentUser={currentUser} />} />

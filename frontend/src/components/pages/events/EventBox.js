@@ -14,7 +14,7 @@ import IconButton from "@mui/material/IconButton";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import EventsFavoritesButton from "../events/EventsFavoritesButton";
 
-const EventBox = ({ event, currentUser }) => {
+const EventBox = ({ event, currentUser = [] }) => {
   return (
     <Grid item xs={12} sm={6} md={4}>
       <Link
@@ -40,7 +40,9 @@ const EventBox = ({ event, currentUser }) => {
             }
             alt='Event image'
           />
-          <EventsFavoritesButton event={event} currentUser={currentUser} />
+          {currentUser && (
+            <EventsFavoritesButton event={event} currentUser={currentUser} />
+          )}
           <CardHeader
             avatar={
               <Avatar
@@ -89,7 +91,7 @@ const EventBox = ({ event, currentUser }) => {
                     textOverflow: "ellipsis",
                   }}
                 >
-                  {event.place ? event.place : "To be decided"}
+                  {event.address ? event.address : "To be decided"}
                 </Typography>
               </Grid>
             </Grid>
@@ -115,7 +117,7 @@ const EventBox = ({ event, currentUser }) => {
               }}
               variant='body1'
             >
-              {event.body ? event.body : "Hello!"}
+              {event.body}
             </Typography>
           </CardContent>
         </Card>

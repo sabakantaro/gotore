@@ -53,8 +53,8 @@ export const getCategories = () => {
   return client.get("/categories");
 };
 
-export const getProvinces = () => {
-  return client.get("/provinces");
+export const getcities = () => {
+  return client.get("/cities");
 };
 
 export const createParticipate = (data) => {
@@ -95,22 +95,16 @@ export const getEvents = () => {
   });
 };
 
-export const searchEvents = (keyword) => {
-  return client.get(`/events?keyword=${keyword}`, {
+export const searchEvents = (keyword, datetime) => {
+  return client.get(`/events`, {
     headers: {
       "access-token": Cookies.get("_access_token"),
       client: Cookies.get("_client"),
       uid: Cookies.get("_uid"),
     },
-  });
-};
-
-export const searchEventsByDatetime = (datetime) => {
-  return client.get(`/events?datetime=${datetime}`, {
-    headers: {
-      "access-token": Cookies.get("_access_token"),
-      client: Cookies.get("_client"),
-      uid: Cookies.get("_uid"),
+    params: {
+      keyword: keyword,
+      datetime: datetime,
     },
   });
 };
