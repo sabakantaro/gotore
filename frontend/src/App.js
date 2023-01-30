@@ -1,71 +1,91 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./components/pages/Home";
 import SignUp from "./components/pages/SignUp";
 import SignIn from "./components/pages/SignIn";
 import { getCurrentUser } from "./lib/api/gotoreAPI";
 import Header from "./components/pages/Header";
-import Post from "./components/pages/posts/Show";
-import CreatePost from "./components/pages/posts/Create";
-import EditPost from "./components/pages/posts/Edit";
+import Event from "./components/pages/events/Show";
+import EventThanks from "./components/pages/events/Thanks";
+import CreateEvent from "./components/pages/events/Create";
+import EditEvent from "./components/pages/events/Edit";
 import User from "./components/pages/users/Show";
 import EditUser from "./components/pages/users/Edit";
+import ChatRooms from "./components/pages/chat_rooms/ChatRooms";
+import ChatRoom from "./components/pages/chat_rooms/ChatRoom";
+import NotificationsList from "./components/pages/notifications/NotificationsList";
+import Relationships from "./components/pages/users/Relationships";
+import Evaluations from "./components/pages/users/Evaluations";
 
 const App = () => {
   const [isSignedIn, setIsSignedIn] = useState(false);
   const [currentUser, setCurrentUser] = useState();
-  const AuthContext = React.createContext();
 
-  const handleGetCurrentUser = async () => {
+  const handleGetCurrentUser = useCallback(async () => {
     try {
       const res = await getCurrentUser();
       if (res) {
         setIsSignedIn(true);
-        setCurrentUser(res?.data.currentUser);
-        console.log(res?.data);
-      } else {
-        console.log(res?.data);
+        setCurrentUser(res.data?.currentUser);
       }
     } catch (err) {
       console.log(err);
     }
-  };
-
+  }, []);
   useEffect(() => {
     handleGetCurrentUser();
-  }, [setCurrentUser]);
+  }, [handleGetCurrentUser, setCurrentUser]);
 
   return (
     <Router>
       <Header isSignedIn={isSignedIn} currentUser={currentUser} />
-      <AuthContext.Provider>
-        <Routes>
-          <Route path='/' element={<Home currentUser={currentUser} />} />
-          <Route path='/signup' element={<SignUp />} />
-          <Route path='/signin' element={<SignIn />} />
-          {/* <Route path='/post' element={<Post />} /> */}
-          <Route
-            path='/posts/:id'
-            element={<Post currentUser={currentUser} />}
-          />
-          <Route
-            path='/post-create'
-            element={<CreatePost currentUser={currentUser} />}
-          />
-          <Route
-            path='/post-edit/:id'
-            element={<EditPost currentUser={currentUser} />}
-          />
-          <Route
-            path='/users/:id'
-            element={<User currentUser={currentUser} />}
-          />
-          <Route
-            path='/user-edit/:id'
-            element={<EditUser currentUser={currentUser} />}
-          />
-        </Routes>
-      </AuthContext.Provider>
+      <Routes>
+        <Route path='/' element={<Home currentUser={currentUser} />} />
+        <Route path='/signup' element={<SignUp />} />
+        <Route path='/signin' element={<SignIn />} />
+        <Route
+          exact
+          path='/chatrooms'
+          element={<ChatRooms currentUser={currentUser} />}
+        />
+        <Route
+          path='/chatroom/:id'
+          element={<ChatRoom currentUser={currentUser} />}
+        />
+        <Route
+          path='/events/:id'
+          element={<Event currentUser={currentUser} />}
+        />
+        <Route
+          path='/events/:id/thanks'
+          element={<EventThanks currentUser={currentUser} />}
+        />
+        <Route
+          path='/event-create'
+          element={<CreateEvent currentUser={currentUser} />}
+        />
+        <Route
+          path='/event-edit/:id'
+          element={<EditEvent currentUser={currentUser} />}
+        />
+        <Route path='/users/:id' element={<User currentUser={currentUser} />} />
+        <Route
+          path='/user-edit/:id'
+          element={<EditUser currentUser={currentUser} />}
+        />
+        <Route
+          path='/notifications'
+          element={<NotificationsList currentUser={currentUser} />}
+        />
+        <Route
+          path='/users/:userId/relationships/:id'
+          element={<Relationships />}
+        />
+        <Route
+          path='/users/:id/evaluations'
+          element={<Evaluations currentUser={currentUser} />}
+        />
+      </Routes>
     </Router>
   );
 };

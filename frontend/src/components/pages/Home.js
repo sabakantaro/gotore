@@ -1,46 +1,114 @@
-import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect, useCallback } from "react";
 import Button from "@mui/material/Button";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import CardMedia from "@mui/material/CardMedia";
 import CssBaseline from "@mui/material/CssBaseline";
 import Grid from "@mui/material/Grid";
 import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { getPosts } from "../../lib/api/gotoreAPI";
+import {
+  createTheme,
+  ThemeProvider,
+  styled,
+  alpha,
+} from "@mui/material/styles";
+import { getEvents, searchEvents } from "../../lib/api/gotoreAPI";
+import EventBox from "../pages/events/EventBox";
+import InputBase from "@mui/material/InputBase";
+import SearchIcon from "@mui/icons-material/Search";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import moment from "moment";
-import LocationOnIcon from "@mui/icons-material/LocationOnOutlined";
-import EventIcon from "@mui/icons-material/Event";
-import CardHeader from "@mui/material/CardHeader";
-import Avatar from "@mui/material/Avatar";
-import IconButton from "@mui/material/IconButton";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
 
 const theme = createTheme();
 
 const Home = ({ currentUser }) => {
-  const [posts, setPosts] = useState([]);
+  const [events, setEvents] = useState([]);
+  const [keyword, setKeyword] = useState("");
+  const [meetingDatetime, setMeetingDatetime] = useState("");
 
-  const handleGetPosts = async () => {
+  const eventSearchTitle = meetingDatetime
+    ? `Events held at '${moment(meetingDatetime).format("YYYY-MM-DD")}'`
+    : keyword
+    ? `Events related to the word '${keyword}'`
+    : "Recommended Events";
+
+  const handleGetEvents = useCallback(async () => {
     try {
-      const res = await getPosts();
-      if (res) {
-        setPosts(res.data.posts);
-      } else {
-        console.log("No articles");
-      }
+      const res = await getEvents();
+      setEvents(res.data.events);
     } catch (err) {
       console.log(err);
     }
-  };
+  }, []);
 
   useEffect(() => {
-    handleGetPosts();
-  }, []);
+    handleGetEvents();
+  }, [handleGetEvents]);
+
+  const handleSearchEvents = useCallback(
+    async (date) => {
+      try {
+        if (date) {
+          const res = await searchEvents("", date);
+          setEvents(res.data.events);
+        } else {
+          const res = await searchEvents(keyword, "");
+          setEvents(res.data.events);
+          setMeetingDatetime("");
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    },
+    [keyword]
+  );
+
+  const onChange = useCallback(
+    async (date) => {
+      setMeetingDatetime(date);
+      handleSearchEvents(date);
+    },
+    [handleSearchEvents]
+  );
+
+  const parseAsMoment = (dateTimeStr) => {
+    return moment.utc(dateTimeStr, "YYYY-MM-DDTHH:mm:00Z", "ja").utcOffset(9);
+  };
+
+  const Search = styled("div")(({ theme }) => ({
+    position: "relative",
+    borderRadius: theme.shape.borderRadius,
+    backgroundColor: alpha(theme.palette.common.black, 0.05),
+    "&:hover": {
+      backgroundColor: alpha(theme.palette.common.black, 0.07),
+    },
+    marginLeft: 0,
+    width: "100%",
+    [theme.breakpoints.up("sm")]: {
+      width: "auto",
+    },
+  }));
+
+  const SearchIconWrapper = styled("div")(({ theme }) => ({
+    padding: theme.spacing(0, 2),
+    height: "100%",
+    position: "absolute",
+    pointerEvents: "none",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  }));
+
+  const StyledInputBase = styled(InputBase)(({ theme }) => ({
+    color: "inherit",
+    "& .MuiInputBase-input": {
+      padding: theme.spacing(1, 1, 1, 0),
+      paddingLeft: `calc(1em + ${theme.spacing(4)})`,
+      transition: theme.transitions.create("width"),
+      width: "100%",
+    },
+  }));
 
   return (
     <>
@@ -54,7 +122,7 @@ const Home = ({ currentUser }) => {
               pb: 6,
             }}
           >
-            <Container maxWidth='sm'>
+            <Container maxWidth='sm' fixed>
               <Typography
                 component='h1'
                 variant='h2'
@@ -74,165 +142,109 @@ const Home = ({ currentUser }) => {
                 anywhere! Let's search your favorite friend. They could help
                 with your workout-life, health, and so on!
               </Typography>
+              <Stack sx={{ pt: 1 }} spacing={2} justifyContent='center'>
+                <Search>
+                  <SearchIconWrapper>
+                    <SearchIcon />
+                  </SearchIconWrapper>
+                  <StyledInputBase
+                    autoFocus
+                    fullWidth
+                    placeholder='Search by free words.'
+                    inputProps={{ "aria-label": "search" }}
+                    defaultValue={keyword}
+                    onChange={(e) => setKeyword(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        handleSearchEvents();
+                      }
+                    }}
+                  />
+                </Search>
+              </Stack>
               <Stack
-                sx={{ pt: 4 }}
+                sx={{ pt: 2 }}
                 direction='row'
-                spacing={2}
+                spacing={0.5}
                 justifyContent='center'
               >
                 <Button
                   color='primary'
                   variant='contained'
-                  component={Link}
-                  to='/post'
+                  onClick={() =>
+                    onChange(parseAsMoment(new Date()).format("YYYY/MM/DD"))
+                  }
+                  style={{ borderRadius: 32, fontSize: 11 }}
                 >
-                  Search by details
+                  Today
                 </Button>
                 <Button
                   color='primary'
-                  variant='outlined'
-                  component={Link}
-                  to='/post-create'
+                  variant='contained'
+                  onClick={() => {
+                    const now = new Date();
+                    let yesterday = new Date(
+                      now.getFullYear(),
+                      now.getMonth(),
+                      now.getDate() + 1
+                    );
+                    onChange(moment(yesterday).format("YYYY/MM/DD"));
+                  }}
+                  style={{ borderRadius: 32, fontSize: 11 }}
                 >
-                  Gather friends
+                  Tommorow
                 </Button>
+                <Button
+                  color='primary'
+                  variant='contained'
+                  onClick={() => {
+                    const now = new Date();
+                    let yesterday = new Date(
+                      now.getFullYear(),
+                      now.getMonth(),
+                      now.getDate() + 2
+                    );
+                    onChange(moment(yesterday).format("YYYY/MM/DD"));
+                  }}
+                  style={{ borderRadius: 32, fontSize: 11 }}
+                >
+                  Day after tommorow
+                </Button>
+                <Box>
+                  <DatePicker
+                    selected={
+                      meetingDatetime && moment(meetingDatetime).toDate()
+                    }
+                    onChange={(date) => onChange(date)}
+                    customInput={
+                      <Button
+                        id='datetime'
+                        color='primary'
+                        variant='outlined'
+                        style={{ borderRadius: 32, fontSize: 11 }}
+                      >
+                        other date
+                      </Button>
+                    }
+                  />
+                </Box>
               </Stack>
             </Container>
           </Box>
-          <Container sx={{ py: 8 }} maxWidth='md'>
-            <Grid container spacing={4}>
-              {posts.map((post) => (
-                <Grid item key={post.id} xs={12} sm={6} md={4}>
-                  <Link
-                    variant='body'
-                    style={{ color: "black", textDecoration: "none" }}
-                    component={Link}
-                    to={`/posts/${post.id}`}
-                  >
-                    <Card
-                      sx={{
-                        height: "100%",
-                        display: "flex",
-                        flexDirection: "column",
-                      }}
-                    >
-                      <CardMedia
-                        height='200'
-                        component='img'
-                        src={
-                          post.imageUrl
-                            ? post.imageUrl
-                            : "https://source.unsplash.com/random"
-                        }
-                        alt='post image'
-                      />
-                      <CardHeader
-                        avatar={
-                          <Avatar
-                            alt='User Image'
-                            src={
-                              post.user?.image
-                                ? post.user?.imageUrl
-                                : "https://source.unsplash.com/random"
-                            }
-                          />
-                        }
-                        action={
-                          post.userId === currentUser?.id && (
-                            <IconButton
-                              component={Link}
-                              to={`/post-edit/${post.id}`}
-                            >
-                              <MoreVertIcon />
-                            </IconButton>
-                          )
-                        }
-                        title={`${post.user?.name}`}
-                      />
-                      <CardContent sx={{ flexGrow: 1, pt: 0, pb: 0 }}>
-                        <Typography
-                          gutterBottom
-                          variant='h5'
-                          sx={{
-                            mb: 2,
-                            overflow: "hidden",
-                            whiteSpace: "nowrap",
-                            width: "100%",
-                            textOverflow: "ellipsis",
-                          }}
-                        >
-                          {post.title ? post.title : "New Post"}
-                        </Typography>
-                        <Grid container>
-                          <Grid item xs={2}>
-                            <LocationOnIcon />
-                          </Grid>
-                          <Grid item xs={6}>
-                            <Typography
-                              variant='body3'
-                              sx={{
-                                overflow: "hidden",
-                                whiteSpace: "nowrap",
-                                width: "100%",
-                                textOverflow: "ellipsis",
-                              }}
-                            >
-                              {post.place ? post.place : "To be decided"}
-                            </Typography>
-                          </Grid>
-                        </Grid>
-                        <Grid container>
-                          <Grid item xs={2}>
-                            <EventIcon />
-                          </Grid>
-                          <Grid item xs={6}>
-                            <Typography variant='body3'>
-                              {post.meetingDatetime
-                                ? moment(post.meetingDatetime).format(
-                                    "YYYY-MM-DD"
-                                  )
-                                : "To be decided"}
-                            </Typography>
-                          </Grid>
-                        </Grid>
-                        <Typography
-                          sx={{
-                            mt: 1,
-                            overflow: "hidden",
-                            whiteSpace: "nowrap",
-                            width: "100%",
-                            textOverflow: "ellipsis",
-                          }}
-                          variant='body1'
-                        >
-                          {post.body ? post.body : "Hello!"}
-                        </Typography>
-                      </CardContent>
-                      {/* <CardActions disableSpacing>
-                        <IconButton
-                          onClick={() =>
-                            like ? setLike(false) : setLike(true)
-                          }
-                        >
-                          {like ? <FavoriteIcon /> : <FavoriteBorderIcon />}
-                        </IconButton>
-                        {post.userId === currentUser?.id && (
-                          <div
-                            className={{
-                              marginLeft: "auto",
-                            }}
-                          >
-                            <IconButton
-                              onClick={() => handleDeletePost(post.id)}
-                            >
-                              <DeleteIcon />
-                            </IconButton>
-                          </div>
-                        )}
-                      </CardActions> */}
-                    </Card>
-                  </Link>
-                </Grid>
+          <Container maxWidth='md'>
+            <Typography
+              variant='body3'
+              sx={{ fontSize: 20, fontWeight: "bold" }}
+            >
+              {eventSearchTitle}
+            </Typography>
+            <Grid container sx={{ mb: 5 }} spacing={4}>
+              {events.map((event) => (
+                <EventBox
+                  key={event.id}
+                  event={event}
+                  currentUser={currentUser}
+                />
               ))}
             </Grid>
           </Container>
