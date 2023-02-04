@@ -1,10 +1,8 @@
 /* eslint-disable jsx-a11y/alt-text */
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import { signIn } from "../../lib/api/gotoreAPI";
-import { getCurrentUser } from "../../lib/api/gotoreAPI";
-
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -16,29 +14,33 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { SignInData } from "interfaces/index"
+import { AuthContext } from "App"
 
-const SignIn = () => {
+const SignIn: React.FC = () => {
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const { setIsSignedIn, setCurrentUser } = useContext(AuthContext)
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
 
   const theme = createTheme();
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    const body = {
+    const body: SignInData = {
       email: email,
-      password: password,
+      password: password
     };
     try {
       const res = await signIn(body);
       console.log(res);
 
-      if (res.status === 200) {
-        Cookies.set("_access_token", res.headers["access-token"]);
-        Cookies.set("_client", res.headers["client"]);
-        Cookies.set("_uid", res.headers["uid"]);
-        getCurrentUser();
+      if (res.headers) {
+        Cookies.set("_access_token", res.headers["access-token"]!);
+        Cookies.set("_client", res.headers["client"]!);
+        Cookies.set("_uid", res.headers["uid"]!);
+        setIsSignedIn(true)
+        setCurrentUser(res.data?.currentUser)
         navigate("/");
 
         console.log("Signed in successfully!");
@@ -70,7 +72,6 @@ const SignIn = () => {
           </Typography>
           <Box
             component='form'
-            onSubmit={handleSubmit}
             noValidate
             sx={{ mt: 1 }}
           >

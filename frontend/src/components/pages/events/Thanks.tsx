@@ -4,7 +4,7 @@ import { getEvent } from "../../../lib/api/gotoreAPI";
 import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
-import EventBox from "../events/EventBox";
+import EventBox from "./EventBox";
 
 export default function EventThanks() {
   const [event, setEvent] = useState([]);

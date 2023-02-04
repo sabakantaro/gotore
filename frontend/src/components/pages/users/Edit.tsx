@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import CssBaseline from "@mui/material/CssBaseline";
 import Box from "@mui/material/Box";
@@ -18,18 +18,21 @@ import Cancel from "@mui/icons-material/Cancel";
 import CameraAlt from "@mui/icons-material/CameraAlt";
 import { editUser, getcities } from "../../../lib/api/gotoreAPI";
 import "react-datepicker/dist/react-datepicker.css";
+import { AuthContext } from "App";
+import { City, UpdateUserFormData } from "interfaces";
 
 const theme = createTheme();
 
-export default function EditUser({ currentUser }) {
+const EditUser: React.FC = () => {
+  const{ currentUser } = useContext(AuthContext);
   const [name, setName] = useState(currentUser?.name);
-  const [profile, setProfile] = useState(currentUser?.profile);
+  const [profile, setProfile] = useState<string | undefined>(currentUser?.profile);
   const [image, setImage] = useState(currentUser?.image?.url);
   const [preview, setPreview] = useState(currentUser?.image?.url);
   const [cityId, setCityId] = useState(currentUser?.cityId);
-  const [citiesList, setcitiesList] = useState([]);
+  const [citiesList, setcitiesList] = useState<City>();
   const navigate = useNavigate();
-  const params = useParams();
+  const {id} = useParams();
 
   const handleGetcities = useCallback(async () => {
     try {
@@ -46,40 +49,39 @@ export default function EditUser({ currentUser }) {
     handleGetcities();
   }, [handleGetcities]);
 
-  const uploadImage = useCallback((e) => {
-    const file = e.target.files[0];
-    setImage(file);
-  }, []);
+  const uploadImage = useCallback((e: any) => {
+    const file = e.target.files[0]
+    setImage(file)
+  }, [])
 
-  const previewImage = useCallback((e) => {
-    const file = e.target.files[0];
-    setPreview(window.URL.createObjectURL(file));
-  }, []);
-
-  const createFormData = useCallback(() => {
+  const previewImage = useCallback((e: any) => {
+    const file = e.target.files[0]
+    setPreview(window.URL.createObjectURL(file))
+  }, [])
+  const createFormData = useCallback((): UpdateUserFormData => {
     const formData = new FormData();
-    if (!image) return;
-    formData.append("user[image]", image);
-    formData.append("user[name]", name);
-    formData.append("user[profile]", profile);
-    formData.append("user[city_id]", cityId);
+    // if (!image) return;
+    formData.append("user[image]", String(image));
+    formData.append("user[name]", String(name));
+    formData.append("user[profile]", String(profile));
+    formData.append("user[city_id]", String(cityId));
     return formData;
   }, [image, name, profile, cityId]);
 
   const handleSubmit = useCallback(
-    async (e) => {
+    async (e: { preventDefault: () => void; }) => {
       e.preventDefault();
 
       const data = createFormData();
 
-      await editUser(params.id, data).then(() => {
-        navigate(`/users/${params.id}`);
+      await editUser(Number(id), data).then(() => {
+        navigate(`/users/${id}`);
       });
     },
-    [createFormData, navigate, params.id]
+    [createFormData, navigate, id]
   );
 
-  const UploadButton = useCallback((props) => {
+  const UploadButton = useCallback((props: { name: string | undefined; onChange: React.ChangeEventHandler<HTMLInputElement> | undefined; }) => {
     return (
       <label htmlFor={`upload-button-${props.name}`}>
         <input
@@ -108,7 +110,7 @@ export default function EditUser({ currentUser }) {
           <Typography component='h1' variant='h4' align='center'>
             Edit User Info
           </Typography>
-          <Box component='form' noValidate sx={{ mt: 1 }} align='center'>
+          <Box component='form' sx={{ mt: 1, alignItems: 'center' }}>
             {preview ? (
               <Box sx={{ borderRadius: 1, borderColor: "grey.400" }}>
                 <IconButton color='inherit' onClick={() => setPreview("")}>
@@ -123,11 +125,11 @@ export default function EditUser({ currentUser }) {
               </Box>
             ) : (
               <UploadButton
-                className='primary'
+                // className='primary'
                 name='image'
-                onChange={(e) => {
-                  uploadImage(e);
-                  previewImage(e);
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  uploadImage(e)
+                  previewImage(e)
                 }}
               />
             )}
@@ -160,7 +162,7 @@ export default function EditUser({ currentUser }) {
                 labelId='demo-simple-select-label'
                 id='demo-simple-select'
                 value={cityId}
-                onChange={(e) => setCityId(e.target.value)}
+                onChange={(e) => setCityId(e.target.value as number)}
               >
                 {citiesList &&
                   citiesList.map((citie) => (
@@ -185,3 +187,5 @@ export default function EditUser({ currentUser }) {
     </ThemeProvider>
   );
 }
+
+export default EditUser

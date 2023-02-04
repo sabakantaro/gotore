@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useContext, ReactHTMLElement } from "react";
 import { useNavigate } from "react-router-dom";
 import CssBaseline from "@mui/material/CssBaseline";
 import Box from "@mui/material/Box";
@@ -24,27 +24,30 @@ import {
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import moment from "moment";
+import { AuthContext } from "App";
+import { ButtonBaseActions } from "@mui/material";
+import { Category, City } from "interfaces";
 
 const theme = createTheme();
 
-export default function CreateEvent({ currentUser }) {
+const CreateEvent: React.FC = () => {
+  const { currentUser } = useContext(AuthContext);
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const [address, setAddress] = useState("");
-  const [meetingDatetime, setMeetingDatetime] = useState(new Date());
-  const [categoryId, setCategoryId] = useState(1);
-  const [cityId, setCityId] = useState(0);
-  const [categoriesList, setcategoriesList] = useState([]);
-  const [citiesList, setcitiesList] = useState([]);
-  const [image, setImage] = useState("");
-  const [preview, setPreview] = useState("");
+  const [meetingDatetime, setMeetingDatetime] = useState<Date | null>(new Date());
+  const [categoryId, setCategoryId] = useState<number>(1);
+  const [cityId, setCityId] = useState<number | undefined>(0);
+  const [categoriesList, setcategoriesList] = useState<Category>();
+  const [citiesList, setcitiesList] = useState<City>();
+  const [image, setImage] = useState<string>("")
+  const [preview, setPreview] = useState<string>("")
   const navigate = useNavigate();
 
   const handleGetCategories = useCallback(async () => {
     try {
       const res = await getCategories();
       if (res.data) {
-        console.log(res);
         setcategoriesList(res.data.categories);
       }
     } catch (err) {
@@ -68,16 +71,16 @@ export default function CreateEvent({ currentUser }) {
     handleGetcities();
   }, [handleGetCategories, handleGetcities]);
 
-  const parseAsMoment = (dateTimeStr) => {
+  const parseAsMoment = (dateTimeStr: string | undefined) => {
     return moment.utc(dateTimeStr, "YYYY-MM-DDTHH:mm:00Z", "ja").utcOffset(9);
   };
 
-  const uploadImage = useCallback((e) => {
-    const file = e.target.files[0];
-    setImage(file);
-  }, []);
+  const uploadImage = useCallback((e: { target: { files: any[]; }; }) => {
+    const file = e.target.files[0]
+    setImage(file)
+  }, [])
 
-  const previewImage = useCallback((e) => {
+  const previewImage = useCallback((e: { target: { files: any[]; }; }) => {
     const file = e.target.files[0];
     setPreview(window.URL.createObjectURL(file));
   }, []);
@@ -91,18 +94,16 @@ export default function CreateEvent({ currentUser }) {
     formData.append("event[address]", address);
     formData.append("event[meeting_datetime]", meetingDatetime);
     formData.append("event[category_id]", categoryId);
-    formData.append("event[user_id]", currentUser?.id || null);
+    formData.append("event[user_id]", currentUser?.id);
 
     console.log(formData);
     return formData;
   }, [body, categoryId, currentUser, image, meetingDatetime, address, title]);
 
   const handleSubmit = useCallback(
-    async (e) => {
+    async (e: { preventDefault: () => void; }) => {
       e.preventDefault();
-
       const data = createFormData();
-
       await createEvent(data).then(() => {
         navigate("/");
       });
@@ -110,7 +111,7 @@ export default function CreateEvent({ currentUser }) {
     [createFormData, navigate]
   );
 
-  const UploadButton = useCallback((props) => {
+  const UploadButton = useCallback((props: { name: string | undefined; onChange: React.ChangeEventHandler<HTMLInputElement> | undefined; }) => {
     return (
       <label htmlFor={`upload-button-${props.name}`}>
         <input
@@ -156,9 +157,9 @@ export default function CreateEvent({ currentUser }) {
               <UploadButton
                 className='primary'
                 name='image'
-                onChange={(e) => {
-                  uploadImage(e);
-                  previewImage(e);
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  uploadImage(e)
+                  previewImage(e)
                 }}
               />
             )}
@@ -213,9 +214,9 @@ export default function CreateEvent({ currentUser }) {
                 onChange={(e) => setCityId(e.target.value)}
               >
                 {citiesList &&
-                  citiesList.map((citie) => (
-                    <MenuItem key={citie.id} value={citie.id}>
-                      {citie.name}
+                  citiesList.map((city) => (
+                    <MenuItem key={city.id} value={city.id}>
+                      {city.name}
                     </MenuItem>
                   ))}
               </Select>
@@ -262,3 +263,5 @@ export default function CreateEvent({ currentUser }) {
     </ThemeProvider>
   );
 }
+
+export default CreateEvent;

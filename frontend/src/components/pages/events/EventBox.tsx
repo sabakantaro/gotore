@@ -12,7 +12,7 @@ import CardHeader from "@mui/material/CardHeader";
 import Avatar from "@mui/material/Avatar";
 import IconButton from "@mui/material/IconButton";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import EventsFavoritesButton from "../events/EventsFavoritesButton";
+import EventsFavoritesButton from "./EventsFavoritesButton";
 
 const EventBox = ({ event, currentUser = [] }) => {
   return (

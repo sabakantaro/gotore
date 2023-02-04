@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback,  useContext } from "react";
 import { useParams } from "react-router-dom";
 import { Grid, Typography } from "@mui/material";
 import Avatar from "@mui/material/Avatar";
@@ -8,32 +8,28 @@ import Container from "@mui/material/Container";
 import Button from "@mui/material/Button";
 import SendIcon from "@mui/icons-material/Send";
 import { getChatRoom, createMessage } from "../../../lib/api/gotoreAPI";
+import { User, Message } from "interfaces/index"
+import { AuthContext } from "App"
 
-const ChatRoom = ({ currentUser }) => {
-  const params = useParams();
-
-  const id = params?.id;
-
-  const [loading, setLoading] = useState(true);
-  const [otherUser, setOtherUser] = useState("");
-  const [messages, setMeesages] = useState([]);
-  const [content, setContent] = useState("");
+const ChatRoom: React.FC = () => {
+  const { currentUser } = useContext(AuthContext)
+  const {id} = useParams<string>();
+  const [loading, setLoading] = useState<boolean>(true)
+  const [otherUser, setOtherUser] = useState<User>()
+  const [messages, setMeesages] = useState<Message[]>([])
+  const [content, setContent] = useState<string>("")
 
   const handleGetChatRoom = useCallback(async () => {
     try {
-      const res = await getChatRoom(id);
+      const res = await getChatRoom(Number(id));
       console.log(res?.data.otherUser);
-
       if (res) {
         setOtherUser(res?.data.otherUser);
         setMeesages(res?.data.messages);
-      } else {
-        console.log("No other user");
       }
     } catch (err) {
       console.log(err);
     }
-
     setLoading(false);
   }, [id]);
 
@@ -41,19 +37,17 @@ const ChatRoom = ({ currentUser }) => {
     handleGetChatRoom();
   }, [handleGetChatRoom]);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-
     const data = {
-      chat_room_id: id,
-      user_id: currentUser?.id,
+      // chat_room_id: Number(id),
+      // user_id: currentUser?.id,
+      chatRoomId: Number(id),
+      userId: currentUser?.id,
       content: content,
     };
-
     try {
       const res = await createMessage(data);
-      console.log(res);
-
       if (res) {
         setMeesages([...messages, res.data.message]);
         setContent("");
@@ -63,8 +57,8 @@ const ChatRoom = ({ currentUser }) => {
     }
   };
 
-  const iso8601ToDateTime = (iso8601) => {
-    const date = new Date(Date.parse(iso8601));
+  const iso8601ToDateTime = (iso8601: string | undefined) => {
+    const date = new Date(Date.parse(iso8601!));
     const year = date.getFullYear();
     const month = date.getMonth() + 1;
     const day = date.getDate();

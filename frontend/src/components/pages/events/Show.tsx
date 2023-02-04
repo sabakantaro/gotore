@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useContext } from "react";
 import { Link as RouterLink, useParams, useNavigate } from "react-router-dom";
 import CardHeader from "@mui/material/CardHeader";
 import CardMedia from "@mui/material/CardMedia";
@@ -10,7 +10,7 @@ import {
   deleteComment,
   createComment,
 } from "../../../lib/api/gotoreAPI";
-import AttendButton from "../events/AttendButton";
+import AttendButton from "./AttendButton";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
@@ -24,7 +24,7 @@ import CardActions from "@mui/material/CardActions";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import EventsFavoritesButton from "../events/EventsFavoritesButton";
+import EventsFavoritesButton from "./EventsFavoritesButton";
 import Stack from "@mui/material/Stack";
 import List from "@mui/material/List";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -37,24 +37,38 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import Slide from "@mui/material/Slide";
+import { TransitionProps } from '@mui/material/transitions';
 import ListItemIcon from "@mui/material/ListItemIcon";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import { AuthContext } from "App"
+import {Comment, Event} from 'interfaces/index'
 
-const Transition = React.forwardRef(function Transition(props, ref) {
-  return <Slide direction='up' ref={ref} {...props} />;
+const Transition = React.forwardRef(function Transition(
+  props: TransitionProps & {
+    children: React.ReactElement<any, any>;
+  },
+  ref: React.Ref<unknown>,
+) {
+  return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const Event = ({ currentUser }) => {
-  const [event, setEvent] = useState([]);
-  const [comments, setComments] = useState([]);
+
+const EventShow = () => {
+  type Params = {
+    id:  string | undefined;
+  };
+
+  const { currentUser } = useContext(AuthContext)
+  const [event, setEvent] = useState<Event>();
+  const [comments, setComments] = useState<Comment>();
   const [content, setContent] = useState("");
   const [open, setOpen] = useState(false);
-  const params = useParams();
+  const {id} = useParams<Params>();
   const navigate = useNavigate();
 
   const handleGetEvent = useCallback(async () => {
     try {
-      const res = await getEvent(params.id);
+      const res = await getEvent(id);
       if (res) {
         setEvent(res.data.event);
         setComments(res.data.comments);
@@ -64,7 +78,7 @@ const Event = ({ currentUser }) => {
     } catch (err) {
       console.log(err);
     }
-  }, [params]);
+  }, [id]);
 
   useEffect(() => {
     handleGetEvent();
@@ -72,12 +86,12 @@ const Event = ({ currentUser }) => {
 
   const handleCreateParticipate = useCallback(async () => {
     const data = {
-      user_id: currentUser?.id,
-      event_id: event.id,
+      userId: currentUser?.id,
+      eventId: event?.id,
     };
     try {
       await createParticipate(data);
-      navigate(`/events/${event.id}/thanks`);
+      navigate(`/events/${event?.id}/thanks`);
     } catch (err) {
       console.log(err);
     }
@@ -86,11 +100,11 @@ const Event = ({ currentUser }) => {
   const handleCreateComment = useCallback(async () => {
     const data = {
       user_id: currentUser?.id,
-      event_id: event.id,
+      event_id: event?.id,
       content: content,
     };
     try {
-      const res = await createComment(event.id, data);
+      const res = await createComment(event?.id, data);
       if (res) {
         setContent("");
         handleGetEvent();
@@ -103,7 +117,7 @@ const Event = ({ currentUser }) => {
   }, [currentUser, event, content, handleGetEvent]);
 
   const handleDeleteComment = useCallback(
-    async (commentId) => {
+    async (commentId: number) => {
       try {
         const res = await deleteComment(event.id, commentId);
         if (res) {
@@ -232,7 +246,7 @@ const Event = ({ currentUser }) => {
                     </Grid>
                     <Grid item xs={6}>
                       <Typography
-                        variant='body3'
+                        variant='body2'
                         sx={{ fontSize: 14, fontWeight: "bold", ml: 1 }}
                       >
                         {event.meetingDatetime &&
@@ -245,7 +259,7 @@ const Event = ({ currentUser }) => {
                   <Grid container sx={{ mt: 0.5, mb: 1 }}>
                     <Grid item xs={6} sx={{ backgroundColor: "lightgray" }}>
                       <Typography
-                        variant='body3'
+                        variant='body2'
                         sx={{ fontSize: 14, fontWeight: "bold", ml: 1 }}
                       >
                         Category
@@ -253,7 +267,7 @@ const Event = ({ currentUser }) => {
                     </Grid>
                     <Grid item xs={6}>
                       <Typography
-                        variant='body3'
+                        variant='body2'
                         sx={{ fontSize: 14, fontWeight: "bold", ml: 1 }}
                       >
                         {event.category?.name}
@@ -296,7 +310,7 @@ const Event = ({ currentUser }) => {
                     pr: 1.5,
                   }}
                 >
-                  {comments?.map((comment) => (
+                  {comments?.map((comment: Comment) => (
                     <>
                       <ListItem alignItems='flex-start'>
                         <ListItemAvatar>
@@ -305,7 +319,7 @@ const Event = ({ currentUser }) => {
                             src={comment?.user.imageUrl}
                           />
                         </ListItemAvatar>
-                        <ListItemText primary={comment.content} />
+                        <ListItemText primary={`${comment.content}`} />
                         {currentUser?.id === comment.userId && (
                           <Stack
                             direction='row'
@@ -386,8 +400,8 @@ const Event = ({ currentUser }) => {
                 <LocationOnIcon />
               </ListItemIcon>
               <ListItemText
-                primary={event.city?.name}
-                secondary={event.address}
+                primary={`${event.city?.name}`}
+                secondary={`${event.address}`}
               />
             </ListItem>
           </DialogContentText>
@@ -415,4 +429,4 @@ const Event = ({ currentUser }) => {
   );
 };
 
-export default Event;
+export default EventShow;
