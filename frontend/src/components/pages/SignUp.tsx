@@ -1,9 +1,8 @@
 /* eslint-disable jsx-a11y/alt-text */
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import { signUp } from "../../lib/api/gotoreAPI";
-import { getCurrentUser } from "../../lib/api/gotoreAPI";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -14,8 +13,12 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { AuthContext } from "App"
+import { SignUpData } from "interfaces";
+
 
 const SignUp = () => {
+  const { setIsSignedIn, setCurrentUser } = useContext(AuthContext)
   const navigate = useNavigate();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -24,9 +27,9 @@ const SignUp = () => {
 
   const theme = createTheme();
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    const body = {
+    const body: SignUpData = {
       name: name,
       email: email,
       password: password,
@@ -37,10 +40,11 @@ const SignUp = () => {
       console.log(res);
 
       if (res.status === 200) {
-        Cookies.set("_access_token", res.headers["access-token"]);
-        Cookies.set("_client", res.headers["client"]);
-        Cookies.set("_uid", res.headers["uid"]);
-        getCurrentUser();
+        Cookies.set("_access_token", res.headers["access-token"]!);
+        Cookies.set("_client", res.headers["client"]!);
+        Cookies.set("_uid", res.headers["uid"]!);
+        setIsSignedIn(true)
+        setCurrentUser(res.data?.currentUser)
         navigate("/");
         console.log("Signed in successfully!");
       } else {
@@ -72,7 +76,6 @@ const SignUp = () => {
           <Box
             component='form'
             noValidate
-            onSubmit={handleSubmit}
             sx={{ mt: 3 }}
           >
             <Grid container spacing={2}>
@@ -133,6 +136,7 @@ const SignUp = () => {
               fullWidth
               variant='contained'
               sx={{ mt: 3, mb: 2 }}
+              onClick={handleSubmit}
             >
               Sign Up
             </Button>

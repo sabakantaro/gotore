@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useContext } from "react";
 import { useNavigate, Link as RouterLink } from "react-router-dom";
 import Cookies from "js-cookie";
 import { signOut } from "../../lib/api/gotoreAPI";
@@ -24,13 +24,15 @@ import IconButton from "@mui/material/IconButton";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
 import Menu from "@mui/material/Menu";
+import { AuthContext } from "App"
 
-const Header = ({ isSignedIn, currentUser }) => {
+const Header: React.FC = () => {
+  const { isSignedIn, currentUser } = useContext(AuthContext)
   const navigate = useNavigate();
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(e.currentTarget);
   };
   const handleClose = () => {
     setAnchorEl(null);
@@ -68,7 +70,7 @@ const Header = ({ isSignedIn, currentUser }) => {
           <Typography variant='h6' color='inherit' noWrap sx={{ flexGrow: 1 }}>
             <Link
               href='/'
-              variant='body'
+              variant='body2'
               style={{ color: "black", textDecoration: "none" }}
             >
               Gotore
@@ -79,7 +81,6 @@ const Header = ({ isSignedIn, currentUser }) => {
             {isSignedIn ? (
               <>
                 <Button
-                  underline='hover'
                   color='inherit'
                   component={RouterLink}
                   to='/event-create'
@@ -87,7 +88,6 @@ const Header = ({ isSignedIn, currentUser }) => {
                   <SendIcon />
                 </Button>
                 <Button
-                  underline='hover'
                   color='inherit'
                   component={RouterLink}
                   to={"/"}
@@ -95,7 +95,6 @@ const Header = ({ isSignedIn, currentUser }) => {
                   <SearchIcon />
                 </Button>
                 <Button
-                  underline='hover'
                   color='inherit'
                   component={RouterLink}
                   to={"/notifications"}
@@ -108,7 +107,6 @@ const Header = ({ isSignedIn, currentUser }) => {
                   </Badge>
                 </Button>
                 <Button
-                  underline='hover'
                   color='inherit'
                   component={RouterLink}
                   to={`/chatrooms`}
@@ -116,17 +114,15 @@ const Header = ({ isSignedIn, currentUser }) => {
                   <ChatBubbleIcon />
                 </Button>
                 <Button
-                  underline='hover'
                   color='inherit'
                   component={RouterLink}
                   to={`/users/${currentUser?.id}`}
                 >
-                  <Avatar src={currentUser?.image.url}>
+                  <Avatar src={currentUser?.imageUrl}>
                     {currentUser?.name.charAt(0)}
                   </Avatar>
                 </Button>
                 <Button
-                  underline='hover'
                   color='inherit'
                   onClick={handleSignOut}
                 >
@@ -204,7 +200,6 @@ const Header = ({ isSignedIn, currentUser }) => {
           {open && isSignedIn ? (
             <>
               <ListItemButton
-                underline='hover'
                 color='inherit'
                 component={RouterLink}
                 to='/event-create'
@@ -221,7 +216,6 @@ const Header = ({ isSignedIn, currentUser }) => {
                 />
               </ListItemButton>
               <ListItemButton
-                underline='hover'
                 color='inherit'
                 component={RouterLink}
                 to={"/"}
@@ -238,7 +232,6 @@ const Header = ({ isSignedIn, currentUser }) => {
                 />
               </ListItemButton>
               <ListItemButton
-                underline='hover'
                 color='inherit'
                 component={RouterLink}
                 to={"/notifications"}
@@ -260,7 +253,6 @@ const Header = ({ isSignedIn, currentUser }) => {
                 />
               </ListItemButton>
               <ListItemButton
-                underline='hover'
                 color='inherit'
                 component={RouterLink}
                 to={`/chatrooms`}
@@ -277,14 +269,13 @@ const Header = ({ isSignedIn, currentUser }) => {
                 />
               </ListItemButton>
               <ListItemButton
-                underline='hover'
                 color='inherit'
                 component={RouterLink}
                 to={`/users/${currentUser?.id}`}
                 onClick={() => setAnchorEl(null)}
               >
                 <Avatar
-                  src={currentUser?.image.url}
+                  src={currentUser?.imageUrl}
                   sx={{ width: 24, height: 24 }}
                 />
                 <ListItemText

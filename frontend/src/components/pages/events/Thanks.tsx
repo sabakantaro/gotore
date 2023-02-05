@@ -4,10 +4,11 @@ import { getEvent } from "../../../lib/api/gotoreAPI";
 import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
-import EventBox from "../events/EventBox";
+import EventBox from "./EventBox";
+import { Event } from "interfaces";
 
 export default function EventThanks() {
-  const [event, setEvent] = useState([]);
+  const [event, setEvent] = useState<Event>();
   const params = useParams();
   const navigate = useNavigate();
 
@@ -44,11 +45,11 @@ export default function EventThanks() {
           Check your event details bellow. If needed you can contact with the
           host of this event.
         </Typography>
-        <EventBox key={event.id} event={event} />
+        <EventBox key={event?.id} event={event!} />
         <Button
           color='primary'
           variant='contained'
-          onClick={() => navigate(`/chatroom/${event.userId}`)}
+          onClick={() => navigate(`/chatroom/${event?.userId}`)}
           fullWidth
           sx={{ justifyContent: "center", mt: 4, mb: 0 }}
         >

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, createContext } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./components/pages/Home";
 import SignUp from "./components/pages/SignUp";
@@ -9,17 +9,25 @@ import Event from "./components/pages/events/Show";
 import EventThanks from "./components/pages/events/Thanks";
 import CreateEvent from "./components/pages/events/Create";
 import EditEvent from "./components/pages/events/Edit";
-import User from "./components/pages/users/Show";
+import ShowUser from "./components/pages/users/Show";
 import EditUser from "./components/pages/users/Edit";
 import ChatRooms from "./components/pages/chat_rooms/ChatRooms";
 import ChatRoom from "./components/pages/chat_rooms/ChatRoom";
 import NotificationsList from "./components/pages/notifications/NotificationsList";
 import Relationships from "./components/pages/users/Relationships";
 import Evaluations from "./components/pages/users/Evaluations";
+import { User } from "interfaces";
 
-const App = () => {
-  const [isSignedIn, setIsSignedIn] = useState(false);
-  const [currentUser, setCurrentUser] = useState();
+export const AuthContext = createContext({} as {
+  isSignedIn: boolean
+  setIsSignedIn: React.Dispatch<React.SetStateAction<boolean>>
+  currentUser: User | undefined
+  setCurrentUser: React.Dispatch<React.SetStateAction<User | undefined>>
+})
+
+const App: React.FC = () => {
+  const [isSignedIn, setIsSignedIn] = useState<boolean>(false);
+  const [currentUser, setCurrentUser] = useState<User | undefined>();
 
   const handleGetCurrentUser = useCallback(async () => {
     try {
@@ -38,44 +46,44 @@ const App = () => {
 
   return (
     <Router>
-      <Header isSignedIn={isSignedIn} currentUser={currentUser} />
+      <AuthContext.Provider value={{ isSignedIn, setIsSignedIn, currentUser, setCurrentUser}}>
+      <Header />
       <Routes>
-        <Route path='/' element={<Home currentUser={currentUser} />} />
+        <Route path='/' element={<Home />} />
         <Route path='/signup' element={<SignUp />} />
         <Route path='/signin' element={<SignIn />} />
         <Route
-          exact
           path='/chatrooms'
-          element={<ChatRooms currentUser={currentUser} />}
+          element={<ChatRooms />}
         />
         <Route
           path='/chatroom/:id'
-          element={<ChatRoom currentUser={currentUser} />}
+          element={<ChatRoom />}
         />
         <Route
           path='/events/:id'
-          element={<Event currentUser={currentUser} />}
+          element={<Event />}
         />
         <Route
           path='/events/:id/thanks'
-          element={<EventThanks currentUser={currentUser} />}
+          element={<EventThanks />}
         />
         <Route
           path='/event-create'
-          element={<CreateEvent currentUser={currentUser} />}
+          element={<CreateEvent />}
         />
         <Route
           path='/event-edit/:id'
-          element={<EditEvent currentUser={currentUser} />}
+          element={<EditEvent />}
         />
-        <Route path='/users/:id' element={<User currentUser={currentUser} />} />
+        <Route path='/users/:id' element={<ShowUser />} />
         <Route
           path='/user-edit/:id'
-          element={<EditUser currentUser={currentUser} />}
+          element={<EditUser />}
         />
         <Route
           path='/notifications'
-          element={<NotificationsList currentUser={currentUser} />}
+          element={<NotificationsList />}
         />
         <Route
           path='/users/:userId/relationships/:id'
@@ -83,9 +91,10 @@ const App = () => {
         />
         <Route
           path='/users/:id/evaluations'
-          element={<Evaluations currentUser={currentUser} />}
+          element={<Evaluations />}
         />
       </Routes>
+            </AuthContext.Provider>
     </Router>
   );
 };

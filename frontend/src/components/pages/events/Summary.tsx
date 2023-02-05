@@ -6,8 +6,13 @@ import ListItemText from "@mui/material/ListItemText";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import moment from "moment";
+import { Event } from "interfaces";
 
-export default function Summary({ event }) {
+type Props = {
+  event: Event;
+}
+
+const Summary: React.FC<Props> = ({ event }) => {
   return (
     <>
       <List>
@@ -17,8 +22,8 @@ export default function Summary({ event }) {
           </ListItemIcon>
           <ListItemText
             primary={
-              event.meetingDatetime &&
-              moment(event.meetingDatetime).format("dddd, MMMM DD, YYYY HH:mm")
+              event?.meetingDatetime &&
+              moment(event?.meetingDatetime).format("dddd, MMMM DD, YYYY HH:mm")
             }
           />
         </ListItem>
@@ -26,14 +31,14 @@ export default function Summary({ event }) {
           <ListItemIcon>
             <LocationOnIcon />
           </ListItemIcon>
-          <ListItemText primary={event.city?.name} secondary={event.address} />
+          <ListItemText primary={event?.city?.name} secondary={event?.address} />
         </ListItem>
       </List>
       <div style={{ width: "100%", height: 240 }}>
         <iframe
           title='Google Map'
           src={`https://www.google.com/maps?output=embed&q=${
-            event.address || event.city?.name
+            event?.address || event?.city?.name
           }`}
           style={{
             border: 0,
@@ -46,3 +51,5 @@ export default function Summary({ event }) {
     </>
   );
 }
+
+export default Summary

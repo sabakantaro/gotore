@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useContext } from "react";
 import { Link as RouterLink, useParams } from "react-router-dom";
 import CardHeader from "@mui/material/CardHeader";
 import CardMedia from "@mui/material/CardMedia";
@@ -15,17 +15,20 @@ import Button from "@mui/material/Button";
 import Rating from "@mui/material/Rating";
 import EventBox from "../events/EventBox";
 import { getUser, follow, unfollow } from "../../../lib/api/gotoreAPI";
+import { AuthContext } from "App";
+import { Event, User } from "interfaces";
 
-const User = ({ currentUser }) => {
+const UserShow: React.FC = () => {
+  const { currentUser } = useContext(AuthContext);
   const [favoriteEvents, setFavoriteEvents] = useState([]);
   const [participateEvents, setParticipateEvents] = useState([]);
-  const [user, setUser] = useState([]);
+  const [user, setUser] = useState<User>();
   const [isFollowed, setIsFollowed] = useState(false);
-  const params = useParams();
+  const {id} = useParams();
 
   const handleGetUser = useCallback(async () => {
     try {
-      const res = await getUser(params.id);
+      const res = await getUser(Number(id));
       setUser(res.data.user);
       setFavoriteEvents(res.data.favoriteEvents);
       setParticipateEvents(res.data.participateEvents);
@@ -33,7 +36,7 @@ const User = ({ currentUser }) => {
     } catch (err) {
       console.log(err);
     }
-  }, [params]);
+  }, [id]);
 
   useEffect(() => {
     handleGetUser();
@@ -41,12 +44,12 @@ const User = ({ currentUser }) => {
 
   const handleFollowStatus = useCallback(async () => {
     try {
-      const data = { followed_id: user.id, follower_id: currentUser.id };
+      const data = { followedId: user?.id, followerId: currentUser?.id };
       if (isFollowed) {
-        await unfollow(user.id, data);
+        await unfollow(user?.id);
         setIsFollowed(false);
       } else {
-        await follow(user.id, data);
+        await follow(user?.id, data);
         setIsFollowed(true);
       }
     } catch (err) {
@@ -130,7 +133,7 @@ const User = ({ currentUser }) => {
                   sx={{ mt: -3 }}
                 />
                 <Typography
-                  variant='body3'
+                  variant='body2'
                   sx={{ fontSize: 20, fontWeight: "bold" }}
                 >
                   {user?.name}
@@ -148,7 +151,7 @@ const User = ({ currentUser }) => {
                     underline='hover'
                     color='inherit'
                     component={RouterLink}
-                    to={`/users/${user.id}/relationships/0`}
+                    to={`/users/${user?.id}/relationships/0`}
                   >
                     Followers {user?.followersCount}
                   </Link>
@@ -157,7 +160,7 @@ const User = ({ currentUser }) => {
                     underline='hover'
                     color='inherit'
                     component={RouterLink}
-                    to={`/users/${user.id}/relationships/1`}
+                    to={`/users/${user?.id}/relationships/1`}
                   >
                     Followings {user?.followingsCount}
                   </Link>
@@ -165,7 +168,7 @@ const User = ({ currentUser }) => {
                 <Grid container sx={{ mt: 0.5 }}>
                   <Grid item xs={6} sx={{ backgroundColor: "lightgray" }}>
                     <Typography
-                      variant='body3'
+                      variant='body2'
                       sx={{ fontSize: 14, fontWeight: "bold", ml: 1 }}
                     >
                       Event joined
@@ -173,7 +176,7 @@ const User = ({ currentUser }) => {
                   </Grid>
                   <Grid item xs={6}>
                     <Typography
-                      variant='body3'
+                      variant='body2'
                       sx={{ fontSize: 14, fontWeight: "bold", ml: 1 }}
                     >
                       {user?.name ? user.name : "To be decided"}
@@ -183,7 +186,7 @@ const User = ({ currentUser }) => {
                 <Grid container sx={{ mt: 0.5, mb: 1 }}>
                   <Grid item xs={6} sx={{ backgroundColor: "lightgray" }}>
                     <Typography
-                      variant='body3'
+                      variant='body2'
                       sx={{ fontSize: 14, fontWeight: "bold", ml: 1 }}
                     >
                       Category
@@ -191,7 +194,7 @@ const User = ({ currentUser }) => {
                   </Grid>
                   <Grid item xs={6}>
                     <Typography
-                      variant='body3'
+                      variant='body2'
                       sx={{ fontSize: 14, fontWeight: "bold", ml: 1 }}
                     >
                       {user?.name}
@@ -205,17 +208,16 @@ const User = ({ currentUser }) => {
         {participateEvents && (
           <Container maxWidth='md'>
             <Typography
-              variant='body3'
+              variant='body2'
               sx={{ fontSize: 20, fontWeight: "bold" }}
             >
               Participate events
             </Typography>
             <Grid container sx={{ mb: 5 }} spacing={4}>
-              {participateEvents.map((event) => (
+              {participateEvents.map((event: Event) => (
                 <EventBox
-                  key={event.id}
+                  key={event?.id}
                   event={event}
-                  currentUser={currentUser}
                 />
               ))}
             </Grid>
@@ -224,17 +226,16 @@ const User = ({ currentUser }) => {
         {favoriteEvents && (
           <Container maxWidth='md'>
             <Typography
-              variant='body3'
+              variant='body2'
               sx={{ fontSize: 20, fontWeight: "bold" }}
             >
               Favorite events
             </Typography>
             <Grid container sx={{ mb: 5 }} spacing={4}>
-              {favoriteEvents.map((event) => (
+              {favoriteEvents.map((event: Event) => (
                 <EventBox
-                  key={event.id}
+                  key={event?.id}
                   event={event}
-                  currentUser={currentUser}
                 />
               ))}
             </Grid>
@@ -245,4 +246,4 @@ const User = ({ currentUser }) => {
   );
 };
 
-export default User;
+export default UserShow;

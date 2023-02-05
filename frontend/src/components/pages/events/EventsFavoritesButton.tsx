@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useContext } from "react";
 import Typography from "@mui/material/Typography";
 import {
   createEventsFavorites,
@@ -7,19 +7,25 @@ import {
 import IconButton from "@mui/material/IconButton";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import FavoriteIcon from "@mui/icons-material/Favorite";
+import { Event } from "interfaces";
+import { AuthContext } from "App";
 
-const EventsFavoritesButton = ({ event, currentUser }) => {
+type Props = {
+  event: Event
+}
+const EventsFavoritesButton: React.FC<Props> = ({ event }) => {
+  const { currentUser } = useContext(AuthContext);
   const [favorite, setFavorite] = useState(false);
 
   const handleEventsFavorites = useCallback(
-    async (e) => {
+    async (e: React.MouseEvent<HTMLButtonElement>) => {
       e.preventDefault();
       if (favorite) {
-        await deleteEventsFavorites(event.id);
+        await deleteEventsFavorites(Number(event?.id));
         setFavorite(false);
       } else {
-        const data = { event_id: event.id, user_id: currentUser.id };
-        await createEventsFavorites(event.id, data);
+        const data = { eventId: Number(event?.id), userId: currentUser?.id };
+        await createEventsFavorites(Number(event?.id), data);
         setFavorite(true);
       }
     },
@@ -27,7 +33,8 @@ const EventsFavoritesButton = ({ event, currentUser }) => {
   );
 
   useEffect(() => {
-    setFavorite(currentUser?.myFavoriteEventIds?.includes(event.id));
+    // @ts-ignore
+    setFavorite(currentUser?.myFavoriteEventIds?.includes(event?.id));
   }, [currentUser, event]);
 
   return (
