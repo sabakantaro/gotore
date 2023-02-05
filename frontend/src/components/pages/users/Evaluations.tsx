@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Box from "@mui/material/Box";
 import Rating from "@mui/material/Rating";
@@ -11,11 +11,14 @@ import Paper from "@mui/material/Paper";
 import { getUser, evaluate } from "../../../lib/api/gotoreAPI";
 import { Button } from "@mui/material";
 import Modal from "@mui/material/Modal";
+import { User } from "interfaces";
+import { AuthContext } from "App";
 
-export default function Evaluations({ currentUser }) {
-  const [user, setUser] = useState(0);
+const Evaluations: React.FC = () => {
+  const { currentUser } = useContext(AuthContext);
+  const [user, setUser] = useState<User>();
   const [score, setScore] = useState(0);
-  const params = useParams();
+  const {id} = useParams();
   const navigate = useNavigate();
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
@@ -23,22 +26,22 @@ export default function Evaluations({ currentUser }) {
 
   const sendEvaluation = useCallback(async () => {
     try {
-      const data = { evaluated_id: user.id, score: score };
-      await evaluate(currentUser.id, data);
-      navigate(`users/${user.id}`);
+      const data = { evaluatedId: user?.id, score: score };
+      await evaluate(Number(currentUser?.id), data);
+      navigate(`users/${user?.id}`);
     } catch (err) {
-      console.log(err.message);
+      console.log(err);
     }
   }, [currentUser, navigate, score, user]);
 
   const handleGetUser = useCallback(async () => {
     try {
-      const res = await getUser(params.id);
+      const res = await getUser(Number(id));
       setUser(res.data.user);
     } catch (err) {
       console.log(err);
     }
-  }, [params]);
+  }, [id]);
 
   useEffect(() => {
     handleGetUser();
@@ -81,7 +84,7 @@ export default function Evaluations({ currentUser }) {
               variant='outlined'
               sx={{ my: { xs: 3, md: 6 }, p: { xs: 2, md: 3 } }}
             >
-              <Box align='center'>
+              <Box sx={{alignItems: 'center'}}>
                 <Avatar
                   alt='User Image'
                   src={
@@ -93,7 +96,7 @@ export default function Evaluations({ currentUser }) {
                 />
                 <Stack spacing={1}>
                   <Typography
-                    variant='body3'
+                    variant='body2'
                     sx={{ fontSize: 20, fontWeight: "bold", mt: 1 }}
                   >
                     {user?.name}
@@ -101,10 +104,10 @@ export default function Evaluations({ currentUser }) {
                 </Stack>
                 <Rating
                   name='simple-controlled'
-                  score={score}
+                  value={score}
                   sx={{ mt: 1 }}
                   onChange={(_, newscore) => {
-                    setScore(newscore);
+                    setScore(newscore as number);
                   }}
                 />
               </Box>
@@ -172,3 +175,5 @@ export default function Evaluations({ currentUser }) {
     </div>
   );
 }
+
+export default Evaluations

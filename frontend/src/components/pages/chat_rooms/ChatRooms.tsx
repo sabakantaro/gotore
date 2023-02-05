@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { Grid, Typography } from "@mui/material";
 import Avatar from "@mui/material/Avatar";
@@ -7,38 +7,35 @@ import ListItem from "@mui/material/ListItem";
 import Divider from "@mui/material/Divider";
 import ListItemText from "@mui/material/ListItemText";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
-
 import { getChatRooms } from "../../../lib/api/gotoreAPI";
+import { ChatRoom } from "interfaces/index"
 
-const ChatRooms = () => {
+const ChatRooms: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [chatRooms, setChatRooms] = useState([]);
 
-  const handleGetChatRooms = async () => {
+  const handleGetChatRooms = useCallback(async () => {
     try {
       const res = await getChatRooms();
-
       if (res.status === 200) {
         setChatRooms(res.data.chatRooms);
-      } else {
-        console.log("No chat rooms");
       }
     } catch (err) {
       console.log(err);
     }
 
     setLoading(false);
-  };
+  },[])
 
   useEffect(() => {
     handleGetChatRooms();
-  }, []);
+  }, [handleGetChatRooms]);
 
   return (
     <>
       {!loading ? (
         chatRooms.length > 0 ? (
-          chatRooms.map((chatRoom, index) => {
+          chatRooms.map((chatRoom: ChatRoom, index: number) => {
             return (
               <Grid container key={index} sx={{ justifyContent: "center" }}>
                 <List>

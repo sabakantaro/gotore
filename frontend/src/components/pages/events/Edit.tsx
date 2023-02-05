@@ -1,5 +1,5 @@
-import React, { useState, useCallback, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useCallback, useEffect, useContext } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import CssBaseline from "@mui/material/CssBaseline";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
@@ -17,36 +17,56 @@ import CardMedia from "@mui/material/CardMedia";
 import Cancel from "@mui/icons-material/Cancel";
 import CameraAlt from "@mui/icons-material/CameraAlt";
 import {
-  createEvent,
+  editEvent,
+  getEvent,
   getCategories,
   getcities,
 } from "../../../lib/api/gotoreAPI";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import moment from "moment";
+import { Category, City } from "interfaces";
+import { AuthContext } from "App";
 
 const theme = createTheme();
 
-export default function CreateEvent({ currentUser }) {
+const EditEvent: React.FC = () => {
+  const { currentUser } = useContext(AuthContext)
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const [address, setAddress] = useState("");
   const [meetingDatetime, setMeetingDatetime] = useState(new Date());
-  const [categoryId, setCategoryId] = useState(1);
+  const [categoryId, setCategoryId] = useState(0);
   const [cityId, setCityId] = useState(0);
   const [categoriesList, setcategoriesList] = useState([]);
   const [citiesList, setcitiesList] = useState([]);
   const [image, setImage] = useState("");
   const [preview, setPreview] = useState("");
+  const {id} = useParams();
   const navigate = useNavigate();
+
+  const handleGetEvent = useCallback(async () => {
+    try {
+      const res = await getEvent(id);
+      const event = res.data.event;
+      setTitle(event.title);
+      setBody(event.body);
+      setAddress(event.address);
+      setMeetingDatetime(
+        event.meetingDatetime !== null ? event.meetingDatetime : new Date()
+      );
+      setCategoryId(event.categoryId);
+      setImage(event.imageUrl);
+      setPreview(event.imageUrl);
+    } catch (err) {
+      console.log(err);
+    }
+  }, [id]);
 
   const handleGetCategories = useCallback(async () => {
     try {
       const res = await getCategories();
-      if (res.data) {
-        console.log(res);
-        setcategoriesList(res.data.categories);
-      }
+      setcategoriesList(res.data.categories);
     } catch (err) {
       console.log(err);
     }
@@ -55,62 +75,64 @@ export default function CreateEvent({ currentUser }) {
   const handleGetcities = useCallback(async () => {
     try {
       const res = await getcities();
-      if (res.data) {
-        setcitiesList(res.data.cities);
-      }
+      setcitiesList(res.data.cities);
     } catch (err) {
       console.log(err);
     }
   }, []);
 
   useEffect(() => {
+    handleGetEvent();
     handleGetCategories();
     handleGetcities();
-  }, [handleGetCategories, handleGetcities]);
+  }, [handleGetEvent, handleGetCategories, handleGetcities]);
 
-  const parseAsMoment = (dateTimeStr) => {
+  useEffect(() => {
+    handleGetEvent();
+  }, [handleGetEvent]);
+
+  const parseAsMoment = (dateTimeStr: moment.MomentInput) => {
     return moment.utc(dateTimeStr, "YYYY-MM-DDTHH:mm:00Z", "ja").utcOffset(9);
   };
 
-  const uploadImage = useCallback((e) => {
+  const uploadImage = useCallback((e: any) => {
     const file = e.target.files[0];
     setImage(file);
   }, []);
 
-  const previewImage = useCallback((e) => {
+  const previewImage = useCallback((e: any) => {
     const file = e.target.files[0];
     setPreview(window.URL.createObjectURL(file));
   }, []);
 
   const createFormData = useCallback(() => {
     const formData = new FormData();
-    if (!image) return;
     formData.append("event[image]", image);
     formData.append("event[title]", title);
     formData.append("event[body]", body);
     formData.append("event[address]", address);
-    formData.append("event[meeting_datetime]", meetingDatetime);
-    formData.append("event[category_id]", categoryId);
-    formData.append("event[user_id]", currentUser?.id || null);
+    formData.append("event[meeting_datetime]", String(meetingDatetime));
+    formData.append("event[category_id]", String(categoryId));
+    formData.append("event[user_id]", String(currentUser?.id));
 
-    console.log(formData);
     return formData;
   }, [body, categoryId, currentUser, image, meetingDatetime, address, title]);
 
   const handleSubmit = useCallback(
-    async (e) => {
+    async (e: { preventDefault: () => void; }) => {
       e.preventDefault();
 
       const data = createFormData();
+      console.log(data);
 
-      await createEvent(data).then(() => {
+      await editEvent(Number(id), data).then(() => {
         navigate("/");
       });
     },
-    [createFormData, navigate]
+    [createFormData, navigate, id]
   );
 
-  const UploadButton = useCallback((props) => {
+  const UploadButton = useCallback((props: any) => {
     return (
       <label htmlFor={`upload-button-${props.name}`}>
         <input
@@ -139,7 +161,7 @@ export default function CreateEvent({ currentUser }) {
           <Typography component='h1' variant='h4' align='center'>
             Gather workout friends!
           </Typography>
-          <Box component='form' noValidate sx={{ mt: 1 }} align='center'>
+          <Box component='form' sx={{ mt: 1, alignItems: 'center' }}>
             {preview ? (
               <Box sx={{ borderRadius: 1, borderColor: "grey.400" }}>
                 <IconButton color='inherit' onClick={() => setPreview("")}>
@@ -156,7 +178,7 @@ export default function CreateEvent({ currentUser }) {
               <UploadButton
                 className='primary'
                 name='image'
-                onChange={(e) => {
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                   uploadImage(e);
                   previewImage(e);
                 }}
@@ -172,7 +194,6 @@ export default function CreateEvent({ currentUser }) {
               label='Title'
               name='title'
               autoComplete='title'
-              autoFocus
             />
             <TextField
               value={body}
@@ -184,7 +205,6 @@ export default function CreateEvent({ currentUser }) {
               label='Body'
               name='body'
               autoComplete='body'
-              autoFocus
             />
             <FormControl fullWidth required margin='normal'>
               <InputLabel id='demo-simple-select-label'>Category</InputLabel>
@@ -193,29 +213,29 @@ export default function CreateEvent({ currentUser }) {
                 labelId='demo-simple-select-label'
                 id='demo-simple-select'
                 value={categoryId}
-                onChange={(e) => setCategoryId(e.target.value)}
+                onChange={(e) => setCategoryId(e.target.value as number)}
               >
                 {categoriesList &&
-                  categoriesList.map((category) => (
-                    <MenuItem key={category.id} value={category.id}>
-                      {category.name}
+                  categoriesList.map((category: Category) => (
+                    <MenuItem key={category?.id} value={category?.id}>
+                      {category?.name}
                     </MenuItem>
                   ))}
               </Select>
             </FormControl>
             <FormControl fullWidth required margin='normal'>
-              <InputLabel id='demo-simple-select-label'>citie</InputLabel>
+              <InputLabel id='demo-simple-select-label'>city</InputLabel>
               <Select
-                label='citie'
+                label='city'
                 labelId='demo-simple-select-label'
                 id='demo-simple-select'
                 value={cityId}
-                onChange={(e) => setCityId(e.target.value)}
+                onChange={(e) => setCityId(e.target.value as number)}
               >
                 {citiesList &&
-                  citiesList.map((citie) => (
-                    <MenuItem key={citie.id} value={citie.id}>
-                      {citie.name}
+                  citiesList.map((city: City) => (
+                    <MenuItem key={city?.id} value={city?.id}>
+                      {city?.name}
                     </MenuItem>
                   ))}
               </Select>
@@ -229,10 +249,11 @@ export default function CreateEvent({ currentUser }) {
               id='address'
               label='Address'
               name='address'
+              autoComplete='address'
             />
             <DatePicker
               selected={moment(meetingDatetime).toDate()}
-              onChange={(date) => setMeetingDatetime(date)}
+              onChange={(date) => setMeetingDatetime(date as Date)}
               customInput={
                 <TextField
                   margin='normal'
@@ -241,6 +262,7 @@ export default function CreateEvent({ currentUser }) {
                   id='datetime'
                   label='Datetime'
                   name='datetime'
+                  autoComplete='datetime'
                   inputProps={{ readOnly: true }}
                 >
                   {parseAsMoment(meetingDatetime).format("YYYY/MM/DD")}
@@ -262,3 +284,5 @@ export default function CreateEvent({ currentUser }) {
     </ThemeProvider>
   );
 }
+
+export default EditEvent

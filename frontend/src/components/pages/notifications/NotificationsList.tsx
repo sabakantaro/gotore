@@ -12,10 +12,11 @@ import {
   getNotifications,
   updateNotification,
 } from "../../../lib/api/gotoreAPI";
+import { Notification } from "interfaces";
 
 const NotificationsList = () => {
   const [loading, setLoading] = useState(true);
-  const [notifications, setNotifications] = useState([]);
+  const [notifications, setNotifications] = useState<Notification>();
   const navigate = useNavigate();
 
   const handleGetNotifications = async () => {
@@ -37,9 +38,9 @@ const NotificationsList = () => {
     handleGetNotifications();
   }, []);
 
-  const handleIsChecked = async (notification) => {
+  const handleIsChecked = async (notification: Notification) => {
     try {
-      const res = await updateNotification(notification.id);
+      const res = await updateNotification(Number(notification.id));
       if (res) {
         navigate(notification.linkUrl);
       }
@@ -52,24 +53,25 @@ const NotificationsList = () => {
   return (
     <>
       {!loading ? (
-        notifications.length > 0 ? (
-          notifications.map((notification, index) => {
+        notifications?.length! > 0 ? (
+          notifications?.map((notification) => {
             return (
-              <Grid container key={index} sx={{ justifyContent: "center" }}>
+              <Grid container key={notification?.id} sx={{ justifyContent: "center" }}>
                 <List>
                   <Badge
                     variant='dot'
                     color='primary'
-                    invisible={notification.isChecked}
+                    invisible={notification?.isChecked}
                   >
                     <Link
                       onClick={() => {
                         handleIsChecked(notification);
-                      }}
+                      } }
                       style={{
                         textDecoration: "none",
                         color: "inherit",
                       }}
+                      to={""}
                     >
                       <div
                         style={{

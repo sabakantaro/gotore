@@ -1,5 +1,5 @@
-import React, { useState, useCallback, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import React, { useState, useCallback, useEffect, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import CssBaseline from "@mui/material/CssBaseline";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
@@ -17,53 +17,38 @@ import CardMedia from "@mui/material/CardMedia";
 import Cancel from "@mui/icons-material/Cancel";
 import CameraAlt from "@mui/icons-material/CameraAlt";
 import {
-  editEvent,
-  getEvent,
+  createEvent,
   getCategories,
   getcities,
 } from "../../../lib/api/gotoreAPI";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import moment from "moment";
+import { AuthContext } from "App";
+import { Category, City, UpdateEventFormData } from "interfaces";
 
 const theme = createTheme();
 
-export default function EditEvent({ currentUser }) {
+const CreateEvent: React.FC = () => {
+  const { currentUser } = useContext(AuthContext);
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const [address, setAddress] = useState("");
-  const [meetingDatetime, setMeetingDatetime] = useState(new Date());
-  const [categoryId, setCategoryId] = useState(0);
-  const [cityId, setCityId] = useState(0);
-  const [categoriesList, setcategoriesList] = useState([]);
-  const [citiesList, setcitiesList] = useState([]);
-  const [image, setImage] = useState("");
-  const [preview, setPreview] = useState("");
-  const params = useParams();
+  const [meetingDatetime, setMeetingDatetime] = useState<Date | null>(new Date());
+  const [categoryId, setCategoryId] = useState<number>(1);
+  const [cityId, setCityId] = useState<number | undefined>(0);
+  const [categoriesList, setcategoriesList] = useState<Category>();
+  const [citiesList, setcitiesList] = useState<City>();
+  const [image, setImage] = useState<string>("")
+  const [preview, setPreview] = useState<string>("")
   const navigate = useNavigate();
-
-  const handleGetEvent = useCallback(async () => {
-    try {
-      const res = await getEvent(params.id);
-      const event = res.data.event;
-      setTitle(event.title);
-      setBody(event.body);
-      setAddress(event.address);
-      setMeetingDatetime(
-        event.meetingDatetime !== null ? event.meetingDatetime : new Date()
-      );
-      setCategoryId(event.categoryId);
-      setImage(event.imageUrl);
-      setPreview(event.imageUrl);
-    } catch (err) {
-      console.log(err);
-    }
-  }, [params.id]);
 
   const handleGetCategories = useCallback(async () => {
     try {
       const res = await getCategories();
-      setcategoriesList(res.data.categories);
+      if (res.data) {
+        setcategoriesList(res.data.categories);
+      }
     } catch (err) {
       console.log(err);
     }
@@ -72,64 +57,57 @@ export default function EditEvent({ currentUser }) {
   const handleGetcities = useCallback(async () => {
     try {
       const res = await getcities();
-      setcitiesList(res.data.cities);
+      if (res.data) {
+        setcitiesList(res.data.cities);
+      }
     } catch (err) {
       console.log(err);
     }
   }, []);
 
   useEffect(() => {
-    handleGetEvent();
     handleGetCategories();
     handleGetcities();
-  }, [handleGetEvent, handleGetCategories, handleGetcities]);
+  }, [handleGetCategories, handleGetcities]);
 
-  useEffect(() => {
-    handleGetEvent();
-  }, [handleGetEvent]);
-
-  const parseAsMoment = (dateTimeStr) => {
+  const parseAsMoment = (dateTimeStr: string | undefined) => {
     return moment.utc(dateTimeStr, "YYYY-MM-DDTHH:mm:00Z", "ja").utcOffset(9);
   };
 
-  const uploadImage = useCallback((e) => {
+  const uploadImage = useCallback((e: any) => {
     const file = e.target.files[0];
     setImage(file);
   }, []);
 
-  const previewImage = useCallback((e) => {
+  const previewImage = useCallback((e: any) => {
     const file = e.target.files[0];
     setPreview(window.URL.createObjectURL(file));
   }, []);
 
-  const createFormData = useCallback(() => {
+  const createFormData = useCallback(():UpdateEventFormData => {
     const formData = new FormData();
     formData.append("event[image]", image);
     formData.append("event[title]", title);
     formData.append("event[body]", body);
     formData.append("event[address]", address);
-    formData.append("event[meeting_datetime]", meetingDatetime);
-    formData.append("event[category_id]", categoryId);
-    formData.append("event[user_id]", currentUser?.id || null);
-
+    formData.append("event[meeting_datetime]", String(meetingDatetime));
+    formData.append("event[category_id]", String(categoryId));
+    formData.append("event[user_id]", String(currentUser?.id));
     return formData;
   }, [body, categoryId, currentUser, image, meetingDatetime, address, title]);
 
   const handleSubmit = useCallback(
-    async (e) => {
+    async (e: React.MouseEvent<HTMLButtonElement>) => {
       e.preventDefault();
-
       const data = createFormData();
-      console.log(data);
-
-      await editEvent(params.id, data).then(() => {
+      await createEvent(data).then(() => {
         navigate("/");
       });
     },
-    [createFormData, navigate, params.id]
+    [createFormData, navigate]
   );
 
-  const UploadButton = useCallback((props) => {
+  const UploadButton = useCallback((props: { name: string | undefined; onChange: React.ChangeEventHandler<HTMLInputElement> | undefined; }) => {
     return (
       <label htmlFor={`upload-button-${props.name}`}>
         <input
@@ -158,7 +136,7 @@ export default function EditEvent({ currentUser }) {
           <Typography component='h1' variant='h4' align='center'>
             Gather workout friends!
           </Typography>
-          <Box component='form' noValidate sx={{ mt: 1 }} align='center'>
+          <Box component='form' sx={{ mt: 1, alignItems: 'center' }}>
             {preview ? (
               <Box sx={{ borderRadius: 1, borderColor: "grey.400" }}>
                 <IconButton color='inherit' onClick={() => setPreview("")}>
@@ -173,9 +151,9 @@ export default function EditEvent({ currentUser }) {
               </Box>
             ) : (
               <UploadButton
-                className='primary'
+                // className='primary'
                 name='image'
-                onChange={(e) => {
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                   uploadImage(e);
                   previewImage(e);
                 }}
@@ -191,6 +169,7 @@ export default function EditEvent({ currentUser }) {
               label='Title'
               name='title'
               autoComplete='title'
+              autoFocus
             />
             <TextField
               value={body}
@@ -202,6 +181,7 @@ export default function EditEvent({ currentUser }) {
               label='Body'
               name='body'
               autoComplete='body'
+              autoFocus
             />
             <FormControl fullWidth required margin='normal'>
               <InputLabel id='demo-simple-select-label'>Category</InputLabel>
@@ -210,7 +190,7 @@ export default function EditEvent({ currentUser }) {
                 labelId='demo-simple-select-label'
                 id='demo-simple-select'
                 value={categoryId}
-                onChange={(e) => setCategoryId(e.target.value)}
+                onChange={(e) => setCategoryId(e.target.value as number)}
               >
                 {categoriesList &&
                   categoriesList.map((category) => (
@@ -227,12 +207,12 @@ export default function EditEvent({ currentUser }) {
                 labelId='demo-simple-select-label'
                 id='demo-simple-select'
                 value={cityId}
-                onChange={(e) => setCityId(e.target.value)}
+                onChange={(e) => setCityId(e.target.value as number)}
               >
                 {citiesList &&
-                  citiesList.map((citie) => (
-                    <MenuItem key={citie.id} value={citie.id}>
-                      {citie.name}
+                  citiesList.map((city) => (
+                    <MenuItem key={city.id} value={city.id}>
+                      {city.name}
                     </MenuItem>
                   ))}
               </Select>
@@ -246,7 +226,6 @@ export default function EditEvent({ currentUser }) {
               id='address'
               label='Address'
               name='address'
-              autoComplete='address'
             />
             <DatePicker
               selected={moment(meetingDatetime).toDate()}
@@ -259,10 +238,9 @@ export default function EditEvent({ currentUser }) {
                   id='datetime'
                   label='Datetime'
                   name='datetime'
-                  autoComplete='datetime'
                   inputProps={{ readOnly: true }}
                 >
-                  {parseAsMoment(meetingDatetime).format("YYYY/MM/DD")}
+                  {parseAsMoment(String(meetingDatetime)).format("YYYY/MM/DD")}
                 </TextField>
               }
             />
@@ -281,3 +259,5 @@ export default function EditEvent({ currentUser }) {
     </ThemeProvider>
   );
 }
+
+export default CreateEvent;
