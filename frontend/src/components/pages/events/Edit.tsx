@@ -217,16 +217,16 @@ const EditEvent: React.FC = () => {
               >
                 {categoriesList &&
                   categoriesList.map((category: Category) => (
-                    <MenuItem key={category.id} value={category.id}>
-                      {category.name}
+                    <MenuItem key={category?.id} value={category?.id}>
+                      {category?.name}
                     </MenuItem>
                   ))}
               </Select>
             </FormControl>
             <FormControl fullWidth required margin='normal'>
-              <InputLabel id='demo-simple-select-label'>citie</InputLabel>
+              <InputLabel id='demo-simple-select-label'>city</InputLabel>
               <Select
-                label='citie'
+                label='city'
                 labelId='demo-simple-select-label'
                 id='demo-simple-select'
                 value={cityId}
@@ -234,8 +234,8 @@ const EditEvent: React.FC = () => {
               >
                 {citiesList &&
                   citiesList.map((city: City) => (
-                    <MenuItem key={city.id} value={city.id}>
-                      {city.name}
+                    <MenuItem key={city?.id} value={city?.id}>
+                      {city?.name}
                     </MenuItem>
                   ))}
               </Select>

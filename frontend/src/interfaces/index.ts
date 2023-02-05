@@ -11,6 +11,8 @@ export interface SignInData {
 }
 
 export interface User {
+  map(arg0: (user: any) => JSX.Element): import("react").ReactNode
+  includes: number
   id: number
   uid: string
   provider: string
@@ -29,6 +31,8 @@ export interface User {
   evaluationScore?: number | undefined | null
   followersCount?: number | undefined | null
   followingsCount?: number | undefined | null
+  myFavoriteEventIds?: number | undefined | null
+  length: number | undefined
 }
 
 export interface UpdateUserData {
@@ -44,13 +48,13 @@ export interface UpdateUserFormData extends FormData {
 }
 
 export interface Event {
-  id: string | undefined
+  id?: string | undefined
   userId: number
   categoryId: number | undefined | null
   cityId: number | undefined | null
-  title: Text
-  body: Text
-  address: Text
+  title: string
+  body: string
+  address: string
   meetingDatetime: Date
   image?: string
   imageUrl?: string
@@ -59,6 +63,9 @@ export interface Event {
     id: string | undefined
     name: string | undefined
   }
+  participate: Participate
+  city: City
+  eventsFavorites?: EventFavorite
 }
 
 export interface UpdateEventData {
@@ -86,11 +93,12 @@ export interface City {
 }
 
 export interface Comment {
-  user: any
-  id: number
-  userId: number
-  eventId: number
-  content: Text
+  map(arg0: (comment: any) => JSX.Element): import("react").ReactNode
+  user?: User
+  id?: number
+  userId?: number
+  eventId?: number
+  content?: string
 }
 
 export interface Participate {
@@ -102,6 +110,7 @@ export interface EventFavorite {
   id?: number
   userId: number | undefined | null
   eventId: number | undefined | null
+  length?: number
 }
 
 export interface Relationship {
@@ -130,4 +139,14 @@ export interface Message {
   userId: number | undefined
   content: string
   createdAt?: Date
+}
+
+export interface Notification {
+  map(arg0: (notification: any) => JSX.Element): import("react").ReactNode
+  id?: number
+  isChecked: boolean
+  linkUrl: string
+  imageUrl: string
+  content: string
+  length: number
 }

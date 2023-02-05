@@ -25,7 +25,7 @@ const theme = createTheme();
 const Home: React.FC = () => {
   const [events, setEvents] = useState<any[]>([]);
   const [keyword, setKeyword] = useState("");
-  const [meetingDatetime, setMeetingDatetime] = useState<string | Date | null>(null);
+  const [meetingDatetime, setMeetingDatetime] = useState<string | Date | null>();
 
   const eventSearchTitle = meetingDatetime
     ? `Events held at '${moment(meetingDatetime).format("YYYY-MM-DD")}'`
@@ -213,7 +213,7 @@ const Home: React.FC = () => {
                 <Box>
                   <DatePicker
                     selected={
-                      moment(meetingDatetime).toDate()
+                      meetingDatetime ? moment(meetingDatetime).toDate() : new Date()
                     }
                     onChange={onChange}
                     customInput={

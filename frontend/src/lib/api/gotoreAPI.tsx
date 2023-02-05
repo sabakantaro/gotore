@@ -1,6 +1,6 @@
 import client from "./client";
 import Cookies from "js-cookie";
-import { SignUpData, SignInData, User, Event, Participate, Message, EventFavorite, Evaluate, Relationship, UpdateUserData, UpdateUserFormData, UpdateEventFormData } from "interfaces/index"
+import { SignUpData, SignInData, Participate, Message, EventFavorite, Evaluate, Relationship, UpdateUserFormData, UpdateEventFormData } from "interfaces/index"
 
 export const signUp = (params: SignUpData) => {
   return client.post("auth", params);

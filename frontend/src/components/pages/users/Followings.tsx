@@ -8,26 +8,25 @@ import Divider from "@mui/material/Divider";
 import ListItemText from "@mui/material/ListItemText";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
 import { getFollowings } from "../../../lib/api/gotoreAPI";
+import { User } from "interfaces";
 
-const Followers = () => {
+const Followers: React.FC = () => {
   const [loading, setLoading] = useState(true);
-  const [users, setUsers] = useState([]);
-  const params = useParams();
+  const [users, setUsers] = useState<User>();
+  const {userId} = useParams();
 
   const handlegetFollowings = useCallback(async () => {
     try {
-      const res = await getFollowings(params.userId);
+      const res = await getFollowings(Number(userId));
       if (res) {
         setUsers(res.data.users);
-      } else {
-        console.log("No chat rooms");
       }
     } catch (err) {
       console.log(err);
     }
 
     setLoading(false);
-  }, [params]);
+  }, [userId]);
 
   useEffect(() => {
     handlegetFollowings();
@@ -36,13 +35,13 @@ const Followers = () => {
   return (
     <>
       {!loading ? (
-        users.length > 0 ? (
-          users.map((user, index) => {
+        users?.length! > 0 ? (
+          users?.map((user) => {
             return (
-              <Grid container key={index} sx={{ justifyContent: "center" }}>
+              <Grid container key={user?.id} sx={{ justifyContent: "center" }}>
                 <List>
                   <Link
-                    to={`/users/${user.id}`}
+                    to={`/users/${user?.id}`}
                     style={{
                       textDecoration: "none",
                       color: "inherit",
@@ -57,11 +56,11 @@ const Followers = () => {
                     >
                       <ListItem alignItems='flex-start' style={{ padding: 0 }}>
                         <ListItemAvatar>
-                          <Avatar alt='avatar' src={user.image.url} />
+                          <Avatar alt='avatar' src={user?.image.url} />
                         </ListItemAvatar>
                         <ListItemText
-                          primary={user.name}
-                          secondary={user.profile ? user.profile : "Hello"}
+                          primary={user?.name}
+                          secondary={user?.profile}
                         />
                       </ListItem>
                     </div>

@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, useContext, ReactHTMLElement } from "react";
+import React, { useState, useCallback, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import CssBaseline from "@mui/material/CssBaseline";
 import Box from "@mui/material/Box";
@@ -25,8 +25,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import moment from "moment";
 import { AuthContext } from "App";
-import { ButtonBaseActions } from "@mui/material";
-import { Category, City } from "interfaces";
+import { Category, City, UpdateEventFormData } from "interfaces";
 
 const theme = createTheme();
 
@@ -75,33 +74,30 @@ const CreateEvent: React.FC = () => {
     return moment.utc(dateTimeStr, "YYYY-MM-DDTHH:mm:00Z", "ja").utcOffset(9);
   };
 
-  const uploadImage = useCallback((e: { target: { files: any[]; }; }) => {
-    const file = e.target.files[0]
-    setImage(file)
-  }, [])
+  const uploadImage = useCallback((e: any) => {
+    const file = e.target.files[0];
+    setImage(file);
+  }, []);
 
-  const previewImage = useCallback((e: { target: { files: any[]; }; }) => {
+  const previewImage = useCallback((e: any) => {
     const file = e.target.files[0];
     setPreview(window.URL.createObjectURL(file));
   }, []);
 
-  const createFormData = useCallback(() => {
+  const createFormData = useCallback(():UpdateEventFormData => {
     const formData = new FormData();
-    if (!image) return;
     formData.append("event[image]", image);
     formData.append("event[title]", title);
     formData.append("event[body]", body);
     formData.append("event[address]", address);
-    formData.append("event[meeting_datetime]", meetingDatetime);
-    formData.append("event[category_id]", categoryId);
-    formData.append("event[user_id]", currentUser?.id);
-
-    console.log(formData);
+    formData.append("event[meeting_datetime]", String(meetingDatetime));
+    formData.append("event[category_id]", String(categoryId));
+    formData.append("event[user_id]", String(currentUser?.id));
     return formData;
   }, [body, categoryId, currentUser, image, meetingDatetime, address, title]);
 
   const handleSubmit = useCallback(
-    async (e: { preventDefault: () => void; }) => {
+    async (e: React.MouseEvent<HTMLButtonElement>) => {
       e.preventDefault();
       const data = createFormData();
       await createEvent(data).then(() => {
@@ -140,7 +136,7 @@ const CreateEvent: React.FC = () => {
           <Typography component='h1' variant='h4' align='center'>
             Gather workout friends!
           </Typography>
-          <Box component='form' noValidate sx={{ mt: 1 }} align='center'>
+          <Box component='form' sx={{ mt: 1, alignItems: 'center' }}>
             {preview ? (
               <Box sx={{ borderRadius: 1, borderColor: "grey.400" }}>
                 <IconButton color='inherit' onClick={() => setPreview("")}>
@@ -155,11 +151,11 @@ const CreateEvent: React.FC = () => {
               </Box>
             ) : (
               <UploadButton
-                className='primary'
+                // className='primary'
                 name='image'
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                  uploadImage(e)
-                  previewImage(e)
+                  uploadImage(e);
+                  previewImage(e);
                 }}
               />
             )}
@@ -194,7 +190,7 @@ const CreateEvent: React.FC = () => {
                 labelId='demo-simple-select-label'
                 id='demo-simple-select'
                 value={categoryId}
-                onChange={(e) => setCategoryId(e.target.value)}
+                onChange={(e) => setCategoryId(e.target.value as number)}
               >
                 {categoriesList &&
                   categoriesList.map((category) => (
@@ -211,7 +207,7 @@ const CreateEvent: React.FC = () => {
                 labelId='demo-simple-select-label'
                 id='demo-simple-select'
                 value={cityId}
-                onChange={(e) => setCityId(e.target.value)}
+                onChange={(e) => setCityId(e.target.value as number)}
               >
                 {citiesList &&
                   citiesList.map((city) => (
@@ -244,7 +240,7 @@ const CreateEvent: React.FC = () => {
                   name='datetime'
                   inputProps={{ readOnly: true }}
                 >
-                  {parseAsMoment(meetingDatetime).format("YYYY/MM/DD")}
+                  {parseAsMoment(String(meetingDatetime)).format("YYYY/MM/DD")}
                 </TextField>
               }
             />

@@ -86,8 +86,8 @@ const EventShow = () => {
 
   const handleCreateParticipate = useCallback(async () => {
     const data = {
-      userId: currentUser?.id,
-      eventId: event?.id,
+      userId: Number(currentUser?.id),
+      eventId: Number(event?.id),
     };
     try {
       await createParticipate(data);
@@ -99,17 +99,16 @@ const EventShow = () => {
 
   const handleCreateComment = useCallback(async () => {
     const data = {
-      user_id: currentUser?.id,
-      event_id: event?.id,
-      content: content,
+      userId: Number(currentUser?.id),
+      eventId: Number(event?.id),
+      content: String(content),
     };
     try {
-      const res = await createComment(event?.id, data);
+      // @ts-ignore
+      const res = await createComment(Number(event?.id), data);
       if (res) {
         setContent("");
         handleGetEvent();
-      } else {
-        console.log("Failed");
       }
     } catch (err) {
       console.log(err);
@@ -119,11 +118,9 @@ const EventShow = () => {
   const handleDeleteComment = useCallback(
     async (commentId: number) => {
       try {
-        const res = await deleteComment(event.id, commentId);
+        const res = await deleteComment(Number(event?.id), commentId);
         if (res) {
           handleGetEvent();
-        } else {
-          console.log("Failed");
         }
       } catch (err) {
         console.log(err);
@@ -156,7 +153,7 @@ const EventShow = () => {
                   flexDirection: "column",
                 }}
               >
-                <Summary event={event} />
+                <Summary event={event!} />
               </Paper>
             </Grid>
             <Grid item xs={12} md={8} lg={8}>
@@ -169,22 +166,21 @@ const EventShow = () => {
                 <CardMedia
                   sx={{ borderRadius: "4px 4px 0 0", height: 400 }}
                   component='img'
-                  src={event.imageUrl}
+                  src={event?.imageUrl}
                   alt='event image'
                 />
                 <EventsFavoritesButton
-                  event={event}
-                  currentUser={currentUser}
+                  event={event!}
                 />
                 <div style={{ padding: 24 }}>
                   <CardHeader
                     sx={{ p: 0 }}
                     action={
                       currentUser &&
-                      event.userId === currentUser?.id && (
+                      event?.userId === currentUser?.id && (
                         <IconButton
                           component={RouterLink}
-                          to={`/event-edit/${event.id}`}
+                          to={`/event-edit/${event?.id}`}
                         >
                           <MoreVertIcon />
                         </IconButton>
@@ -198,7 +194,7 @@ const EventShow = () => {
                           mb: 0,
                         }}
                       >
-                        {event.title}
+                        {event?.title}
                       </Typography>
                     }
                   />
@@ -221,7 +217,7 @@ const EventShow = () => {
                           textOverflow: "ellipsis",
                         }}
                       >
-                        {event.address}
+                        {event?.address}
                       </Typography>
                     }
                     color='text.secondary'
@@ -233,12 +229,12 @@ const EventShow = () => {
                         {currentUser?.name.charAt(0)}
                       </Avatar>
                     }
-                    title={`${event.user?.name}`}
+                    title={`${event?.user?.name}`}
                   />
                   <Grid container sx={{ mt: 0.5 }}>
                     <Grid item xs={6} sx={{ backgroundColor: "lightgray" }}>
                       <Typography
-                        variant='body3'
+                        variant='body2'
                         sx={{ fontSize: 14, fontWeight: "bold", ml: 1 }}
                       >
                         Event date
@@ -249,8 +245,8 @@ const EventShow = () => {
                         variant='body2'
                         sx={{ fontSize: 14, fontWeight: "bold", ml: 1 }}
                       >
-                        {event.meetingDatetime &&
-                          moment(event.meetingDatetime).format(
+                        {event?.meetingDatetime &&
+                          moment(event?.meetingDatetime).format(
                             "dddd, MMMM DD, YYYY HH:mm"
                           )}
                       </Typography>
@@ -270,7 +266,7 @@ const EventShow = () => {
                         variant='body2'
                         sx={{ fontSize: 14, fontWeight: "bold", ml: 1 }}
                       >
-                        {event.category?.name}
+                        {event?.category?.name}
                       </Typography>
                     </Grid>
                   </Grid>
@@ -290,7 +286,7 @@ const EventShow = () => {
                     }}
                     variant='body1'
                   >
-                    {event.body}
+                    {event?.body}
                   </Typography>
                 </div>
                 <Divider />
@@ -316,7 +312,7 @@ const EventShow = () => {
                         <ListItemAvatar>
                           <Avatar
                             alt='User Name'
-                            src={comment?.user.imageUrl}
+                            src={comment?.user?.imageUrl}
                           />
                         </ListItemAvatar>
                         <ListItemText primary={`${comment.content}`} />
@@ -329,7 +325,7 @@ const EventShow = () => {
                             <IconButton aria-label='delete' size='small'>
                               <DeleteIcon
                                 fontSize='small'
-                                onClick={() => handleDeleteComment(comment.id)}
+                                onClick={() => handleDeleteComment(Number(comment?.id))}
                               />
                             </IconButton>
                           </Stack>
@@ -365,9 +361,9 @@ const EventShow = () => {
           </Grid>
         </Container>
       </Box>
-      {event.userId !== currentUser?.id && (
+      {event?.userId !== currentUser?.id && (
         <AttendButton
-          openAttendModal={() => setOpen(true)}
+          openAttendModal={(e) => setOpen(e)}
           disabled={event?.participate?.userId === currentUser?.id}
         />
       )}
@@ -381,15 +377,15 @@ const EventShow = () => {
         <DialogTitle>Confirm your participation</DialogTitle>
         <DialogContent>
           <DialogContentText id='attend-modal-slide'>
-            {event.title}
+            {event?.title}
             <ListItem>
               <ListItemIcon>
                 <AccessTimeIcon />
               </ListItemIcon>
               <ListItemText
                 primary={
-                  event.meetingDatetime &&
-                  moment(event.meetingDatetime).format(
+                  event?.meetingDatetime &&
+                  moment(event?.meetingDatetime).format(
                     "dddd, MMMM DD, YYYY HH:mm"
                   )
                 }
@@ -400,8 +396,8 @@ const EventShow = () => {
                 <LocationOnIcon />
               </ListItemIcon>
               <ListItemText
-                primary={`${event.city?.name}`}
-                secondary={`${event.address}`}
+                primary={`${event?.city?.name}`}
+                secondary={`${event?.address}`}
               />
             </ListItem>
           </DialogContentText>
