@@ -8,7 +8,7 @@ import Followers from "./Followers";
 import Followings from "./Followings";
 import { useParams } from "react-router-dom";
 
-function TabPanel(props) {
+function TabPanel(props: any) {
   const { children, value, index, ...other } = props;
 
   return (
@@ -34,7 +34,7 @@ TabPanel.propTypes = {
   value: PropTypes.number.isRequired,
 };
 
-function a11yProps(index) {
+function a11yProps(index: number) {
   return {
     id: `simple-tab-${index}`,
     "aria-controls": `simple-tabpanel-${index}`,
@@ -45,7 +45,7 @@ export default function BasicTabs() {
   const params = useParams();
   const [value, setValue] = React.useState(Number(params?.id));
 
-  const handleChange = (_, newValue) => {
+  const handleChange = (_:any, newValue: number) => {
     setValue(newValue);
   };
 

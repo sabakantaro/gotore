@@ -3,7 +3,11 @@ import Box from "@mui/material/Box";
 import CardActions from "@mui/material/CardActions";
 import Button from "@mui/material/Button";
 
-export default function AttendButton({ openAttendModal, disabled }) {
+type Props ={
+  openAttendModal: (value: boolean) => void;
+  disabled: boolean
+}
+const AttendButton:React.FC<Props> = ({ openAttendModal, disabled }) => {
   return (
     <CardActions sx={{ justifyContent: "center" }}>
       <Box
@@ -16,7 +20,7 @@ export default function AttendButton({ openAttendModal, disabled }) {
         <Button
           color='primary'
           variant='contained'
-          onClick={() => openAttendModal()}
+          onClick={() => openAttendModal(false)}
           disabled={disabled}
         >
           Attend
@@ -25,3 +29,5 @@ export default function AttendButton({ openAttendModal, disabled }) {
     </CardActions>
   );
 }
+
+export default AttendButton

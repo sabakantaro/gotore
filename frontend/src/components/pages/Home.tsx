@@ -13,7 +13,7 @@ import {
   alpha,
 } from "@mui/material/styles";
 import { getEvents, searchEvents } from "../../lib/api/gotoreAPI";
-import EventBox from "../pages/events/EventBox";
+import EventBox from "./events/EventBox";
 import InputBase from "@mui/material/InputBase";
 import SearchIcon from "@mui/icons-material/Search";
 import DatePicker from "react-datepicker";
@@ -22,10 +22,10 @@ import moment from "moment";
 
 const theme = createTheme();
 
-const Home = ({ currentUser }) => {
-  const [events, setEvents] = useState([]);
+const Home: React.FC = () => {
+  const [events, setEvents] = useState<any[]>([]);
   const [keyword, setKeyword] = useState("");
-  const [meetingDatetime, setMeetingDatetime] = useState("");
+  const [meetingDatetime, setMeetingDatetime] = useState<string | Date | null>();
 
   const eventSearchTitle = meetingDatetime
     ? `Events held at '${moment(meetingDatetime).format("YYYY-MM-DD")}'`
@@ -47,15 +47,15 @@ const Home = ({ currentUser }) => {
   }, [handleGetEvents]);
 
   const handleSearchEvents = useCallback(
-    async (date) => {
+    async (newValue: string | Date | null ) => {
       try {
-        if (date) {
-          const res = await searchEvents("", date);
+        if (newValue) {
+          const res = await searchEvents("", newValue);
           setEvents(res.data.events);
         } else {
-          const res = await searchEvents(keyword, "");
+          const res = await searchEvents(keyword, null);
           setEvents(res.data.events);
-          setMeetingDatetime("");
+          setMeetingDatetime(null);
         }
       } catch (err) {
         console.log(err);
@@ -65,14 +65,14 @@ const Home = ({ currentUser }) => {
   );
 
   const onChange = useCallback(
-    async (date) => {
-      setMeetingDatetime(date);
-      handleSearchEvents(date);
+    async (newValue: string | Date | null) => {
+      setMeetingDatetime(newValue);
+      handleSearchEvents(newValue);
     },
     [handleSearchEvents]
   );
 
-  const parseAsMoment = (dateTimeStr) => {
+  const parseAsMoment = (dateTimeStr: string | Date | null) => {
     return moment.utc(dateTimeStr, "YYYY-MM-DDTHH:mm:00Z", "ja").utcOffset(9);
   };
 
@@ -156,7 +156,7 @@ const Home = ({ currentUser }) => {
                     onChange={(e) => setKeyword(e.target.value)}
                     onKeyDown={(e) => {
                       if (e.key === "Enter") {
-                        handleSearchEvents();
+                        handleSearchEvents(null);
                       }
                     }}
                   />
@@ -213,9 +213,9 @@ const Home = ({ currentUser }) => {
                 <Box>
                   <DatePicker
                     selected={
-                      meetingDatetime && moment(meetingDatetime).toDate()
+                      meetingDatetime ? moment(meetingDatetime).toDate() : new Date()
                     }
-                    onChange={(date) => onChange(date)}
+                    onChange={onChange}
                     customInput={
                       <Button
                         id='datetime'
@@ -233,7 +233,7 @@ const Home = ({ currentUser }) => {
           </Box>
           <Container maxWidth='md'>
             <Typography
-              variant='body3'
+              variant='body2'
               sx={{ fontSize: 20, fontWeight: "bold" }}
             >
               {eventSearchTitle}
@@ -243,7 +243,6 @@ const Home = ({ currentUser }) => {
                 <EventBox
                   key={event.id}
                   event={event}
-                  currentUser={currentUser}
                 />
               ))}
             </Grid>

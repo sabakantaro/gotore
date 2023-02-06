@@ -1,7 +1,8 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useContext } from "react";
+import { Link as RouterLink } from "react-router-dom";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
+import Link from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
@@ -12,16 +13,23 @@ import CardHeader from "@mui/material/CardHeader";
 import Avatar from "@mui/material/Avatar";
 import IconButton from "@mui/material/IconButton";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import EventsFavoritesButton from "../events/EventsFavoritesButton";
+import EventsFavoritesButton from "./EventsFavoritesButton";
+import { AuthContext } from "App";
+import {Event} from "interfaces/index"
 
-const EventBox = ({ event, currentUser = [] }) => {
+type Props = {
+  event: Event;
+}
+
+const EventBox: React.FC<Props> = ({ event }) => {
+  const {currentUser} = useContext(AuthContext)
   return (
     <Grid item xs={12} sm={6} md={4}>
       <Link
-        variant='body'
+        // variant='body2'
         style={{ color: "black", textDecoration: "none" }}
-        component={Link}
-        to={`/events/${event.id}`}
+        component={RouterLink}
+        to={`/events/${event?.id}`}
       >
         <Card
           sx={{
@@ -34,34 +42,34 @@ const EventBox = ({ event, currentUser = [] }) => {
             height='200'
             component='img'
             src={
-              event.imageUrl
-                ? event.imageUrl
+              event?.imageUrl
+                ? event?.imageUrl
                 : "https://source.unsplash.com/random"
             }
             alt='Event image'
           />
           {currentUser && (
-            <EventsFavoritesButton event={event} currentUser={currentUser} />
+            <EventsFavoritesButton event={event} />
           )}
           <CardHeader
             avatar={
               <Avatar
                 alt='User Image'
                 src={
-                  event.user?.image
-                    ? event.user?.imageUrl
+                  event?.user?.image
+                    ? event?.user?.imageUrl
                     : "https://source.unsplash.com/random"
                 }
               />
             }
             action={
-              event.userId === currentUser?.id && (
-                <IconButton component={Link} to={`/event-edit/${event.id}`}>
+              event?.userId === currentUser?.id && (
+                <IconButton component={RouterLink} to={`/event-edit/${event?.id}`}>
                   <MoreVertIcon />
                 </IconButton>
               )
             }
-            title={`${event.user?.name}`}
+            title={`${event?.user?.name}`}
           />
           <CardContent sx={{ flexGrow: 1, pt: 0, pb: 0 }}>
             <Typography
@@ -75,7 +83,7 @@ const EventBox = ({ event, currentUser = [] }) => {
                 textOverflow: "ellipsis",
               }}
             >
-              {event.title ? event.title : "New event"}
+              {event?.title}
             </Typography>
             <Grid container>
               <Grid item xs={2}>
@@ -83,7 +91,7 @@ const EventBox = ({ event, currentUser = [] }) => {
               </Grid>
               <Grid item xs={6}>
                 <Typography
-                  variant='body3'
+                  variant='body2'
                   sx={{
                     overflow: "hidden",
                     whiteSpace: "nowrap",
@@ -91,7 +99,7 @@ const EventBox = ({ event, currentUser = [] }) => {
                     textOverflow: "ellipsis",
                   }}
                 >
-                  {event.address ? event.address : "To be decided"}
+                  {event?.address}
                 </Typography>
               </Grid>
             </Grid>
@@ -100,9 +108,9 @@ const EventBox = ({ event, currentUser = [] }) => {
                 <EventIcon />
               </Grid>
               <Grid item xs={6}>
-                <Typography variant='body3'>
-                  {event.meetingDatetime
-                    ? moment(event.meetingDatetime).format("YYYY-MM-DD")
+                <Typography variant='body2'>
+                  {event?.meetingDatetime
+                    ? moment(event?.meetingDatetime).format("YYYY-MM-DD")
                     : "To be decided"}
                 </Typography>
               </Grid>
@@ -117,7 +125,7 @@ const EventBox = ({ event, currentUser = [] }) => {
               }}
               variant='body1'
             >
-              {event.body}
+              {event?.body}
             </Typography>
           </CardContent>
         </Card>

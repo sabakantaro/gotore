@@ -1,11 +1,12 @@
 import client from "./client";
 import Cookies from "js-cookie";
+import { SignUpData, SignInData, Participate, Message, EventFavorite, Evaluate, Relationship, UpdateUserFormData, UpdateEventFormData } from "interfaces/index"
 
-export const signUp = (params) => {
+export const signUp = (params: SignUpData) => {
   return client.post("auth", params);
 };
 
-export const signIn = (params) => {
+export const signIn = (params: SignInData) => {
   return client.post("auth/sign_in", params);
 };
 
@@ -35,7 +36,7 @@ export const getCurrentUser = () => {
   }
 };
 
-export const getUser = (id) => {
+export const getUser = (id: number | undefined) => {
   return client.get(`/users/${id}`, {
     headers: {
       "access-token": Cookies.get("_access_token"),
@@ -45,7 +46,7 @@ export const getUser = (id) => {
   });
 };
 
-export const editUser = (id, data) => {
+export const editUser = (id: number | undefined, data: UpdateUserFormData) => {
   return client.put(`/users/${id}`, data);
 };
 
@@ -57,7 +58,7 @@ export const getcities = () => {
   return client.get("/cities");
 };
 
-export const createParticipate = (data) => {
+export const createParticipate = (data: Participate) => {
   return client.post("/participates", data);
 };
 
@@ -71,7 +72,7 @@ export const getChatRooms = () => {
   });
 };
 
-export const getChatRoom = (id) => {
+export const getChatRoom = (id: number) => {
   return client.get(`/chat_rooms/${id}`, {
     headers: {
       "access-token": Cookies.get("_access_token"),
@@ -81,7 +82,7 @@ export const getChatRoom = (id) => {
   });
 };
 
-export const createMessage = (data) => {
+export const createMessage = (data: Message) => {
   return client.post("/messages", data);
 };
 
@@ -95,7 +96,7 @@ export const getEvents = () => {
   });
 };
 
-export const searchEvents = (keyword, datetime) => {
+export const searchEvents = (keyword: string, datetime: string | Date | null) => {
   return client.get(`/events`, {
     headers: {
       "access-token": Cookies.get("_access_token"),
@@ -109,19 +110,19 @@ export const searchEvents = (keyword, datetime) => {
   });
 };
 
-export const getEvent = (id) => {
+export const getEvent = (id: string | undefined) => {
   return client.get(`/events/${id}`);
 };
 
-export const createEvent = (data) => {
+export const createEvent = (data: UpdateEventFormData) => {
   return client.post("/events", data);
 };
 
-export const editEvent = (id, data) => {
+export const editEvent = (id: number, data: UpdateEventFormData) => {
   return client.patch(`/events/${id}`, data);
 };
 
-export const deleteEvent = (id) => {
+export const deleteEvent = (id: number) => {
   return client.delete(`/events/${id}`);
 };
 
@@ -135,15 +136,15 @@ export const getNotifications = () => {
   });
 };
 
-export const updateNotification = (id) => {
+export const updateNotification = (id: number) => {
   return client.patch(`/notifications/${id}`);
 };
 
-export const createEventsFavorites = (eventId, data) => {
+export const createEventsFavorites = (eventId: number, data: EventFavorite) => {
   return client.post(`/events/${eventId}/events_favorites`, data);
 };
 
-export const deleteEventsFavorites = (eventId) => {
+export const deleteEventsFavorites = (eventId: number) => {
   return client.delete(`/events/${eventId}/events_favorites`, {
     headers: {
       "access-token": Cookies.get("_access_token"),
@@ -153,11 +154,11 @@ export const deleteEventsFavorites = (eventId) => {
   });
 };
 
-export const follow = (userId, data) => {
+export const follow = (userId: number | undefined | null, data: Relationship) => {
   return client.post(`/users/${userId}/relationships`, data);
 };
 
-export const unfollow = (userId) => {
+export const unfollow = (userId: number | undefined | null) => {
   return client.delete(`/users/${userId}/relationships`, {
     headers: {
       "access-token": Cookies.get("_access_token"),
@@ -167,23 +168,23 @@ export const unfollow = (userId) => {
   });
 };
 
-export const getFollowings = (userId) => {
+export const getFollowings = (userId: number) => {
   return client.get(`/users/${userId}/followings`);
 };
 
-export const getFollowers = (userId) => {
+export const getFollowers = (userId: number) => {
   return client.get(`/users/${userId}/followers`);
 };
 
-export const evaluate = (id, data) => {
+export const evaluate = (id: number, data: Evaluate) => {
   return client.post(`/users/${id}/evaluations`, data);
 };
 
-export const createComment = (eventId, data) => {
+export const createComment = (eventId: number, data: Comment) => {
   return client.post(`/events/${eventId}/comments`, data);
 };
 
-export const deleteComment = (eventId, id) => {
+export const deleteComment = (eventId: number, id: number) => {
   return client.delete(`/events/${eventId}/comments/${id}`, {
     headers: {
       "access-token": Cookies.get("_access_token"),
