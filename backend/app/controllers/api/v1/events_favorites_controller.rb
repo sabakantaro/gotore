@@ -6,7 +6,7 @@ class Api::V1::EventsFavoritesController < ApplicationController
 	end
 
   def destroy
-    return head 403 unless current_api_v1_user.present?
+    return head 401 unless api_v1_user_signed_in?
 		events_favorites = EventsFavorite.find_by(user_id: current_api_v1_user.id, event_id: params[:event_id])
     events_favorites.destroy
 		head 200
