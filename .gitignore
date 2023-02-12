@@ -6,3 +6,6 @@
 /backend/config/master.key
 /backend/config/credentials.yml.enc
 /backend/config/local_env.yml
+/infrastructure/.terraform
+/infrastructure/.terraform.lock.hcl
+/infrastructure/task-definitions

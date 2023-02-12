@@ -1,0 +1,6 @@
+aws_access_key    = "AWSアクセスキー"
+aws_secret_key    = "AWSシークレットキー"
+aws_account_id    = "AWSアカウントID"
+database_name     = "sample_app_production"
+database_username = "root"
+database_password = "password"
