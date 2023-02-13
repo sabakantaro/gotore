@@ -11,3 +11,4 @@
 /infrastructure/.terraform.lock.hcl
 /infrastructure/task-definitions
 /infrastructure/terraform.tfvars
+/infrastructure/terraform.tfstate.backup
