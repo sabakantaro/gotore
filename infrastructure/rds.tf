@@ -14,7 +14,7 @@ resource "aws_db_subnet_group" "gotore_db_subnet_group" {
 resource "aws_db_instance" "gotore_db" {
   identifier          = "${var.r_prefix}-db"
   engine              = "mysql"
-  engine_version      = "8.0.20"
+  engine_version      = "8.0.31"
   instance_class      = "db.t2.micro"
   allocated_storage   = 20
   storage_type        = "gp2"

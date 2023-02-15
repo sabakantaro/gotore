@@ -14,3 +14,4 @@
 /infrastructure/task-definitions
 /infrastructure/terraform.tfvars
 /infrastructure/terraform.tfstate.backup
+/infrastructure/terraform.tfstate
