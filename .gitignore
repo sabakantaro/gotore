@@ -1,4 +1,6 @@
 /backend/.ruby-version
+/backend/.github
+/backend/ecs/task-definition.json
 /backend/vendor
 /backend/public
 /frontend/node_modules
@@ -6,3 +8,10 @@
 /backend/config/master.key
 /backend/config/credentials.yml.enc
 /backend/config/local_env.yml
+/backend/nginx/nginx.conf
+/infrastructure/.terraform
+/infrastructure/.terraform.lock.hcl
+/infrastructure/task-definitions
+/infrastructure/terraform.tfvars
+/infrastructure/terraform.tfstate.backup
+/infrastructure/terraform.tfstate
