@@ -1,5 +1,4 @@
 /backend/.ruby-version
-/backend/ecs/task-definition.json
 /backend/vendor
 /backend/public
 /frontend/node_modules
