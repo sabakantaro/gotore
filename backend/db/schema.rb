@@ -34,9 +34,10 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_21_084849) do
 
   create_table "cities", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name"
-    t.integer "province_id"
+    t.integer "province_id", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["province_id"], name: "index_cities_on_province_id"
   end
 
   create_table "comments", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -67,6 +68,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_21_084849) do
     t.integer "city_id", default: 0, null: false
     t.text "address"
     t.index ["category_id"], name: "index_events_on_category_id"
+    t.index ["city_id"], name: "index_events_on_city_id"
     t.index ["meeting_datetime"], name: "index_events_on_meeting_datetime"
     t.index ["user_id"], name: "index_events_on_user_id"
   end
@@ -148,6 +150,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_21_084849) do
     t.datetime "updated_at", null: false
     t.integer "city_id", default: 0, null: false
     t.date "birth_date"
+    t.index ["birth_date"], name: "index_users_on_birth_date"
+    t.index ["city_id"], name: "index_users_on_city_id"
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
