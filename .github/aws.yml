@@ -32,7 +32,7 @@ jobs:
         ECR_REPOSITORY: gotore-app
         IMAGE_TAG: ${{ github.sha }}
       run: |
-        cd backend
+        cd backend &&
         docker build -f ./ecs/Dockerfile . -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
