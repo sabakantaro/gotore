@@ -22,7 +22,7 @@ class Api::V1::ParticipatesController < ApplicationController
 		send_notification(
 			participate.user_id,
 			"#{current_api_v1_user.name} participated in #{event.title}! Start to chat!",
-			event.user.image.url
+			event.user.image.url,
 			"/chatroom/#{participate.user_id}",
 		)
 
