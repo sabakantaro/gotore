@@ -3,6 +3,7 @@
 /backend/public
 /frontend/node_modules
 /backend/dump.rdb
+/backend/sessionmanager-bundle
 /backend/config/master.key
 /backend/config/local_env.yml
 /infrastructure/.terraform
