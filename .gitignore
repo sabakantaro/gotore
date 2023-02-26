@@ -4,9 +4,8 @@
 /frontend/node_modules
 /backend/dump.rdb
 /backend/config/master.key
-/backend/config/credentials.yml.enc
+/backend/ecs/task-definition.json
 /backend/config/local_env.yml
-/backend/nginx/nginx.conf
 /infrastructure/.terraform
 /infrastructure/.terraform.lock.hcl
 /infrastructure/task-definitions

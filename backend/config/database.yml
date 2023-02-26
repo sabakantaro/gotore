@@ -20,3 +20,4 @@ production:
   username: <%= ENV["DATABASE_USERNAME"] %>
   password: <%= ENV["DATABASE_PASSWORD"] %>
   host: <%= ENV["DATABASE_HOST"] %>
+  secret_key_base: <%= ENV["SECRET_KEY_BASE"] %>
